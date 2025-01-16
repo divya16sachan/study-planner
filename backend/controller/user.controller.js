@@ -3,8 +3,8 @@ import bcrypt from "bcryptjs";
 import { generateToken } from "../utils/jwt.js";
 
 export const signup = async (req, res) => {
-    const { fullName, userName, password } = req.body;
-    if (!fullName || !userName || !password) {
+    const { fullName, email, userName, password } = req.body;
+    if (!fullName || !email || !userName || !password) {
         return res.status(400).json({ message: "All fields required." });
     }
 
@@ -13,7 +13,11 @@ export const signup = async (req, res) => {
     }
 
     if (!/^[a-zA-Z0-9._]{3,30}$/.test(userName)) {
-        return res.status(400).json({ message: "userName invalid format." });
+        return res.status(400).json({ message: "invalid userName format." });
+    }
+
+    if(!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)){
+        return res.status(400).json({ message: "Invalid email format." });
     }
 
     try {
@@ -27,6 +31,7 @@ export const signup = async (req, res) => {
 
         const newUser = new User({
             fullName,
+            email,
             userName,
             password: hashedPassword
         });
@@ -42,6 +47,7 @@ export const signup = async (req, res) => {
             _id: newUser._id,
             fullName: newUser.fullName,
             userName: newUser.userName,
+            email: newUser.email,
             streak: newUser.streak,
         });
 
@@ -76,6 +82,7 @@ export const login = async (req, res) => {
             _id: user._id,
             fullName: user.fullName,
             userName: user.userName,
+            email: user.email,
             streak: user.streak,
         });
 
@@ -98,13 +105,39 @@ export const logout = (req, res) => {
 
 export const checkAuth = async (req, res) => {
     try {
+        if(!req.user){
+            return res.status(400).json({message: "user not found"});
+        }
+
         res.status(200).json({
             _id : req.user._id,
             userName : req.user.userName,
             fullName : req.user.fullName,
+            email: req.user.email,
+            streak: req.user.streak,
         })
     } catch (error) {
         console.error('Error in checkAuth controller: ', error);
+        res.status(500).json({message: "Internal server error"});
+    }
+}
+
+export const getUser = async (req, res)=>{
+    const {userName} = req.params;
+    try {
+        const user = await User.findOne({userName});
+        if(!user){
+            return res.status(404).json({message: `User not found`});
+        }
+        res.status(200).json({
+            _id: user._id,
+            fullName: user.fullName,
+            userName: user.userName,
+            email: user.email,
+            streak: user.streak,
+        })
+    } catch (error) {
+        console.error('Error in getUser controller: ', error);
         res.status(500).json({message: "Internal server error"});
     }
 }

@@ -4,6 +4,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    email: {
+        type : String,
+        unique: true,
+    },
     userName: {
         type: String,
         required: true,
@@ -12,6 +16,12 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true,
+    },
+    passwordResetCode: {
+        type: String,
+    },
+    passwordResetCodeExpiration: {
+        type: Date,
     },
     streak: {
         type: Number,
