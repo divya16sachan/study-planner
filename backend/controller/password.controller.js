@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 // UTILITY
 import { generateToken } from "../utils/jwt.js";
 import { generateVerificationCode } from "../utils/generateVerificationCode.js";
-import { validateResetCode } from "../utils/validateResetCode.js";
+import { validateVerificationCode } from "../utils/validateVerificationCode.js";
 
 export const resetPasswordRequest = async (req, res) => {
     const { email } = req.body;
@@ -17,14 +17,19 @@ export const resetPasswordRequest = async (req, res) => {
         }
 
         const passwordResetCode = generateVerificationCode();
+        const salt = await bcrypt.genSalt(10); 
+        const passwordResetCodeHash = await bcrypt.hash(passwordResetCode, salt);
+
+        
+        // set the verification code for password reset and expiration time of 15 min
+        user.verificationPurpose = "password_reset";
+        user.verificationCode = passwordResetCodeHash;
+        user.verificationCodeExpiration = Date.now() + 15 * 60 * 1000;
+        
+        await user.save();
+        
         const mailSubject = 'Password Reset Code';
         const mailBody = `Your password reset code is: ${passwordResetCode}`;
-
-        // set the reset code and expiration time to user
-        user.passwordResetCode = passwordResetCode;
-        user.passwordResetCodeExpiration = Date.now() + 15 * 60 * 1000;
-        await user.save();
-
         await sendMail(user.email, mailSubject, mailBody);
 
         res.status(200).json({ message: "Password reset code sent successfully." });
@@ -38,7 +43,7 @@ export const verifypasswordResetCode = async (req, res) => {
     const { email, passwordResetCode } = req.body;
 
     try {
-        const {success, message, user} = await validateResetCode(email, passwordResetCode);
+        const {success, message, user} = await validateVerificationCode(email, passwordResetCode);
         if (!success) {
             res.status(400).json({ message});
         }
@@ -53,18 +58,24 @@ export const verifypasswordResetCode = async (req, res) => {
 export const resetPassword = async (req, res) => {
     const { email, passwordResetCode, newPassword } = req.body;
 
+    if(newPassword.length < 6){
+        return res.status(400).json({message: "Password must be at least 6 characters."});
+    }
+
     try {
-        const {success, message, user} = await validateResetCode(email, passwordResetCode);
+        const {success, message, user} = await validateVerificationCode(email, passwordResetCode);
         if (!success) {
             res.status(400).json({ message});
         }
+
 
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(newPassword, salt);
 
         user.password = hashedPassword;
-        user.passwordResetCode = undefined;
-        user.passwordResetCodeExpiration = undefined;
+        user.verificationCode = undefined;
+        user.verificationCodeExpiration = undefined;
+        user.verificationPurpose = "";
 
         generateToken(user._id, res);
         await user.save();
