@@ -2,6 +2,8 @@ import User from "../model/user.model.js";
 import bcrypt from "bcryptjs";
 import { generateToken } from "../utils/jwt.js";
 import { cloudinary, removeCloudinaryImage } from "../utils/cloudinary.js"
+import { sendMail } from "../utils/sendMail.js";
+import { generateVerificationCode } from "../utils/generateVerificationCode.js";
 
 export const signup = async (req, res) => {
     const { fullName, email, userName, password } = req.body;
@@ -27,6 +29,7 @@ export const signup = async (req, res) => {
             return res.status(400).json({ message: "userName already exists." });
         }
 
+        const emailVerificationCode = generateVerificationCode();
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -37,21 +40,21 @@ export const signup = async (req, res) => {
             password: hashedPassword
         });
 
-        if (!newUser) {
-            return res.status(400).json({ message: "Invalid info provided." });
-        }
-
-        generateToken(newUser._id, res);
         await newUser.save();
+        const mailSubject = "Email verification code";
+        const mailBody = `Your verification code is ${emailVerificationCode}`;
+        await sendMail(email, mailSubject, mailBody);
 
         res.status(201).json({
-            _id: newUser._id,
-            fullName: newUser.fullName,
-            userName: newUser.userName,
-            email: newUser.email,
-            streak: newUser.streak,
+            user: {
+                _id: newUser._id,
+                fullName: newUser.fullName,
+                userName: newUser.userName,
+                email: newUser.email,
+                streak: newUser.streak,
+            },
+            message: "Signup successful. Please verify your email."
         });
-
 
     } catch (error) {
         console.error("error in signup controller: ", error);
@@ -64,7 +67,6 @@ export const login = async (req, res) => {
     if (!userName || !password) {
         return res.status(400).json({ message: "All fields required." });
     }
-
     try {
         const user = await User.findOne({ userName });
         if (!user) {

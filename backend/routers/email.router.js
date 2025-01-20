@@ -4,7 +4,7 @@ import { verificationRequest,  verifyCode, updateEmail} from "../controller/emai
 
 const router = express.Router();
 
-router.post('/verification-request', protectRoute, verificationRequest);
+router.get('/verification-request', protectRoute, verificationRequest);
 router.post('/verify-code', protectRoute, verifyCode);
 router.put('/update', protectRoute, updateEmail);
 

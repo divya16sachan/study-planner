@@ -5,7 +5,7 @@ const router = express.Router();
 
 
 // Step 1: User requests reset code
-router.post('/reset-request', resetPasswordRequest);
+router.get('/reset-request', resetPasswordRequest);
 
 // Step 2: User submits the reset code
 router.post('/verify-reset-code', verifypasswordResetCode);

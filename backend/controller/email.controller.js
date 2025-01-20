@@ -49,6 +49,7 @@ export const verifyCode = async (req, res) => {
         user.verificationPurpose = "";
 
         await user.save();
+        
         res.status(200).json({ message: "email verified successfully" });
     } catch (error) {
         console.log("Error in email verifyCode controller: ", error);
