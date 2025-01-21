@@ -6,6 +6,7 @@ import cors from "cors";
 
 import userRoutes from "./routers/user.router.js";
 import passwordRoutes from "./routers/password.router.js";
+import emailRoutes from "./routers/email.router.js";
 
 config();
 const app = express();
@@ -23,6 +24,7 @@ app.get('/', (req, res)=>{
 
 //ROUTES
 app.use('/api/user', userRoutes);
+app.use('/api/email', emailRoutes);
 app.use('/api/password', passwordRoutes);
 
 const PORT = process.env.PORT;

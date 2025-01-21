@@ -22,6 +22,7 @@ function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
   useEffect(() => {
     checkAuth();
+    console.log(authUser);
   }, []);
 
   if (isCheckingAuth && !authUser) {
@@ -37,7 +38,7 @@ function App() {
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <div>
         <Routes>
-          <Route path='/verify-email' element={<EmailVerificationPage />} />
+          <Route path='/verify-email' element={true || !authUser?.isEmailVerified ?<EmailVerificationPage /> : <Navigate to='/' />} />
           <Route path='/' element={authUser ? <Dashboard /> : <Navigate to='/login' />} />
           <Route path='/profile' element={authUser ? <ProfilePage /> : <Navigate to='/login' />} />
 

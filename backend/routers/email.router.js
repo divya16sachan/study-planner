@@ -1,11 +1,11 @@
 import express from "express";
-import { protectRoute } from "../middleware/protectRoute";
-import { verificationRequest,  verifyCode, updateEmail} from "../controller/email.controller.js"
+import { protectRoute } from "../middleware/protectRoute.js";
+import { verifyCode, resendCode, updateEmail} from "../controller/email.controller.js"
 
 const router = express.Router();
 
-router.get('/verification-request', protectRoute, verificationRequest);
-router.post('/verify-code', protectRoute, verifyCode);
+router.post('/verify-code',  verifyCode);
+router.get('/resend-code', resendCode);
 router.put('/update', protectRoute, updateEmail);
 
 export default router;

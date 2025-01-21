@@ -7,10 +7,11 @@ export const useAuthStore = create((set, get) => ({
   isCheckingAuth: false,
   isSigningUp: false,
   isLoggingIn: false,
+  isVerifyingEmail: false,
 
   checkAuth: async () => {
     set({ isCheckingAuth: true });
-    const {authUser} = get();
+    const { authUser } = get();
     try {
       const res = await axiosInstance.get('/user/check/auth');
       set({ authUser: res.data });
@@ -19,8 +20,8 @@ export const useAuthStore = create((set, get) => ({
     } catch (error) {
       set({ authUser: null });
       toast.error(error.response.data.message);
-    } finally{
-      set({isCheckingAuth: false});
+    } finally {
+      set({ isCheckingAuth: false });
     }
   },
 
@@ -28,14 +29,14 @@ export const useAuthStore = create((set, get) => ({
     set({ isSigningUp: true });
     try {
       const res = await axiosInstance.post('/user/signup', data);
-      const {user, message} = res.data;
+      const { user, message } = res.data;
       set({ authUser: user });
       toast.success(message);
-      return {success: true};
+      return { success: true };
     } catch (error) {
       set({ authUser: null });
       toast.error(error.response.data.message);
-      return {success: false};
+      return { success: false };
     } finally {
       set({ isSigningUp: false });
     }
@@ -55,14 +56,38 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
-  logout: async () =>{
+  logout: async () => {
     try {
       const res = await axiosInstance.post('/user/logout');
-      set({ authUser: null});
+      set({ authUser: null });
       toast.success(res.data.message);
     } catch (error) {
-      set({ authUser: null});
+      set({ authUser: null });
       toast.error(error.response.data.message);
+    }
+  },
+
+  verifyEmail: async (data) => {
+    set({ isVerifyingEmail: true });
+    try {
+      const res = await axiosInstance.post('/email/verify-code', data);
+      set({ authUser: res.data.user });
+      toast.success(res.data.message);
+    } catch (error) {
+      set({ authUser: null });
+      toast.error(error.response.data.message);
+      console.log(error);
+    } finally {
+      set({ isVerifyingEmail: false });
+    }
+  },
+  resendEmailOTP:  async () => {
+    try {
+      const res = await axiosInstance('/email/resend-code');
+      toast.success(res.data.message);
+    } catch (error) {
+      toast.error(error.response.data.message);
+      console.log(error);
     }
   }
 })); 

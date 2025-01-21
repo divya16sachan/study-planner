@@ -20,9 +20,11 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp"
 import { Card, CardContent } from "@/components/ui/card"
+import { useAuthStore } from "@/stores/useAuthStore"
+import { Loader2 } from "lucide-react"
 
 const FormSchema = z.object({
-  pin: z.string().min(6, {
+  emailVerificationCode: z.string().min(6, {
     message: "Your OTP must be 6 characters.",
   }),
 })
@@ -31,12 +33,14 @@ const EmailVerificationPage = () => {
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      pin: "",
+      emailVerificationCode: "",
     },
   })
 
-  function onSubmit(data) {
-    console.log("Submitted data:", data)
+  const { verifyEmail, isVerifyingEmail, resendOTP } = useAuthStore();
+
+  const onSubmit = async (data) => {
+    await verifyEmail(data);
   }
 
   return (
@@ -47,7 +51,7 @@ const EmailVerificationPage = () => {
             <form onSubmit={form.handleSubmit(onSubmit)} className=" space-y-6">
               <FormField
                 control={form.control}
-                name="pin"
+                name="emailVerificationCode"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Email Verification</FormLabel>
@@ -70,8 +74,23 @@ const EmailVerificationPage = () => {
                   </FormItem>
                 )}
               />
-
-              <Button type="submit" className="w-full">Submit</Button>
+              <div className="flex justify-between items-center">
+                <span>Don't receive the OTP?</span>
+                <Button type="button" variant="link" onClick={resendOTP} disabled={isVerifyingEmail}>
+                  RESEND
+                </Button>
+              </div>
+              <Button type="submit" className="w-full" disabled={isVerifyingEmail}>
+                {
+                  isVerifyingEmail ?
+                    <>
+                      <Loader2 className="animate-spin" />
+                      Please wait
+                    </>
+                    :
+                    "Verify OTP"
+                }
+              </Button>
             </form>
           </Form>
         </CardContent>

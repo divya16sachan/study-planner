@@ -4,6 +4,7 @@ import { generateToken } from "../utils/jwt.js";
 import { cloudinary, removeCloudinaryImage } from "../utils/cloudinary.js"
 import { sendMail } from "../utils/sendMail.js";
 import { generateVerificationCode } from "../utils/generateVerificationCode.js";
+import { verifyEmailTemplate } from "../utils/mailTemplates.js";
 
 export const signup = async (req, res) => {
     const { fullName, email, userName, password } = req.body;
@@ -11,6 +12,7 @@ export const signup = async (req, res) => {
         return res.status(400).json({ message: "All fields required." });
     }
 
+    // validating the credentials
     if (password.length < 6) {
         return res.status(400).json({ message: "Password must contain at least 6 characters." });
     }
@@ -24,27 +26,48 @@ export const signup = async (req, res) => {
     }
 
     try {
+        // preventing duplicate username insertion
         const existingUser = await User.findOne({ userName });
         if (existingUser) {
             return res.status(400).json({ message: "userName already exists." });
         }
 
-        const emailVerificationCode = generateVerificationCode();
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
+        // password and verfication code hashing
+        const saltForVerification = await bcrypt.genSalt(10);
+        const saltForPassword = await bcrypt.genSalt(10);
 
+        const emailVerificationCode = generateVerificationCode();
+        const emailVerificationHash = await bcrypt.hash(emailVerificationCode, saltForVerification);
+        const hashedPassword = await bcrypt.hash(password, saltForPassword);
+
+        // creating the user and setting verification code expiration of 15 min  
         const newUser = new User({
+            verificationCode: emailVerificationHash,
+            verificationCodeExpiration: Date.now() + 15 * 60 * 1000,
+            verificationPurpose: 'email_verification',
+
             fullName,
             email,
             userName,
             password: hashedPassword
         });
-
         await newUser.save();
-        const mailSubject = "Email verification code";
-        const mailBody = `Your verification code is ${emailVerificationCode}`;
-        await sendMail(email, mailSubject, mailBody);
 
+        // sending mail to the 
+        const mailSubject = "Email verification code";
+        const title = "Email Verification";
+        const message = "Thank you for registering with NoteHub. To complete your registration and verify your email address, please use the following verification code:";
+        const mailBody = verifyEmailTemplate(title, message, emailVerificationCode);
+        await sendMail(email, mailSubject, mailBody);
+        console.log(emailVerificationCode);
+
+        // storing cookie and Set expiration time of 15 min
+        res.cookie("_id", newUser._id, {
+            httpOnly: true,
+            expires: new Date(Date.now() + 15 * 60 * 1000),
+        })
+
+        // api success response
         res.status(201).json({
             user: {
                 _id: newUser._id,
@@ -111,14 +134,8 @@ export const checkAuth = async (req, res) => {
         if (!req.user) {
             return res.status(400).json({ message: "user not found" });
         }
-
-        res.status(200).json({
-            _id: req.user._id,
-            userName: req.user.userName,
-            fullName: req.user.fullName,
-            email: req.user.email,
-            streak: req.user.streak,
-        })
+        
+        res.status(200).json(req.user)
     } catch (error) {
         console.error('Error in checkAuth controller: ', error);
         res.status(500).json({ message: "Internal server error" });
@@ -194,9 +211,9 @@ export const updateUserInfo = async (req, res) => {
     try {
         user.userName = userName;
         user.fullName = fullName;
-        user.save();
+        await user.save();
 
-        res.status(200).json({message: "user info updated successfully"});
+        res.status(200).json({ message: "user info updated successfully" });
     } catch (error) {
         console.error('Error in updateuserInfo controller: ', error);
         res.status(500).json({ message: "Internal server error" });
