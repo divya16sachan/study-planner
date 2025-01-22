@@ -1,4 +1,3 @@
-import User from "../model/user.model.js";
 import bcrypt from "bcryptjs";
 
 export const validateVerificationCode = async (user, verificationCode) => {
@@ -7,7 +6,7 @@ export const validateVerificationCode = async (user, verificationCode) => {
     }
 
     if (user.verificationCodeExpiration < Date.now()) {
-        return { success: false, message: "Verification code has expired." };
+        return { success: false, message: "Your OTP has expired. Please re-signup." };
     }
 
     const isMatch = await bcrypt.compare(verificationCode, user.verificationCode);

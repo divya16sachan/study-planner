@@ -1,6 +1,6 @@
 import User from "../model/user.model.js";
 import bcrypt from "bcryptjs";
-import { generateToken } from "../utils/jwt.js";
+import { generateOtpCookie, generateToken } from "../utils/jwt.js";
 import { cloudinary, removeCloudinaryImage } from "../utils/cloudinary.js"
 import { sendMail } from "../utils/sendMail.js";
 import { generateVerificationCode } from "../utils/generateVerificationCode.js";
@@ -26,19 +26,29 @@ export const signup = async (req, res) => {
     }
 
     try {
-        // preventing duplicate username insertion
         const existingUser = await User.findOne({ userName });
         if (existingUser) {
-            return res.status(400).json({ message: "userName already exists." });
+            // preventing duplicate username insertion
+            if (existingUser.isEmailVerified) {
+                return res.status(400).json({ message: "Username already exists." });
+            }
+
+            // verification pending
+            if (existingUser.verificationCodeExpiration >= Date.now()) {
+                return res.status(400).json({ message: "Username already exists." });
+            }
+            // verification time has expired 
+            else {
+                await User.findByIdAndDelete(existingUser._id);
+            }
         }
 
-        // password and verfication code hashing
-        const saltForVerification = await bcrypt.genSalt(10);
-        const saltForPassword = await bcrypt.genSalt(10);
 
+        // password and verfication code hashing
+        const salt = await bcrypt.genSalt(10);
         const emailVerificationCode = generateVerificationCode();
-        const emailVerificationHash = await bcrypt.hash(emailVerificationCode, saltForVerification);
-        const hashedPassword = await bcrypt.hash(password, saltForPassword);
+        const emailVerificationHash = await bcrypt.hash(emailVerificationCode, salt);
+        const hashedPassword = await bcrypt.hash(password, salt);
 
         // creating the user and setting verification code expiration of 15 min  
         const newUser = new User({
@@ -61,13 +71,9 @@ export const signup = async (req, res) => {
         await sendMail(email, mailSubject, mailBody);
         console.log(emailVerificationCode);
 
-        // storing cookie and Set expiration time of 15 min
-        res.cookie("_id", newUser._id, {
-            httpOnly: true,
-            expires: new Date(Date.now() + 15 * 60 * 1000),
-        })
+        generateOtpCookie(newUser._id, res);
 
-        // api success response
+        // API success response
         res.status(201).json({
             user: {
                 _id: newUser._id,
@@ -81,7 +87,7 @@ export const signup = async (req, res) => {
 
     } catch (error) {
         console.error("error in signup controller: ", error);
-        res.status(500).json({ message: "Internal server error" });
+        res.status(500).json({ message: "Internal server error." });
     }
 }
 
@@ -134,7 +140,7 @@ export const checkAuth = async (req, res) => {
         if (!req.user) {
             return res.status(400).json({ message: "user not found" });
         }
-        
+
         res.status(200).json(req.user)
     } catch (error) {
         console.error('Error in checkAuth controller: ', error);

@@ -6,9 +6,20 @@ export const generateToken = (userId, res)=>{
         expiresIn: '7d'
     });
     res.cookie('jwt', token, {
-        expires : new Date(expirationTime),
         httpOnly: true,
+        expires : new Date(expirationTime),
         secure: process.env.NODE_ENV === 'production',
     });
     return token;
+}
+
+export const generateOtpCookie = (userId, res) => {
+    const token = jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '15m' });
+
+    res.cookie('otp_token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'Strict',
+        maxAge: 15 * 60 * 1000, // 15 minutes
+    });
 }

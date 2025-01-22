@@ -4,17 +4,27 @@ import { generateToken } from "../utils/jwt.js";
 import { validateVerificationCode } from "../utils/validateVerificationCode.js";
 import { generateVerificationCode } from "../utils/generateVerificationCode.js";
 import { sendMail } from "../utils/sendMail.js";
-
+import jwt from "jsonwebtoken";
 
 export const verifyCode = async (req, res) => {
-    const { emailVerificationCode } = req.body;
-    const _id = req.cookies._id
-
     try {
-        const user = await User.findById(_id).select('-password');
-        if (!user) {
-            return res.status(400).json({ message: "user not found" });
+        const { emailVerificationCode } = req.body;
+        const otp_token = req.cookies.otp_token
+        const decode = jwt.verify(otp_token, process.env.JWT_SECRET)
+        if (!decode) {
+            return res.status(401).json({ message: "Invalid token" });
         }
+
+        const { userId } = decode;
+
+        const user = await User.findById(userId).select('-password');
+        if (!user) {
+            return res.status(404).json({ message: "User not found." });
+        }
+        if (user.isEmailVerified) {
+            return res.status(200).json({ user, message: "Your email is already verified, no action needed." });
+        }
+
         const { success, message } = await validateVerificationCode(user, emailVerificationCode);
         if (!success) {
             return res.status(400).json({ message });
@@ -32,7 +42,7 @@ export const verifyCode = async (req, res) => {
         res.status(200).json({ user, message: "Email has been verified." });
     } catch (error) {
         console.log("Error in email verifyCode controller: ", error);
-        res.status(500).json({ message: "Internal server error" });
+        res.status(500).json({ message: "Internal server error." });
     }
 }
 
