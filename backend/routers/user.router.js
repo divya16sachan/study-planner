@@ -1,5 +1,5 @@
 import express from "express";
-import { 
+import {
     login,
     signup,
     logout,
@@ -10,11 +10,12 @@ import {
     updateUserInfo
 } from "../controller/user.controller.js"
 import { protectRoute } from "../middleware/protectRoute.js";
+import { signupLimiter, loginLimiter } from "../middleware/rateLimiter.middleware.js";
 
 const router = express.Router();
 
-router.post('/signup', signup);
-router.post('/login', login);
+router.post('/signup', signupLimiter, signup);
+router.post('/login', loginLimiter, login);
 router.post('/logout', logout);
 
 router.post('/upload-avatar', protectRoute, uploadAvatar);

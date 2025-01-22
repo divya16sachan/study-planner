@@ -6,7 +6,7 @@ import { generateVerificationCode } from "../utils/generateVerificationCode.js";
 import { sendMail } from "../utils/sendMail.js";
 import jwt from "jsonwebtoken";
 
-export const verifyCode = async (req, res) => {
+export const verifyOtp = async (req, res) => {
     try {
         const { emailVerificationCode } = req.body;
         const otp_token = req.cookies.otp_token
@@ -41,12 +41,12 @@ export const verifyCode = async (req, res) => {
         generateToken(user._id, res);
         res.status(200).json({ user, message: "Email has been verified." });
     } catch (error) {
-        console.log("Error in email verifyCode controller: ", error);
+        console.log("Error in email verifyOtp controller: ", error);
         res.status(500).json({ message: "Internal server error." });
     }
 }
 
-export const resendCode = async (req, res) => {
+export const resendOtp = async (req, res) => {
     const _id = req.cookies._id
     try {
         const user = await User.findById(_id).select('-password');

@@ -70,7 +70,7 @@ export const useAuthStore = create((set, get) => ({
   verifyEmail: async (data) => {
     set({ isVerifyingEmail: true });
     try {
-      const res = await axiosInstance.post('/email/verify-code', data);
+      const res = await axiosInstance.post('/email/verify-otp', data);
       set({ authUser: res.data.user });
       toast.success(res.data.message);
     } catch (error) {
@@ -83,7 +83,7 @@ export const useAuthStore = create((set, get) => ({
   },
   resendEmailOTP:  async () => {
     try {
-      const res = await axiosInstance('/email/resend-code');
+      const res = await axiosInstance('/email/resend-otp');
       toast.success(res.data.message);
     } catch (error) {
       toast.error(error.response.data.message);
