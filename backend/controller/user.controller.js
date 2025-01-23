@@ -204,24 +204,52 @@ export const removeAvatar = async (req, res) => {
     }
 }
 
-export const updateUserInfo = async (req, res) => {
-    const { userName, fullName } = req.body;
-    const { user } = req;
-    if (!user) {
-        return res.status(401).json({ message: "Unothorized: user not found" });
-    }
-    if (!userName || !fullName) {
-        return res.status(400).json({ message: "userName or fullName not provided" });
-    }
-
+export const updateFullName = async (req, res) => {
     try {
-        user.userName = userName;
+        const { fullName } = req.body;
+        const { user } = req;
+        if(!fullName){
+            return res.status(400).json({message: "fullName required for updation."});
+        }
+
         user.fullName = fullName;
         await user.save();
-
-        res.status(200).json({ message: "user info updated successfully" });
+        res.status(200).json({message: "fullName updated successfully."});
     } catch (error) {
-        console.error('Error in updateuserInfo controller: ', error);
-        res.status(500).json({ message: "Internal server error" });
+        console.log("Error in updateFullName controller\n", error);
+        res.status(500).json({ message: "Internal server error." });
+    }
+}
+
+export const updateUserName = async (req, res) => {
+    try {
+        const { userName } = req.body;
+        const { user } = req;
+
+        if(!userName){
+            return res.status(400).json({message: "userName required, for updation."});
+        }
+        if (!/^[a-zA-Z0-9._]{3,30}$/.test(userName)) {
+            return res.status(400).json({ message: "Invalid userName format." });
+        }
+
+        user.userName = userName;
+        await user.save();
+        res.status(200).json({message: "userName updated successfully."});
+    } catch (error) {
+        console.log("Error in updateUserName controller\n", error);
+        res.status(500).json({ message: "Internal server error." });
+    }
+}
+
+export const updateEmail = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const { user } = req;
+        user.fullName = email;
+        await user.save();
+    } catch (error) {
+        console.log("Error in updateEmail controller\n", error);
+        res.status(500).json({ message: "Internal server error." });
     }
 }

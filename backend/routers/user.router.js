@@ -7,7 +7,9 @@ import {
     checkAuth,
     uploadAvatar,
     removeAvatar,
-    updateUserInfo
+    updateFullName,
+    updateUserName,
+    updateEmail,
 } from "../controller/user.controller.js"
 import { protectRoute } from "../middleware/protectRoute.js";
 import { signupLimiter, loginLimiter } from "../middleware/rateLimiter.middleware.js";
@@ -21,7 +23,9 @@ router.post('/logout', logout);
 router.post('/upload-avatar', protectRoute, uploadAvatar);
 router.delete('/remove-avatar', protectRoute, removeAvatar);
 
-router.put('/update-user-Info', protectRoute, updateUserInfo);
+router.put('/update-fullname', protectRoute, updateFullName);
+router.put('/update-username', protectRoute, updateUserName);
+router.put('/update-email', protectRoute, updateEmail);
 
 router.get('/check/auth', protectRoute, checkAuth);
 router.get('/:userName', getUser);

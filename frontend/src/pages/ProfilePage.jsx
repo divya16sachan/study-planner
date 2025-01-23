@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-import React from 'react';
+import React, { useState } from 'react';
 import { DrawerDialog } from "../components/EditProfile";
 import { Button } from '@/components/ui/button';
 import { Camera, Pencil } from 'lucide-react';
@@ -10,6 +10,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import defaultAvatar from "../../public/avatar.png";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { axiosInstance } from "@/lib/axios";
+import { toast } from "sonner";
 
 const ProfilePage = () => {
   const { authUser } = useAuthStore();
@@ -25,15 +27,15 @@ const ProfilePage = () => {
         </div>
         <CardContent>
           <div className="border-b pb-8 mb-8 flex items-center space-x-4">
-            <Avatar className="relative shadow-md size-48 -mt-14 bg-black rounded-full">
+            <Avatar className="relative shadow-md size-48 shrink-0 border-8 border-background -mt-14 rounded-full">
               <AvatarImage
                 className="w-full h-full object-cover rounded-full"
-                src={authUser?.avatar}
+                // src={"https://github.com/shadcn.png"}
                 alt="@shadcn"
               />
               <AvatarFallback className="text-4xl">
                 <img
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover dark:brightness-[0.2]"
                   src={defaultAvatar}
                   alt="shadcn"
                 />
@@ -65,7 +67,12 @@ const ProfilePage = () => {
                     </Button>
                   }
                 >
-                  <ProfileForm field="Username" defaultValue={authUser?.userName} />
+                  <ProfileForm
+                    apiEndPoint="user/update-username"
+                    dataKey="userName"
+                    field="Username"
+                    defaultValue={authUser?.userName}
+                  />
                 </DrawerDialog>
               </div>
             </div>
@@ -82,7 +89,12 @@ const ProfilePage = () => {
                     </Button>
                   }
                 >
-                  <ProfileForm field="Full Name" defaultValue={authUser?.fullName} />
+                  <ProfileForm
+                    apiEndPoint="user/update-fullname"
+                    dataKey="fullName"
+                    field="Full Name"
+                    defaultValue={authUser?.fullName}
+                  />
                 </DrawerDialog>
               </div>
             </div>
@@ -99,7 +111,12 @@ const ProfilePage = () => {
                     </Button>
                   }
                 >
-                  <ProfileForm field="Email" defaultValue={authUser?.email} />
+                  <ProfileForm
+                    apiEndPoint="user/update-email"
+                    dataKey="email"
+                    field="Email"
+                    defaultValue={authUser?.email}
+                  />
                 </DrawerDialog>
               </div>
             </div>
@@ -111,12 +128,29 @@ const ProfilePage = () => {
   );
 };
 
-function ProfileForm({ className, field, defaultValue }) {
+function ProfileForm({ className, field, defaultValue, apiEndPoint, dataKey }) {
+  const [value, setValue] = useState(defaultValue);
+  const handleSubmit = async (e) => {
+    console.log(dataKey, value);
+    const data = {[dataKey] : value}
+    try {
+      const res = await axiosInstance.put(apiEndPoint, data);
+      toast.success(res.data.message);
+    } catch (error) {
+      toast.success(error.response.data.message);
+      console.log(error);
+    }
+  }
   return (
-    <form className={cn("grid items-start gap-4", className)}>
+    <form onSubmit={handleSubmit} className={cn("grid items-start gap-4", className)}>
       <div className="grid gap-2">
         <Label htmlFor={field}>{field}</Label>
-        <Input type="text" id={field} defaultValue={defaultValue} />
+        <Input
+          type="text"
+          id={field}
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+        />
       </div>
       <Button type="submit">Save changes</Button>
     </form>
