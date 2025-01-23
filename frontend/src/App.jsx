@@ -40,7 +40,7 @@ function App() {
         <Routes>
           <Route path='/verify-email' element={true || !authUser?.isEmailVerified ?<EmailVerificationPage /> : <Navigate to='/' />} />
           <Route path='/' element={authUser ? <Dashboard /> : <Navigate to='/login' />} />
-          <Route path='/profile' element={authUser ? <ProfilePage /> : <Navigate to='/login' />} />
+          {/* <Route path='/profile' element={<ProfilePage />} /> */}
 
           <Route path='/signup' element={!authUser ? <SignUpPage /> : <Navigate to='/' />} />
           <Route path='/login' element={!authUser ? <LoginPage /> : <Navigate to='/' />} />
