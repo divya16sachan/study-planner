@@ -8,6 +8,7 @@ export const useAuthStore = create((set, get) => ({
   isSigningUp: false,
   isLoggingIn: false,
   isVerifyingEmail: false,
+  emailStatus: "",
 
   checkAuth: async () => {
     set({ isCheckingAuth: true });
@@ -81,13 +82,32 @@ export const useAuthStore = create((set, get) => ({
       set({ isVerifyingEmail: false });
     }
   },
-  resendEmailOTP:  async () => {
+  resendEmailOTP: async () => {
     try {
       const res = await axiosInstance('/email/resend-otp');
       toast.success(res.data.message);
     } catch (error) {
       toast.error(error.response.data.message);
       console.log(error);
+    }
+  },
+  updateUserField: async (apiEndPoint, data) => {
+    try {
+      const res = await axiosInstance.put(apiEndPoint, data);
+      set({authUser: res.data.user});
+      toast.success(res.data.message);
+    } catch (error) {
+      toast.success(error.response.data.message);
+      console.log(error);
+    }
+  },
+  checkEmailStatus : async()=>{
+    try {
+      const res = await axiosInstance.get('email/check-status');
+      set({emailStatus : res.data.status});
+    } catch (error) {
+      console.log(error);
+      set({emailStatus : ""});
     }
   }
 })); 

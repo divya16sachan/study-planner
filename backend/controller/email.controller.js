@@ -9,7 +9,7 @@ import jwt from "jsonwebtoken";
 export const verifyOtp = async (req, res) => {
     try {
         const { emailVerificationCode } = req.body;
-        const otp_token = req.cookies.otp_token
+        const { otp_token } = req.cookies;
         const decode = jwt.verify(otp_token, process.env.JWT_SECRET)
         if (!decode) {
             return res.status(401).json({ message: "Invalid token" });
@@ -36,6 +36,8 @@ export const verifyOtp = async (req, res) => {
         user.verificationCodeExpiration = undefined;
         user.verificationPurpose = undefined;
 
+        res.clearCookie('otp_token');
+
         await user.save();
         // generating jwt token and appending with response cookie
         generateToken(user._id, res);
@@ -45,6 +47,42 @@ export const verifyOtp = async (req, res) => {
         res.status(500).json({ message: "Internal server error." });
     }
 }
+
+export const checkStatus = async (req, res) => {
+    try {
+        const { otp_token } = req.cookies;
+        if (!otp_token) {
+            return res.status(401).json({ message: "No token provided." });
+        }
+
+        const decode = jwt.verify(otp_token, process.env.JWT_SECRET);
+        if (!decode) {
+            return res.status(401).json({ message: "Invalid token" });
+        }
+
+        const { userId } = decode;
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        if (user.isEmailVerified) {
+            return res.status(200).json({ status: "verified", message: "Email already verified" });
+        }
+
+        if (user.verificationCodeExpiration > Date.now()) {
+            return res.status(400).json({ status: "expired", message: "Verification code expired" });
+        }
+
+        res.status().json({ status: "pending", message: "Verification code expired" });
+    } catch (error) {
+        {
+            console.log("Error in checkStatus controller: ", error);
+            res.status(500).json({ message: "Internal server error" });
+        }
+    }
+}
+
 
 export const resendOtp = async (req, res) => {
     const _id = req.cookies._id

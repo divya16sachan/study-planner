@@ -8,10 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label"
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import defaultAvatar from "../../public/avatar.png";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { axiosInstance } from "@/lib/axios";
-import { toast } from "sonner";
 
 const ProfilePage = () => {
   const { authUser } = useAuthStore();
@@ -36,7 +33,7 @@ const ProfilePage = () => {
               <AvatarFallback className="text-4xl">
                 <img
                   className="w-full h-full object-cover dark:brightness-[0.2]"
-                  src={defaultAvatar}
+                  src="/avatar.png"
                   alt="shadcn"
                 />
               </AvatarFallback>
@@ -130,16 +127,11 @@ const ProfilePage = () => {
 
 function ProfileForm({ className, field, defaultValue, apiEndPoint, dataKey }) {
   const [value, setValue] = useState(defaultValue);
+  const { updateUserField } = useAuthStore();
   const handleSubmit = async (e) => {
-    console.log(dataKey, value);
+    e.preventDefault();
     const data = {[dataKey] : value}
-    try {
-      const res = await axiosInstance.put(apiEndPoint, data);
-      toast.success(res.data.message);
-    } catch (error) {
-      toast.success(error.response.data.message);
-      console.log(error);
-    }
+    await updateUserField(apiEndPoint, data);
   }
   return (
     <form onSubmit={handleSubmit} className={cn("grid items-start gap-4", className)}>

@@ -20,14 +20,20 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp"
 import { Card, CardContent } from "@/components/ui/card"
+
 import { useAuthStore } from "@/stores/useAuthStore"
 import { Loader2 } from "lucide-react"
+import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
 
 const FormSchema = z.object({
   emailVerificationCode: z.string().min(6, {
     message: "Your OTP must be 6 characters.",
   }),
 })
+// =====================================================
+// =================== main function ===================
+// =====================================================
 
 const EmailVerificationPage = () => {
   const form = useForm({
@@ -36,11 +42,39 @@ const EmailVerificationPage = () => {
       emailVerificationCode: "",
     },
   })
+  const [isResendDisabled, setIsResendDisabled] = useState(true);
+  const [timer, setTimer] = useState(60);
+  const { verifyEmail, isVerifyingEmail, resendOTP, checkEmailStatus, emailStatus } = useAuthStore();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (timer > 0) {
+      const interval = setInterval(() => {
+        setTimer((prevTimer) => prevTimer - 1);
+        console.log(timer);
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+    else {
+      setIsResendDisabled(false);
+    }
+  }, [timer]);
 
-  const { verifyEmail, isVerifyingEmail, resendOTP } = useAuthStore();
+  useEffect(() => {
+    const check = async()=>{
+      await checkEmailStatus();
+      if (emailStatus !== "pending") {
+        navigate('/signup');
+      }
+    }
+
+    check();
+  }, []);
 
   const onSubmit = async (data) => {
     await verifyEmail(data);
+  }
+  const handleResendOTP = async () => {
+
   }
 
   return (
@@ -48,7 +82,7 @@ const EmailVerificationPage = () => {
       <Card>
         <CardContent className="grid p-6">
           <Form  {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className=" space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField
                 control={form.control}
                 name="emailVerificationCode"
@@ -74,12 +108,20 @@ const EmailVerificationPage = () => {
                   </FormItem>
                 )}
               />
-              <div className="flex justify-between items-center">
-                <span>Don't receive the OTP?</span>
-                <Button type="button" variant="link" onClick={resendOTP} disabled={isVerifyingEmail}>
-                  RESEND
+
+              <div className="text-sm flex items-center justify-between">
+                <span>Don't get the OTP?</span>
+                <Button
+                  variant="link"
+                  disabled={isResendDisabled}
+                  onSend={handleResendOTP}
+                >
+                  {
+                    isResendDisabled ? `${timer.toString().padStart(2, '0')} s` : "resend"
+                  }
                 </Button>
               </div>
+
               <Button type="submit" className="w-full" disabled={isVerifyingEmail}>
                 {
                   isVerifyingEmail ?

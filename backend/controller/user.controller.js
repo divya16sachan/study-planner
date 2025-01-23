@@ -214,7 +214,7 @@ export const updateFullName = async (req, res) => {
 
         user.fullName = fullName;
         await user.save();
-        res.status(200).json({message: "fullName updated successfully."});
+        res.status(200).json({user, message: "fullName updated successfully."});
     } catch (error) {
         console.log("Error in updateFullName controller\n", error);
         res.status(500).json({ message: "Internal server error." });
@@ -232,10 +232,14 @@ export const updateUserName = async (req, res) => {
         if (!/^[a-zA-Z0-9._]{3,30}$/.test(userName)) {
             return res.status(400).json({ message: "Invalid userName format." });
         }
+        const existingUser = await User.findOne({userName});
+        if(existingUser){
+            return res.status(400).json({message: "Username already exists."});
+        }
 
         user.userName = userName;
         await user.save();
-        res.status(200).json({message: "userName updated successfully."});
+        res.status(200).json({user, message: "userName updated successfully."});
     } catch (error) {
         console.log("Error in updateUserName controller\n", error);
         res.status(500).json({ message: "Internal server error." });
