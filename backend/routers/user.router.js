@@ -16,8 +16,8 @@ import { signupLimiter, loginLimiter } from "../middleware/rateLimiter.middlewar
 
 const router = express.Router();
 
-router.post('/signup', signupLimiter, signup);
-router.post('/login', loginLimiter, login);
+router.post('/signup', signup);//signupLimiter todo
+router.post('/login', login);//loginLimiter todo
 router.post('/logout', logout);
 
 router.post('/upload-avatar', protectRoute, uploadAvatar);

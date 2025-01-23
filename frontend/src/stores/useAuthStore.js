@@ -15,12 +15,10 @@ export const useAuthStore = create((set, get) => ({
     const { authUser } = get();
     try {
       const res = await axiosInstance.get('/user/check/auth');
+      console.log(res.data);
       set({ authUser: res.data });
-      toast.success("Welcome to the noteHub");
-      console.log(authUser);
     } catch (error) {
       set({ authUser: null });
-      toast.error(error.response.data.message);
     } finally {
       set({ isCheckingAuth: false });
     }
@@ -94,20 +92,22 @@ export const useAuthStore = create((set, get) => ({
   updateUserField: async (apiEndPoint, data) => {
     try {
       const res = await axiosInstance.put(apiEndPoint, data);
-      set({authUser: res.data.user});
+      set({ authUser: res.data.user });
       toast.success(res.data.message);
     } catch (error) {
       toast.success(error.response.data.message);
       console.log(error);
     }
   },
-  checkEmailStatus : async()=>{
+  checkEmailStatus: async () => {
     try {
       const res = await axiosInstance.get('email/check-status');
-      set({emailStatus : res.data.status});
+      set({ emailStatus: res.data.status });
     } catch (error) {
-      console.log(error);
-      set({emailStatus : ""});
+      console.log(error.response.data.message);
+      set({ emailStatus: "" });
+    } finally{
+      console.log("status", get().emailStatus);
     }
   }
 })); 

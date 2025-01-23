@@ -50,7 +50,6 @@ const EmailVerificationPage = () => {
     if (timer > 0) {
       const interval = setInterval(() => {
         setTimer((prevTimer) => prevTimer - 1);
-        console.log(timer);
       }, 1000);
       return () => clearInterval(interval);
     }
@@ -62,14 +61,18 @@ const EmailVerificationPage = () => {
   useEffect(() => {
     const check = async()=>{
       await checkEmailStatus();
-      if (emailStatus !== "pending") {
-        navigate('/signup');
-      }
     }
 
     check();
   }, []);
 
+  useEffect(()=>{
+    if (emailStatus !== "pending") {
+      console.log("emailStatus:" , emailStatus);
+      navigate('/signup');
+    }
+  }, [emailStatus])
+  
   const onSubmit = async (data) => {
     await verifyEmail(data);
   }

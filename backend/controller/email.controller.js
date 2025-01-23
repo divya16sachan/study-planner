@@ -70,11 +70,11 @@ export const checkStatus = async (req, res) => {
             return res.status(200).json({ status: "verified", message: "Email already verified" });
         }
 
-        if (user.verificationCodeExpiration > Date.now()) {
+        if (user.verificationCodeExpiration < Date.now()) {
             return res.status(400).json({ status: "expired", message: "Verification code expired" });
         }
-
-        res.status().json({ status: "pending", message: "Verification code expired" });
+        
+        res.status(200).json({ status: "pending", message: "Verification code expired" });
     } catch (error) {
         {
             console.log("Error in checkStatus controller: ", error);
