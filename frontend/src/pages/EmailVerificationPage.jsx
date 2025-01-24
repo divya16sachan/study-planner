@@ -45,7 +45,7 @@ const EmailVerificationPage = () => {
   })
   const [isResendDisabled, setIsResendDisabled] = useState(true);
   const [timer, setTimer] = useState(60);
-  const { verifyEmail, isVerifyingEmail, resendOTP, checkEmailStatus, authUser } = useAuthStore();
+  const { verifyEmail, isVerifyingEmail, resendEmailOTP, checkEmailStatus, authUser } = useAuthStore();
   const navigate = useNavigate();
   useEffect(() => {
     if (timer > 0) {
@@ -64,16 +64,19 @@ const EmailVerificationPage = () => {
       const status = await checkEmailStatus();
       if(status !== "pending") navigate('/signup');
     }
-
     check();
   }, []);
 
   
   const onSubmit = async (data) => {
-    await verifyEmail(data);
+    const res = await verifyEmail(data);
+    if(res.success){
+      setTimer(60);
+    }
   }
   const handleResendOTP = async () => {
-
+    await resendEmailOTP();
+    
   }
 
   return (

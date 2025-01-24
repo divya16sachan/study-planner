@@ -66,8 +66,8 @@ export const signup = async (req, res) => {
         // sending mail to the 
         const mailSubject = "Email verification code";
         const title = "Email Verification";
-        const message = "Thank you for registering with NoteHub. To complete your registration and verify your email address, please use the following verification code:";
-        const mailBody = verifyEmailTemplate(title, message, emailVerificationCode);
+        const mailMessage = "Thank you for registering with NoteHub. To complete your registration and verify your email address, please use the following verification code:";
+        const mailBody = verifyEmailTemplate(title, mailMessage, emailVerificationCode);
         await sendMail(email, mailSubject, mailBody);
         console.log(emailVerificationCode);
 
@@ -163,25 +163,27 @@ export const getUser = async (req, res) => {
 }
 
 export const uploadAvatar = async (req, res) => {
-    const { avatarUrl } = req.body;
-    const { user } = req;
+    const { user} = req;
+    const {avatarBase64} = req.body;
     if (!user) {
         return res.status(401).json({ message: "Unothorized: user not found" });
     }
-    if (!avatarUrl) {
+    if (!avatarBase64) {
         return res.status(400).json({ message: "Avatar must required." });
     }
     try {
+        
         const publicId = `user_${user._id}_avatar`;
-        const result = await cloudinary.uploader.upload(avatarUrl, {
+        const result = await cloudinary.uploader.upload(avatarBase64, {
             public_id: publicId,
-            overwrite: true
+            overwrite: true,
+            resource_type: 'image' 
         })
 
         user.avatarUrl = result.secure_url;
         await user.save();
 
-        res.status(200).json({ message: "Avatar uploaded successfully" });
+        res.status(200).json({ user, message: "Avatar uploaded successfully" });
     } catch (error) {
         console.error('Error in uploadAvatar controller: ', error);
         res.status(500).json({ message: "Internal server error" });

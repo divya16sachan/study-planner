@@ -9,9 +9,40 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { useAuthStore } from "@/stores/useAuthStore";
+import imageCompression from "browser-image-compression";
 
 const ProfilePage = () => {
-  const { authUser } = useAuthStore();
+  const { authUser, uploadUserAvatar } = useAuthStore();
+  const [previewUrl, setPreviewUrl] = useState(null);
+
+  const handleUploadAvatar = async(e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const option = {
+      maxSizeMB: 0.2,
+      maxWidthOrheight: 1920,
+      useWebWorker: true,
+    }
+    try {
+      // Show a preview while compressing the image
+      const previewUrl = URL.createObjectURL(file);
+      setPreviewUrl(previewUrl);
+
+      // Compressing the image
+      const compressedFile = await imageCompression(file, option);
+
+      // Converting to base64 string
+      const reader = new FileReader();
+      reader.readAsDataURL(compressedFile);
+      reader.onloadend = async ()=>{
+        const base64Image = reader.result;
+        await uploadUserAvatar({avatarBase64 : base64Image});
+      }
+    } catch (error) {
+      console.error('Error compressing or uploading avatar:\n', error);
+    }
+  }
+
   return (
     <div className="p-4">
       <Card className="max-w-screen-md mx-auto overflow-hidden">
@@ -26,9 +57,9 @@ const ProfilePage = () => {
           <div className="border-b pb-8 mb-8 flex items-center space-x-4">
             <Avatar className="relative shadow-md size-48 shrink-0 border-8 border-background -mt-14 rounded-full">
               <AvatarImage
-                className="w-full h-full object-cover rounded-full"
-                // src={"https://github.com/shadcn.png"}
-                alt="@shadcn"
+                className="w-full h-full object-cover rounded-full bg-background"
+                src={previewUrl || authUser?.avatarUrl}
+                alt={authUser?.fullName || "user profile"}
               />
               <AvatarFallback className="text-4xl">
                 <img
@@ -40,7 +71,13 @@ const ProfilePage = () => {
               <Button variant="secondary" size="icon" className="p-0 absolute bottom-2 right-2 z-10 pointer">
                 <label htmlFor="upload-photo" className="p-4 flex items-center space-x-2 cursor-pointer">
                   <Camera />
-                  <input type="file" hidden id="upload-photo" accept="image/*" />
+                  <input
+                    type="file"
+                    hidden
+                    id="upload-photo"
+                    accept="image/*"
+                    onChange={handleUploadAvatar}
+                  />
                 </label>
               </Button>
             </Avatar>
@@ -130,7 +167,7 @@ function ProfileForm({ className, field, defaultValue, apiEndPoint, dataKey }) {
   const { updateUserField } = useAuthStore();
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const data = {[dataKey] : value}
+    const data = { [dataKey]: value }
     await updateUserField(apiEndPoint, data);
   }
   return (

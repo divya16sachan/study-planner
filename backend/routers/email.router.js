@@ -7,7 +7,7 @@ import { checkStatus } from "../middleware/otp.middleware.js";
 const router = express.Router();
 
 router.post('/verify-otp', otpLimiter, checkStatus, verifyOtp);
-router.get('/resend-otp', resendOtpLimiter, resendOtp);
+router.get('/resend-otp', resendOtpLimiter, checkStatus, resendOtp);
 router.get('/check-status', checkStatus, (req, res)=>{
     try {
         const {status, message} = req;

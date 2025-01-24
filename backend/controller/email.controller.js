@@ -5,6 +5,7 @@ import { validateVerificationCode } from "../utils/validateVerificationCode.js";
 import { generateVerificationCode } from "../utils/generateVerificationCode.js";
 import { sendMail } from "../utils/sendMail.js";
 import jwt from "jsonwebtoken";
+import { verifyEmailTemplate } from "../utils/mailTemplates.js";
 
 
 export const verifyOtp = async (req, res) => {
@@ -42,32 +43,17 @@ export const verifyOtp = async (req, res) => {
 
 export const resendOtp = async (req, res) => {
     try {
-        const { otp_token } = req.cookies;
-        if (!otp_token) {
-            return res.status(401).json({ message: "No token provided." });
-        }
+        const { status, message, user } = req;
 
-        const decode = jwt.verify(otp_token, process.env.JWT_SECRET);
-        if (!decode) {
-            return res.status(401).json({ message: "Invalid token" });
-        }
-
-        const { userId } = decode;
-        const user = await User.findById(userId);
-
-        if (!user) {
-            return res.status(400).json({ message: "Please sign up again" });
-        }
-        if (user.isEmailVerified) {
-            return res.status(400).json({ message: "Email already has verified" });
-        }
+        if (status === "verified") return res.status(200).json({ message });
+        if (status === "expired") return res.status(400).json({ message });
 
         // verfication code hashing
         const saltForVerification = await bcrypt.genSalt(10);
         const emailVerificationCode = generateVerificationCode();
         const emailVerificationHash = await bcrypt.hash(emailVerificationCode, saltForVerification);
 
-        // 
+        // Re-configuration
         user.verificationCode = emailVerificationHash;
         user.verificationPurpose = "email_verification";
         user.verificationCodeExpiration = Date.now() + 15 * 60 * 1000;
@@ -77,13 +63,14 @@ export const resendOtp = async (req, res) => {
         // sending mail to the 
         const mailSubject = "Email verification code";
         const title = "Email Verification";
-        const message = "Thank you for registering with NoteHub. To complete your registration and verify your email address, please use the following verification code:";
-        const mailBody = verifyEmailTemplate(title, message, emailVerificationCode);
+        const mailMessage = "Thank you for registering with NoteHub. To complete your registration and verify your email address, please use the following verification code:";
+        const mailBody = verifyEmailTemplate(title, mailMessage, emailVerificationCode);
         await sendMail(user.email, mailSubject, mailBody);
 
         // storing cookie and Set expiration time of 15 min
         generateOtpCookie(user._id, res);
-
+        
+        console.log(emailVerificationCode);
         return res.status(200).json({
             message: "Please check your mail for verification"
         });
