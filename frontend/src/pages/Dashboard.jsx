@@ -15,7 +15,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { Route, Router, Routes } from "react-router-dom";
+import { Outlet, Route, Router, Routes } from "react-router-dom";
 import ProfilePage from "./ProfilePage";
 import HomePage from "./HomePage";
 
@@ -49,8 +49,7 @@ const Dashboard = () => {
         </header>
 
         {/* ================ Route ================  */}
-        <ProfilePage/>
-        {/* <HomePage/> */}
+        <Outlet/>
 
       </SidebarInset>
     </SidebarProvider>

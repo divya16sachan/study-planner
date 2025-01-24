@@ -119,6 +119,7 @@ const SignUpPage = ({ className, ...props }) => {
                       id="password"
                       type="password"
                       required
+                      autoComplete="password"
                       value={formData.password}
                       onChange={handleChange}
                     />
@@ -134,6 +135,7 @@ const SignUpPage = ({ className, ...props }) => {
                       type="password"
                       required
                       value={formData.confirmPassword}
+                      autoComplete="password"
                       onChange={handleChange}
                     />
                     {errors.confirmPassword && <p className="text-red-500">{errors.confirmPassword}</p>}

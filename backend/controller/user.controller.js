@@ -73,15 +73,9 @@ export const signup = async (req, res) => {
 
         generateOtpCookie(newUser._id, res);
 
-        // API success response
+        // API success response 
+        // user will send only if it's verified
         res.status(201).json({
-            user: {
-                _id: newUser._id,
-                fullName: newUser.fullName,
-                userName: newUser.userName,
-                email: newUser.email,
-                streak: newUser.streak,
-            },
             message: "Signup successful. Please verify your email."
         });
 

@@ -38,13 +38,19 @@ function App() {
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <div>
         <Routes>
-          <Route path='/verify-email' element={true || !authUser?.isEmailVerified ?<EmailVerificationPage /> : <Navigate to='/' />} />
-          <Route path='/' element={authUser ? <Dashboard /> : <Navigate to='/login' />} />
-          {/* <Route path='/profile' element={<ProfilePage />} /> */}
-
+          <Route path='/verify-email' element={!authUser?.isEmailVerified ? <EmailVerificationPage /> : <Navigate to='/' />} />
           <Route path='/signup' element={!authUser ? <SignUpPage /> : <Navigate to='/' />} />
           <Route path='/login' element={!authUser ? <LoginPage /> : <Navigate to='/' />} />
           <Route path='/settings' element={<SettingsPage />} />
+
+
+          {/* Nested routes inside Dashboard */}
+          <Route path="/" element={authUser ? <Dashboard /> : <Navigate to="/login" />}>
+            <Route index element={<HomePage />} />
+            <Route path="profile" element={<ProfilePage />} />
+            <Route path="settings" element={<SettingsPage />} />
+          </Route>
+
         </Routes>
       </div>
       <Toaster />

@@ -25,6 +25,7 @@ import { useAuthStore } from "@/stores/useAuthStore"
 import { Loader2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { toast } from "sonner"
 
 const FormSchema = z.object({
   emailVerificationCode: z.string().min(6, {
@@ -44,7 +45,7 @@ const EmailVerificationPage = () => {
   })
   const [isResendDisabled, setIsResendDisabled] = useState(true);
   const [timer, setTimer] = useState(60);
-  const { verifyEmail, isVerifyingEmail, resendOTP, checkEmailStatus, emailStatus } = useAuthStore();
+  const { verifyEmail, isVerifyingEmail, resendOTP, checkEmailStatus, authUser } = useAuthStore();
   const navigate = useNavigate();
   useEffect(() => {
     if (timer > 0) {
@@ -60,18 +61,13 @@ const EmailVerificationPage = () => {
 
   useEffect(() => {
     const check = async()=>{
-      await checkEmailStatus();
+      const status = await checkEmailStatus();
+      if(status !== "pending") navigate('/signup');
     }
 
     check();
   }, []);
 
-  useEffect(()=>{
-    if (emailStatus !== "pending") {
-      console.log("emailStatus:" , emailStatus);
-      navigate('/signup');
-    }
-  }, [emailStatus])
   
   const onSubmit = async (data) => {
     await verifyEmail(data);
@@ -117,7 +113,7 @@ const EmailVerificationPage = () => {
                 <Button
                   variant="link"
                   disabled={isResendDisabled}
-                  onSend={handleResendOTP}
+                  onClick={handleResendOTP}
                 >
                   {
                     isResendDisabled ? `${timer.toString().padStart(2, '0')} s` : "resend"

@@ -15,7 +15,6 @@ export const useAuthStore = create((set, get) => ({
     const { authUser } = get();
     try {
       const res = await axiosInstance.get('/user/check/auth');
-      console.log(res.data);
       set({ authUser: res.data });
     } catch (error) {
       set({ authUser: null });
@@ -29,11 +28,9 @@ export const useAuthStore = create((set, get) => ({
     try {
       const res = await axiosInstance.post('/user/signup', data);
       const { user, message } = res.data;
-      set({ authUser: user });
       toast.success(message);
       return { success: true };
     } catch (error) {
-      set({ authUser: null });
       toast.error(error.response.data.message);
       return { success: false };
     } finally {
@@ -103,11 +100,10 @@ export const useAuthStore = create((set, get) => ({
     try {
       const res = await axiosInstance.get('email/check-status');
       set({ emailStatus: res.data.status });
+      return get().emailStatus;
     } catch (error) {
       console.log(error.response.data.message);
       set({ emailStatus: "" });
-    } finally{
-      console.log("status", get().emailStatus);
-    }
+    } 
   }
 })); 
