@@ -146,8 +146,8 @@ const ProfilePage = () => {
                   }
                 >
                   <ProfileForm
-                    apiEndPoint="user/update-email"
-                    dataKey="email"
+                    apiEndPoint="email/update"
+                    dataKey="newEmail"
                     field="Email"
                     defaultValue={authUser?.email}
                   />

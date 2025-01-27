@@ -1,6 +1,6 @@
 import express from "express";
 import { protectRoute } from "../middleware/protectRoute.js";
-import { verifyOtp, resendOtp, updateEmail } from "../controller/email.controller.js"
+import { verifyOtp, resendOtp, updateEmail, verifyUpdation } from "../controller/email.controller.js"
 import { otpLimiter, resendOtpLimiter } from "../middleware/rateLimiter.middleware.js";
 import { checkStatus } from "../middleware/otp.middleware.js";
 
@@ -16,6 +16,6 @@ router.get('/check-status', checkStatus, (req, res)=>{
         console.log("error while checking status\n", error);
     }
 });
-router.put('/update', protectRoute, updateEmail);
-
+router.post('/update', protectRoute, updateEmail);
+router.get('/verify-updation', verifyUpdation);
 export default router;

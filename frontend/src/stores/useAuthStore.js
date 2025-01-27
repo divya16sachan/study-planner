@@ -91,10 +91,14 @@ export const useAuthStore = create((set, get) => ({
 
     }
   },
-
   updateUserField: async (apiEndPoint, data) => {
     try {
-      const res = await axiosInstance.put(apiEndPoint, data);
+      let res;
+      if (data.newEmail) {
+        res = await axiosInstance.post(apiEndPoint, data);
+      } else {
+        res = await axiosInstance.put(apiEndPoint, data);
+      }
       set({ authUser: res.data.user });
       toast.success(res.data.message);
     } catch (error) {
@@ -107,7 +111,7 @@ export const useAuthStore = create((set, get) => ({
     set({ isUploadingAvatar: true });
     try {
       const res = await axiosInstance.post('/user/upload-avatar', data)
-      set({authUser : res.data.user});
+      set({ authUser: res.data.user });
       toast.success(res.data.message);
     } catch (error) {
       toast.error(error.response.data.message);
@@ -126,5 +130,5 @@ export const useAuthStore = create((set, get) => ({
       console.log(error.response.data.message);
       set({ emailStatus: "" });
     }
-  }
+  },
 })); 

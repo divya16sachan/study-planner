@@ -22,8 +22,7 @@ function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
   useEffect(() => {
     checkAuth();
-    console.log(authUser);
-  }, []);
+  }, [checkAuth]);
 
   if (isCheckingAuth && !authUser) {
     return (
@@ -33,6 +32,7 @@ function App() {
     )
   }
 
+  console.log({authUser});
 
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">

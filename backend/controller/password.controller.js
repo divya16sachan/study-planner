@@ -45,7 +45,7 @@ export const verifypasswordResetCode = async (req, res) => {
     try {
         const {success, message, user} = await validateVerificationCode(email, passwordResetCode);
         if (!success) {
-            res.status(400).json({ message});
+            res.status(400).json({ message, success});
         }
 
         res.status(200).json({ message: "Reset code verified successfully" });
@@ -65,7 +65,7 @@ export const resetPassword = async (req, res) => {
     try {
         const {success, message, user} = await validateVerificationCode(email, passwordResetCode);
         if (!success) {
-            res.status(400).json({ message});
+            res.status(400).json({ message, success});
         }
 
 
