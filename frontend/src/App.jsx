@@ -16,6 +16,7 @@ import EmailVerificationPage from './pages/EmailVerificationPage';
 
 import { Loader } from 'lucide-react';
 import Dashboard from './pages/dashboard';
+import ForgetPasswordPage from './pages/ForgetPasswordPage';
 
 
 function App() {
@@ -42,6 +43,7 @@ function App() {
           <Route path='/signup' element={!authUser ? <SignUpPage /> : <Navigate to='/' />} />
           <Route path='/login' element={!authUser ? <LoginPage /> : <Navigate to='/' />} />
           <Route path='/settings' element={<SettingsPage />} />
+          <Route path='/forget-password' element={<ForgetPasswordPage />} />
 
 
           {/* Nested routes inside Dashboard */}

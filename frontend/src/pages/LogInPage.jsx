@@ -86,7 +86,7 @@ const LoginPage = ({ className, ...props }) => {
                       onChange={handleChange}
                     />
                     <Link
-                      to="#"
+                      to="/forget-password"
                       className="mb-4 text-sm underline-offset-2 hover:underline"
                     >
                       Forgot your password?

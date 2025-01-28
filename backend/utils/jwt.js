@@ -23,3 +23,14 @@ export const generateOtpCookie = (userId, res) => {
         maxAge: 15 * 60 * 1000, // 15 minutes
     });
 }
+
+export const generateResetPasswordToken = (userId, res) => {
+    const token = jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '15m' });
+
+    res.cookie('reset_password_token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'Strict',
+        maxAge: 15 * 60 * 1000, // 15 minutes
+    });
+}
