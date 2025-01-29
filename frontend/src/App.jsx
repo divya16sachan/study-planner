@@ -5,6 +5,7 @@ import { useAuthStore } from './stores/useAuthStore';
 import { Toaster } from 'sonner';
 
 import Navbar from './components/Navbar';
+import Tiptap from './components/Tiptap';
 
 //Pages
 import HomePage from './pages/HomePage';
@@ -17,6 +18,7 @@ import EmailVerificationPage from './pages/EmailVerificationPage';
 import { Loader } from 'lucide-react';
 import Dashboard from './pages/dashboard';
 import ForgetPasswordPage from './pages/ForgetPasswordPage';
+import { TooltipProvider } from '@radix-ui/react-tooltip';
 
 
 function App() {
@@ -33,29 +35,31 @@ function App() {
     )
   }
 
-  console.log({authUser});
+  console.log({ authUser });
 
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <div>
-        <Routes>
-          <Route path='/verify-email' element={!authUser?.isEmailVerified ? <EmailVerificationPage /> : <Navigate to='/' />} />
-          <Route path='/signup' element={!authUser ? <SignUpPage /> : <Navigate to='/' />} />
-          <Route path='/login' element={!authUser ? <LoginPage /> : <Navigate to='/' />} />
-          <Route path='/settings' element={<SettingsPage />} />
-          <Route path='/forget-password' element={<ForgetPasswordPage />} />
+      <TooltipProvider>
+        <div>
+          <Routes>
+            <Route path='/verify-email' element={!authUser?.isEmailVerified ? <EmailVerificationPage /> : <Navigate to='/' />} />
+            <Route path='/signup' element={!authUser ? <SignUpPage /> : <Navigate to='/' />} />
+            <Route path='/login' element={!authUser ? <LoginPage /> : <Navigate to='/' />} />
+            <Route path='/settings' element={<SettingsPage />} />
+            <Route path='/forget-password' element={<ForgetPasswordPage />} />
+            <Route path="/editor" element={<Tiptap />} />
 
+            {/* Nested routes inside Dashboard */}
+            <Route path="/" element={authUser ? <Dashboard /> : <Navigate to="/login" />}>
+              <Route index element={<HomePage />} />
+              <Route path="profile" element={<ProfilePage />} />
+              <Route path="settings" element={<SettingsPage />} />
+            </Route>
 
-          {/* Nested routes inside Dashboard */}
-          <Route path="/" element={authUser ? <Dashboard /> : <Navigate to="/login" />}>
-            <Route index element={<HomePage />} />
-            <Route path="profile" element={<ProfilePage />} />
-            <Route path="settings" element={<SettingsPage />} />
-          </Route>
-
-        </Routes>
-      </div>
-      <Toaster />
+          </Routes>
+        </div>
+        <Toaster />
+      </TooltipProvider>
     </ThemeProvider>
   );
 }
