@@ -1,10 +1,31 @@
 import { Color } from '@tiptap/extension-color'
 import ListItem from '@tiptap/extension-list-item'
 import TextStyle from '@tiptap/extension-text-style'
-import { EditorProvider, useCurrentEditor } from '@tiptap/react'
+import { EditorProvider, useCurrentEditor, ReactNodeViewRenderer } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import Highlighter from '@tiptap/extension-highlight'
+import Highlight from '@tiptap/extension-highlight'
 import React, { useState } from 'react'
+
+
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
+import css from 'highlight.js/lib/languages/css'
+import js from 'highlight.js/lib/languages/javascript'
+import ts from 'highlight.js/lib/languages/typescript'
+import html from 'highlight.js/lib/languages/xml'
+// load all languages with "all" or common languages with "common"
+import { all, createLowlight } from 'lowlight'
+
+// eslint-disable-next-line
+import CodeBlockComponent from './CodeBlockComponent'
+
+// create a lowlight instance
+const lowlight = createLowlight(all)
+
+// you can also register individual languages
+lowlight.register('html', html)
+lowlight.register('css', css)
+lowlight.register('js', js)
+lowlight.register('ts', ts)
 
 import { Button } from './ui/button'
 import {
@@ -32,6 +53,8 @@ import {
     Undo
 } from 'lucide-react'
 
+
+
 const MenuBar = () => {
     const { editor } = useCurrentEditor()
     const [selectedHeading, setSelectedHeading] = useState(null);
@@ -40,20 +63,12 @@ const MenuBar = () => {
         return null
     }
     const headers = [1, 2, 3, 4, 5, 6];
-    const handleHeaderChange = (level) => {
-        if (selectedHeading === level) {
-            editor.chain().focus().setParagraph().run();
-            setSelectedHeading(null);
-        } else {
-            editor.chain().focus().toggleHeading({ level }).run();
-            setSelectedHeading(level);
-        }
-    };
 
     return (
-        <div className="control-group">
+        <div className="control-group sticky top-0 z-10 bg-background border-b border-input">
             <div className="Button-group flex flex-wrap">
-                <TooltipWrapper message={"Bold"}>
+
+                <TooltipWrapper message={"Ctrl + b"}>
                     <Button
                         onClick={() => editor.chain().focus().toggleBold().run()}
                         disabled={
@@ -69,7 +84,7 @@ const MenuBar = () => {
                     </Button>
                 </TooltipWrapper>
 
-                <TooltipWrapper message={"Italic"}>
+                <TooltipWrapper message={"Ctrl + I"}>
                     <Button
 
                         onClick={() => editor.chain().focus().toggleItalic().run()}
@@ -85,7 +100,7 @@ const MenuBar = () => {
                         <Italic />
                     </Button>
                 </TooltipWrapper>
-                <TooltipWrapper message={"Strike Through"}>
+                <TooltipWrapper message={"Ctrl + Shift + S"}>
                     <Button
 
                         onClick={() => editor.chain().focus().toggleStrike().run()}
@@ -118,7 +133,7 @@ const MenuBar = () => {
                 </TooltipWrapper>
                 <TooltipWrapper message={"Highlighter"}>
                     <Button
-                        onClick={() => editor.chain().focus().toggleHighlight().run()}
+                        onClick={() => editor.chain().focus().toggleHighlight({ color: '#958DF1' }).run()}
                         variant={editor.isActive('highlight') ? '' : 'ghost'}
                     >
                         <HighlighterIcon />
@@ -139,26 +154,28 @@ const MenuBar = () => {
                         <Trash />
                     </Button>
                 </TooltipWrapper>
-                <TooltipWrapper message={""}>
-                    <Button
-                        onClick={() => editor.chain().focus().setParagraph().run()}
-                        variant={editor.isActive('paragraph') ? '' : 'ghost'}
-                    >
-                        Paragraph
-                    </Button>
-                </TooltipWrapper>
+
                 <Select>
-                    <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Select a heading" />
+                    <SelectTrigger className="w-[120px]">
+                        <SelectValue placeholder={
+                            editor.isActive('heading', { level: 1 }) ? 'H1' :
+                                editor.isActive('heading', { level: 2 }) ? 'H2' :
+                                    editor.isActive('heading', { level: 3 }) ? 'H3' :
+                                        editor.isActive('heading', { level: 4 }) ? 'H4' :
+                                            editor.isActive('heading', { level: 5 }) ? 'H5' :
+                                                editor.isActive('heading', { level: 6 }) ? 'H6' :
+                                                    'Heading...'
+                        } />
                     </SelectTrigger>
                     <SelectContent className="flex-col">
                         {
                             headers.map((level, index) => (
-                                <TooltipWrapper message={""}>
+                                <TooltipWrapper message={`Heading ${level}`}>
                                     <Button
                                         key={index}
                                         value={level}
-                                        onClick={() => editor.chain().focus().toggleHeading({ level }).run()}
+                                        onClick={() =>
+                                            editor.chain().focus().toggleHeading({ level }).run()}
                                         variant={editor.isActive('heading', { level }) ? '' : 'ghost'}
                                     >
                                         H{level}
@@ -169,7 +186,7 @@ const MenuBar = () => {
                     </SelectContent>
                 </Select>
 
-                <TooltipWrapper message={"Bullet List"}>
+                <TooltipWrapper message={"Control + Shift + 8"}>
                     <Button
                         onClick={() => editor.chain().focus().toggleBulletList().run()}
                         variant={editor.isActive('bulletList') ? '' : 'ghost'}
@@ -210,7 +227,7 @@ const MenuBar = () => {
                         <SeparatorHorizontal />
                     </Button>
                 </TooltipWrapper>
-               
+
                 <TooltipWrapper message={"Undo"}>
                     <Button
                         variant='ghost'
@@ -243,8 +260,13 @@ const MenuBar = () => {
                 </TooltipWrapper>
                 <TooltipWrapper message={""}>
                     <Button
-
-                        onClick={() => editor.chain().focus().setColor('#958DF1').run()}
+                        onClick={() => {
+                            if (editor.isActive('textStyle', { color: '#958DF1' })) {
+                                editor.chain().focus().unsetColor().run();
+                            } else {
+                                editor.chain().focus().setColor('#958DF1').run();
+                            }
+                        }}
                         variant={editor.isActive('textStyle', { color: '#958DF1' }) ? '' : 'ghost'}
                     >
                         Purple
@@ -268,13 +290,18 @@ const extensions = [
             keepAttributes: false, // TODO : Making this as `false` becase marks are not preserved when I try to preserve attrs, awaiting a bit of help
         },
     }),
-    Highlighter,
+    CodeBlockLowlight
+        .extend({
+            addNodeView() {
+                return ReactNodeViewRenderer(CodeBlockComponent)
+            },
+        })
+        .configure({ lowlight }),
+    Highlight.configure({ multicolor: true })
 ]
 
 const content = `
-<h2>
-  Hi there,
-</h2>
+<h2>Hi there,</h2>
 <p>
   this is a <em>basic</em> example of <strong>Tiptap</strong>. Sure, there are all kind of basic text styles you’d probably expect from a text editor. But wait until you see the lists:
 </p>
