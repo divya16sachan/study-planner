@@ -27,15 +27,14 @@ function App() {
     checkAuth();
   }, [checkAuth]);
 
-  if (isCheckingAuth && !authUser) {
-    return (
-      <div className='flex items-center justify-center h-screen'>
-        <Loader className='animate-spin' />
-      </div>
-    )
-  }
+  // if (isCheckingAuth && !authUser) {
+  //   return (
+  //     <div className='flex items-center justify-center h-screen'>
+  //       <Loader className='animate-spin' />
+  //     </div>
+  //   )
+  // }
 
-  console.log({ authUser });
 
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">

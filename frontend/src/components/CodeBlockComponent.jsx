@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Check, ChevronsUpDown } from "lucide-react";
+import React, { useRef, useState } from 'react';
+import { Check, ChevronsUpDown, CodeSquare, Copy, CopyCheck, CopyIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,13 +18,22 @@ import {
 import { NodeViewContent, NodeViewWrapper } from '@tiptap/react';
 
 export default ({ node: { attrs: { language: defaultLanguage } }, updateAttributes, extension }) => {
+  const languages = extension.options.lowlight.listLanguages();
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(defaultLanguage);
-  const languages = extension.options.lowlight.listLanguages();
+  const [copied, setCopied] = useState(false);
+  const codeRef = useRef(null);
+
+  const handleCopy = async ()=>{
+    const codeContent = codeRef.current.textContent;
+    await navigator.clipboard.writeText(codeContent);
+    setCopied(true);
+    setTimeout(()=>setCopied(false), 3000);
+  }
 
   return (
     <NodeViewWrapper className="code-block">
-      <div className='absolute right-2 top-2'>
+      <header className='bg-background rounded-t-md absolute left-0 top-0 w-full flex items-center justify-between p-2 border border-b-input'>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
@@ -70,10 +79,19 @@ export default ({ node: { attrs: { language: defaultLanguage } }, updateAttribut
             </Command>
           </PopoverContent>
         </Popover>
-      </div>
-      <pre>
-        <NodeViewContent as="code" />
+
+        <div className='flex gap-2'>
+          <Button variant="ghost" disabled={copied} onClick={handleCopy}>
+            {copied ? <>copied <CopyCheck/></>  : <Copy/>}
+          </Button>
+        </div>
+
+      </header>
+
+      <pre ref={codeRef}>
+        <NodeViewContent as="code"/>
       </pre>
     </NodeViewWrapper>
   );
 };
+

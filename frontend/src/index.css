@@ -103,31 +103,31 @@
   }
 
   h1 {
-    @apply text-5xl font-extrabold mb-4;
+    @apply text-3xl font-bold mb-4;
   }
 
   h2 {
-    @apply text-4xl font-bold mb-4;
+    @apply text-2xl font-bold mb-4;
   }
 
   h3 {
-    @apply text-3xl font-semibold mb-4;
+    @apply text-xl font-bold mb-4;
   }
 
   h4 {
-    @apply text-2xl font-medium mb-4;
+    @apply text-lg font-bold mb-4;
   }
 
   h5 {
-    @apply text-xl font-medium mb-4;
+    @apply text-base font-bold mb-4;
   }
 
   h6 {
-    @apply text-lg font-medium mb-4;
+    @apply text-sm font-bold mb-4;
   }
 
-  p {
-    @apply mb-6;
+  > p {
+    @apply my-6;
   }
 
   a {
@@ -135,25 +135,24 @@
   }
 
   ul {
-    @apply list-disc pl-5 mb-6;
+    @apply list-disc px-8 my-8;
   }
 
   ol {
-    @apply list-decimal pl-5 mb-6;
+    @apply list-decimal px-8 my-8;
   }
 
-  p {
-    @apply mb-0
+  li {
+    @apply my-1
   }
 
-  
+
   pre {
-    @apply bg-background border-input border rounded-md p-2 my-4 p-2 pt-4;
+    @apply bg-[#171717] border-input border rounded-md my-12 p-2 pt-14;
 
     code {
-      background: none;
+      background: #171717;
       color: inherit;
-      /* font-size: 0.8rem; */
       padding: 0;
     }
 
@@ -210,8 +209,9 @@
       font-weight: 700;
     }
   }
+
   code {
-    @apply bg-accent border p-1 rounded whitespace-nowrap;
+    @apply bg-accent p-1 rounded whitespace-nowrap;
   }
 
   blockquote {
