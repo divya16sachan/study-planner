@@ -53,6 +53,7 @@ import {
     Code,
     CodeSquare,
     Eraser,
+    Heading,
     Heading1,
     Heading2,
     Heading3,
@@ -208,6 +209,7 @@ const MenuBar = () => {
                     formatingGroup.map(({ icon, command, tooltip, name }, index) => (
                         <TooltipWrapper key={index} message={tooltip}>
                             <Button
+                                size="icon"
                                 onClick={() => editor.chain().focus()[command]().run()}
                                 disabled={!editor.can().chain().focus()[command]().run()}
                                 variant={editor.isActive(name) ? '' : 'ghost'}
@@ -221,6 +223,7 @@ const MenuBar = () => {
                     blockGroup.map(({ icon, command, tooltip, name }, index) => (
                         <TooltipWrapper key={index} message={tooltip}>
                             <Button
+                                size="icon"
                                 onClick={() => editor.chain().focus()[command]().run()}
                                 variant={editor.isActive(name) ? '' : 'ghost'}
                                 disabled={name === 'code' && !editor.can().chain().focus()[command]().run()}
@@ -235,6 +238,7 @@ const MenuBar = () => {
                     listGroup.map(({ icon, command, tooltip, name }, index) => (
                         <TooltipWrapper key={index} message={tooltip}>
                             <Button
+                                size="icon"
                                 onClick={() => editor.chain().focus()[command]().run()}
                                 variant={editor.isActive(name) ? '' : 'ghost'}
                             >
@@ -248,6 +252,7 @@ const MenuBar = () => {
                     listController.map(({ icon, command, tooltip, name }, index) => (
                         <TooltipWrapper key={index} message={tooltip}>
                             <Button
+                                size="icon"
                                 variant="ghost"
                                 onClick={() => editor.chain().focus()[command](name).run()}
                                 disabled={!editor.can()[command](name)}
@@ -262,6 +267,7 @@ const MenuBar = () => {
                     controller.map(({ icon, command, tooltip }, index) => (
                         <TooltipWrapper key={index} message={tooltip}>
                             <Button
+                                size="icon"
                                 variant="ghost"
                                 onClick={() => editor.chain().focus()[command]().run()}
                                 disabled={!editor.can().chain().focus()[command]().run()}
@@ -276,6 +282,7 @@ const MenuBar = () => {
                     alignments.map(({ icon, command, tooltip, name }, index) => (
                         <TooltipWrapper message={tooltip}>
                             <Button
+                                size="icon"
                                 onClick={() => editor.chain().focus()[command](name).run()}
                                 variant={editor.isActive({ textAlign: name }) ? '' : 'ghost'}
                             >
@@ -296,7 +303,7 @@ const MenuBar = () => {
                             editor.isActive('heading', { level: 5 }) ? <Heading5 className='size-5' /> :
                             editor.isActive('heading', { level: 6 }) ? <Heading6 className='size-5' /> :
                             editor.isActive('paragraph') ? <Pilcrow className='size-4' /> :
-                            'Heading...'
+                            <Heading className='size-4'/>
                         } />
                     </SelectTrigger>
                     <SelectContent className="flex-col">

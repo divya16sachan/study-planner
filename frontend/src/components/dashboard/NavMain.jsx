@@ -1,6 +1,6 @@
 "use client"
 
-import { ChevronRight } from "lucide-react"
+import { ChevronRight, Folder } from "lucide-react"
 
 import {
     Collapsible,
@@ -16,9 +16,7 @@ import {
     SidebarMenuSub,
     SidebarMenuSubButton,
     SidebarMenuSubItem,
-    useSidebar,
 } from "@/components/ui/sidebar"
-import { DropdownMenu, DropdownMenuSub } from "@radix-ui/react-dropdown-menu"
 
 // items: {
 //     title,
@@ -31,36 +29,36 @@ import { DropdownMenu, DropdownMenuSub } from "@radix-ui/react-dropdown-menu"
 //     }
 // }
 
-const NavMain = ({ items }) => {
-    const { isMobile } = useSidebar();
-
+const NavMain = ({ collections }) => {
+    console.log(collections);
     return (
         <SidebarGroup>
             <SidebarGroupLabel>Platform</SidebarGroupLabel>
             <SidebarMenu>
-                {items.map((item) => (
+                {collections.map((collection, index) => (
                     <Collapsible
-                        key={item.title}
+                        key={collection._id}
                         asChild
-                        defaultOpen={item.isActive}
+                        defaultOpen={index === 0}
                         className="group/collapsible"
                     >
                         <SidebarMenuItem>
                             <CollapsibleTrigger asChild>
-                                <SidebarMenuButton tooltip={item.title}>
-                                    {item.icon && <item.icon />}
-                                    <span>{item.title}</span>
+                                <SidebarMenuButton tooltip={collection.name}>
+                                    <Folder/>
+                                    {collection.icon && <collection.icon />}
+                                    <span>{collection.name}</span>
                                     <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                                 </SidebarMenuButton>
                             </CollapsibleTrigger>
 
                             <CollapsibleContent>
                                 <SidebarMenuSub>
-                                    {item.items?.map((subItem) => (
-                                        <SidebarMenuSubItem key={subItem.title}>
+                                    {collection.notes?.map((note) => (
+                                        <SidebarMenuSubItem key={note.name}>
                                             <SidebarMenuSubButton asChild>
-                                                <a href={subItem.url}>
-                                                    <span>{subItem.title}</span>
+                                                <a href={note.url}>
+                                                    <span>{note.name}</span>
                                                 </a>
                                             </SidebarMenuSubButton>
                                         </SidebarMenuSubItem>

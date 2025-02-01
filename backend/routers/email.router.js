@@ -1,5 +1,5 @@
 import express from "express";
-import { protectRoute } from "../middleware/protectRoute.js";
+import { protectRoute } from "../middleware/protectRoute.middleware.js";
 import { verifyOtp, resendOtp, updateEmail, verifyUpdation } from "../controller/email.controller.js"
 import { otpLimiter, resendOtpLimiter } from "../middleware/rateLimiter.middleware.js";
 import { checkStatus } from "../middleware/otp.middleware.js";

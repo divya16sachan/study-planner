@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const noteSchema = new mongoose.Schema(
     {
-        title: {
+        name: {
             type: String,
             required: true,
         },
@@ -13,6 +13,7 @@ const noteSchema = new mongoose.Schema(
         categoryId: {
             type: mongoose.Schema.Types.ObjectId,
             required: true,
+            ref: 'Collection',
         },
         userId: {
             type: mongoose.Schema.Types.ObjectId,

@@ -1,24 +1,22 @@
 "use client"
 
-import React from "react"
+import React, { useEffect } from "react"
 import {
-    AudioWaveform,
     BookOpen,
     Bot,
-    Command,
     Frame,
     GalleryVerticalEnd,
     Map,
     PieChart,
     Settings2,
-    SquareTerminal,
     Folder,
+    FolderPlus,
+    FilePlus2,
 } from "lucide-react"
 
 import NavMain from "@/components/dashboard/NavMain"
-import NavProjects from "@/components/dashboard/NavProjects"
 import NavUser from "@/components/dashboard/NavUser"
-import TeamSwitcher from "@/components/dashboard/TeamSwitcher"
+
 import {
     Sidebar,
     SidebarContent,
@@ -26,144 +24,83 @@ import {
     SidebarHeader,
     SidebarRail,
 } from "@/components/ui/sidebar"
+import { useNoteStore } from "@/stores/useNoteStore"
+import { Button } from "../ui/button"
 
-// This is sample data.
-const data = {
-    teams: [
-        {
-            name: "Acme Inc",
-            logo: GalleryVerticalEnd,
-            plan: "Enterprise",
-        },
-        {
-            name: "Acme Corp.",
-            logo: AudioWaveform,
-            plan: "Startup",
-        },
-        {
-            name: "Evil Corp.",
-            logo: Command,
-            plan: "Free",
-        },
-    ],
-    navMain: [
-        {
-            title: "Playground",
-            url: "#",
-            icon: Folder,
-            isActive: true,
-            items: [
-                {
-                    title: "History",
-                    url: "#",
-                },
-                {
-                    title: "Starred",
-                    url: "#",
-                },
-                {
-                    title: "Settings",
-                    url: "#",
-                },
-            ],
-        },
-        {
-            title: "Models",
-            url: "#",
-            icon: Bot,
-            items: [
-                {
-                    title: "Genesis",
-                    url: "#",
-                },
-                {
-                    title: "Explorer",
-                    url: "#",
-                },
-                {
-                    title: "Quantum",
-                    url: "#",
-                },
-            ],
-        },
-        {
-            title: "Documentation",
-            url: "#",
-            icon: BookOpen,
-            items: [
-                {
-                    title: "Introduction",
-                    url: "#",
-                },
-                {
-                    title: "Get Started",
-                    url: "#",
-                },
-                {
-                    title: "Tutorials",
-                    url: "#",
-                },
-                {
-                    title: "Changelog",
-                    url: "#",
-                },
-            ],
-        },
-        {
-            title: "Settings",
-            url: "#",
-            icon: Settings2,
-            items: [
-                {
-                    title: "General",
-                    url: "#",
-                },
-                {
-                    title: "Team",
-                    url: "#",
-                },
-                {
-                    title: "Billing",
-                    url: "#",
-                },
-                {
-                    title: "Limits",
-                    url: "#",
-                },
-            ],
-        },
-    ],
-    projects: [
-        {
-            name: "Design Engineering",
-            url: "#",
-            icon: Frame,
-        },
-        {
-            name: "Sales & Marketing",
-            url: "#",
-            icon: PieChart,
-        },
-        {
-            name: "Travel",
-            url: "#",
-            icon: Map,
-        },
-    ],
-}
+
+const collections = [
+    {
+        "_id": "60d5ec49f8d2e30b8c8b4567",
+        "name": "category1",
+        "userId": "60d5ec49f8d2e30b8c8b1234",
+        "isGeneral": false,
+        "createdAt": "2023-01-01T00:00:00.000Z",
+        "updatedAt": "2023-01-01T00:00:00.000Z",
+        "notes": [
+            {
+                "_id": "60d5ec49f8d2e30b8c8b4568",
+                "name": "noteName1",
+                "categoryId": "60d5ec49f8d2e30b8c8b4567",
+                "userId": "60d5ec49f8d2e30b8c8b1234",
+                "createdAt": "2023-01-01T00:00:00.000Z",
+                "updatedAt": "2023-01-01T00:00:00.000Z"
+            },
+            {
+                "_id": "60d5ec49f8d2e30b8c8b4569",
+                "name": "noteName2",
+                "categoryId": "60d5ec49f8d2e30b8c8b4567",
+                "userId": "60d5ec49f8d2e30b8c8b1234",
+                "createdAt": "2023-01-01T00:00:00.000Z",
+                "updatedAt": "2023-01-01T00:00:00.000Z"
+            }
+        ]
+    },
+    {
+        "_id": "60d5ec49f8d2e30b8c8b456a",
+        "name": "category2",
+        "userId": "60d5ec49f8d2e30b8c8b1234",
+        "isGeneral": false,
+        "createdAt": "2023-01-01T00:00:00.000Z",
+        "updatedAt": "2023-01-01T00:00:00.000Z",
+        "notes": []
+    }
+]
+
+
 
 const AppSidebar = (props) => {
+    const { getHierarchy } = useNoteStore();
+
+    useEffect(() => {
+        getHierarchy();
+    }, []);
+
     return (
         <Sidebar collapsible="icon" {...props}>
             <SidebarHeader>
-                <TeamSwitcher teams={data.teams} />
+                <div className="flex items-center justify-between">
+                    <div className="flex gap-2">
+                        <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                            <GalleryVerticalEnd className="size-4" />
+                        </div>
+                        <div className="grid flex-1 text-left text-sm leading-tight">
+                            <span className="truncate font-semibold">
+                                NoteHub
+                            </span>
+                            <span className="truncate text-xs">hello</span>
+                        </div>
+                    </div>
+                    <div className="flex">
+                        <Button className="text-sidebar-accent-foreground/70" size="icon" variant="ghost"><FilePlus2 /></Button>
+                        <Button className="text-sidebar-accent-foreground/70" size="icon" variant="ghost"><FolderPlus /></Button>
+                    </div>
+                </div>
             </SidebarHeader>
             <SidebarContent>
-                <NavMain items={data.navMain} />
-                <NavProjects projects={data.projects} />
+                <NavMain collections={collections} />
             </SidebarContent>
             <SidebarFooter>
-                <NavUser/>
+                <NavUser />
             </SidebarFooter>
             <SidebarRail />
         </Sidebar>

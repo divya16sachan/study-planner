@@ -7,9 +7,6 @@ const collectionSchema = new mongoose.Schema(
             required: true,
             unique: true,
         },
-        description: {
-            type: String
-        },
         userId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User',

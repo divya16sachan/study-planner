@@ -6,7 +6,7 @@ import {
     
     updatePassword,
 } from "../controller/password.controller.js";
-import { protectRoute } from "../middleware/protectRoute.js";
+import { protectRoute } from "../middleware/protectRoute.middleware.js";
 
 const router = express.Router();
 

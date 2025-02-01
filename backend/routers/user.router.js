@@ -11,7 +11,7 @@ import {
     updateUserName,
     updateEmail,
 } from "../controller/user.controller.js"
-import { protectRoute } from "../middleware/protectRoute.js";
+import { protectRoute } from "../middleware/protectRoute.middleware.js";
 import { signupLimiter, loginLimiter } from "../middleware/rateLimiter.middleware.js";
 
 const router = express.Router();
