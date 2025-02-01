@@ -10,7 +10,7 @@ const noteSchema = new mongoose.Schema(
             type: String,
             default: '',
         },
-        categoryId: {
+        collectionId: {
             type: mongoose.Schema.Types.ObjectId,
             required: true,
             ref: 'Collection',

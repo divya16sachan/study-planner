@@ -34,6 +34,7 @@ const AppSidebar = (props) => {
 
   useEffect(() => {
     getHierarchy();
+    console.log(collections);
   }, [getHierarchy]);
 
   const handleCreateCollection = useCallback(async () => {

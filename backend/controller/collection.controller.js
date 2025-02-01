@@ -88,7 +88,7 @@ export const getHierarchy = async (req, res) => {
                 $lookup: {
                     from: "notes",
                     localField: "_id",
-                    foreignField: "categoryId",
+                    foreignField: "collectionId",
                     as: "notes",
                 }
             },

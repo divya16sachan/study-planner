@@ -4,9 +4,10 @@ import { toast } from "sonner";
 
 export const useNoteStore = create((set, get) => ({
   // BOOLEANS
-  isHierarchyLoading: false,
+  isSidebarLoading: false,
   isCreatingCollection: false,
   isDeletingCollection: false,
+  isCreatingNote: false,
 
   collections: [],
 
@@ -44,16 +45,76 @@ export const useNoteStore = create((set, get) => ({
   },
 
   getHierarchy: async () => {
-    set({ isHierarchyLoading: true });
+    set({ isSidebarLoading: true });
     try {
       const res = await axiosInstance.get('collection/hierarchy');
       set({ collections: res.data.collections });
-      console.log("res", res.data);
     } catch (error) {
       console.log(error);
       toast.error(error.response.data.message);
     } finally {
-      set({ isHierarchyLoading: false });
+      set({ isSidebarLoading: false });
     }
   },
+
+  renameCollection: async (data) => {
+    try {
+      const res = await axiosInstance.put('collection/', data);
+      const { collection, message } = res.data;
+      set((state) => ({
+        collections: state.collections.map((c) =>
+          c._id === collection._id ? collection : c
+        )
+      }));
+
+      toast.success(message);
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response.data.message);
+    }
+  },
+
+  createNote: async (data) => {
+    //data:{name, collectionId }
+
+    set({ isCreatingNote: true });
+    const { collectionId } = data;
+    try {
+      const res = await axiosInstance.post('note/', data);
+      const { note, message } = res.data;
+      // add this note to the appropriate collection
+      set((state) => ({
+        collections: state.collections.map((collection) =>
+          collection._id === collectionId
+            ? { ...collection, notes: [...collection.notes, note] }
+            : collection
+        ),
+      }));
+
+      toast.success(message);
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response.data.message);
+    } finally {
+      set({ isCreatingNote: false });
+    }
+  },
+
+  deleteNote: async (noteId) => {
+    console.log(noteId);
+    try {
+      const res = await axiosInstance.delete(`note/${noteId}`);
+      set(state => ({
+        collections: state.collections.map((collection) => ({
+          ...collection,
+          notes: collection.notes.filter(note => note._id !== noteId)
+        }))
+      }))
+      toast.success(res.message);
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response.data.message);
+    }
+  }
+
 }));

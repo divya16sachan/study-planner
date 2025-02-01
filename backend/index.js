@@ -8,6 +8,7 @@ import userRoutes from "./routers/user.router.js";
 import passwordRoutes from "./routers/password.router.js";
 import emailRoutes from "./routers/email.router.js";
 import collectionRouter from './routers/collection.router.js';
+import noteRouter from './routers/note.router.js';
 
 config();
 const app = express();
@@ -28,6 +29,7 @@ app.use('/api/user', userRoutes);
 app.use('/api/email', emailRoutes);
 app.use('/api/password', passwordRoutes);
 app.use('/api/collection', collectionRouter);
+app.use('/api/note', noteRouter);
 
 const PORT = process.env.PORT;
 app.listen(PORT, ()=>{

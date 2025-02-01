@@ -12,7 +12,7 @@ const router = express.Router();
 router.use(protectRoute);
 
 router.post('/', createCollection);
-router.delete('/', deleteCollection);
+router.delete('/:_id', deleteCollection);
 router.get('/hierarchy', getHierarchy);
 router.put('/', renameCollection);
 
