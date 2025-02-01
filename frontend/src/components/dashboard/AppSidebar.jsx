@@ -1,110 +1,115 @@
 "use client"
 
-import React, { useEffect } from "react"
+import React, { useEffect, useState, useCallback } from "react";
 import {
-    BookOpen,
-    Bot,
-    Frame,
-    GalleryVerticalEnd,
-    Map,
-    PieChart,
-    Settings2,
-    Folder,
-    FolderPlus,
-    FilePlus2,
-} from "lucide-react"
+  GalleryVerticalEnd,
+  FolderPlus,
+  FilePlus2,
+} from "lucide-react";
 
-import NavMain from "@/components/dashboard/NavMain"
-import NavUser from "@/components/dashboard/NavUser"
+import NavMain from "@/components/dashboard/NavMain";
+import NavUser from "@/components/dashboard/NavUser";
 
 import {
-    Sidebar,
-    SidebarContent,
-    SidebarFooter,
-    SidebarHeader,
-    SidebarRail,
-} from "@/components/ui/sidebar"
-import { useNoteStore } from "@/stores/useNoteStore"
-import { Button } from "../ui/button"
-
-
-const collections = [
-    {
-        "_id": "60d5ec49f8d2e30b8c8b4567",
-        "name": "category1",
-        "userId": "60d5ec49f8d2e30b8c8b1234",
-        "isGeneral": false,
-        "createdAt": "2023-01-01T00:00:00.000Z",
-        "updatedAt": "2023-01-01T00:00:00.000Z",
-        "notes": [
-            {
-                "_id": "60d5ec49f8d2e30b8c8b4568",
-                "name": "noteName1",
-                "categoryId": "60d5ec49f8d2e30b8c8b4567",
-                "userId": "60d5ec49f8d2e30b8c8b1234",
-                "createdAt": "2023-01-01T00:00:00.000Z",
-                "updatedAt": "2023-01-01T00:00:00.000Z"
-            },
-            {
-                "_id": "60d5ec49f8d2e30b8c8b4569",
-                "name": "noteName2",
-                "categoryId": "60d5ec49f8d2e30b8c8b4567",
-                "userId": "60d5ec49f8d2e30b8c8b1234",
-                "createdAt": "2023-01-01T00:00:00.000Z",
-                "updatedAt": "2023-01-01T00:00:00.000Z"
-            }
-        ]
-    },
-    {
-        "_id": "60d5ec49f8d2e30b8c8b456a",
-        "name": "category2",
-        "userId": "60d5ec49f8d2e30b8c8b1234",
-        "isGeneral": false,
-        "createdAt": "2023-01-01T00:00:00.000Z",
-        "updatedAt": "2023-01-01T00:00:00.000Z",
-        "notes": []
-    }
-]
-
-
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarRail,
+} from "@/components/ui/sidebar";
+import { useNoteStore } from "@/stores/useNoteStore";
+import { Button } from "../ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { toast } from "sonner";
 
 const AppSidebar = (props) => {
-    const { getHierarchy } = useNoteStore();
+  const { getHierarchy, createCollection, collections } = useNoteStore();
+  const [collectionName, setCollectionName] = useState('');
 
-    useEffect(() => {
-        getHierarchy();
-    }, []);
+  useEffect(() => {
+    getHierarchy();
+  }, [getHierarchy]);
 
-    return (
-        <Sidebar collapsible="icon" {...props}>
-            <SidebarHeader>
-                <div className="flex items-center justify-between">
-                    <div className="flex gap-2">
-                        <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                            <GalleryVerticalEnd className="size-4" />
-                        </div>
-                        <div className="grid flex-1 text-left text-sm leading-tight">
-                            <span className="truncate font-semibold">
-                                NoteHub
-                            </span>
-                            <span className="truncate text-xs">hello</span>
-                        </div>
+  const handleCreateCollection = useCallback(async () => {
+    const trimmedName = collectionName.trim();
+    if (trimmedName) {
+      await createCollection({ name: trimmedName });
+      setCollectionName('');
+    } else {
+      toast.error('Collection name cannot be empty');
+    }
+  }, [collectionName, createCollection]);
+
+  return (
+    <Sidebar collapsible="icon" {...props}>
+      <SidebarHeader>
+        <div className="flex items-center justify-between">
+          <div className="flex gap-2">
+            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+              <GalleryVerticalEnd className="size-4" />
+            </div>
+            <div className="grid flex-1 text-left text-sm leading-tight">
+              <span className="truncate font-semibold">NoteHub</span>
+              <span className="truncate text-xs">hello</span>
+            </div>
+          </div>
+          <div className="flex buttons-container">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button className="text-sidebar-accent-foreground/70" size="icon" variant="ghost">
+                  <FolderPlus />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80">
+                <div className="grid gap-4">
+                  <div className="space-y-2">
+                    <h4 className="font-medium leading-none">Collection</h4>
+                    <p className="text-sm text-muted-foreground">Set Collection name</p>
+                  </div>
+                  <div className="grid gap-2">
+                    <div className="flex items-center gap-4">
+                      <Label htmlFor="collectionName">Name</Label>
+                      <Input
+                        id="collectionName"
+                        className="col-span-2 h-8"
+                        value={collectionName}
+                        onChange={(e) => setCollectionName(e.target.value)}
+                      />
                     </div>
-                    <div className="flex">
-                        <Button className="text-sidebar-accent-foreground/70" size="icon" variant="ghost"><FilePlus2 /></Button>
-                        <Button className="text-sidebar-accent-foreground/70" size="icon" variant="ghost"><FolderPlus /></Button>
-                    </div>
+                  </div>
+                  <Button
+                    onClick={handleCreateCollection}
+                    variant="secondary"
+                    disabled={!collectionName.trim() || collections.find(({ name }) => name === collectionName.trim())}
+                  >
+                    Create
+                  </Button>
                 </div>
-            </SidebarHeader>
-            <SidebarContent>
-                <NavMain collections={collections} />
-            </SidebarContent>
-            <SidebarFooter>
-                <NavUser />
-            </SidebarFooter>
-            <SidebarRail />
-        </Sidebar>
-    )
-}
+              </PopoverContent>
+            </Popover>
+            <Button className="text-sidebar-accent-foreground/70" size="icon" variant="ghost">
+              <FilePlus2 />
+            </Button>
+          </div>
+        </div>
+      </SidebarHeader>
+      <SidebarContent>
+        <MemoizedNavMain collections={collections} />
+      </SidebarContent>
+      <SidebarFooter>
+        <NavUser />
+      </SidebarFooter>
+      <SidebarRail />
+    </Sidebar>
+  );
+};
+
+const MemoizedNavMain = React.memo(NavMain);
 
 export default AppSidebar;

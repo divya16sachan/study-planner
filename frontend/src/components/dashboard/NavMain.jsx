@@ -33,7 +33,7 @@ const NavMain = ({ collections }) => {
     console.log(collections);
     return (
         <SidebarGroup>
-            <SidebarGroupLabel>Platform</SidebarGroupLabel>
+            <SidebarGroupLabel>Collections</SidebarGroupLabel>
             <SidebarMenu>
                 {collections.map((collection, index) => (
                     <Collapsible
@@ -69,6 +69,7 @@ const NavMain = ({ collections }) => {
                         </SidebarMenuItem>
                     </Collapsible>
                 ))}
+                
             </SidebarMenu>
         </SidebarGroup>
     )
