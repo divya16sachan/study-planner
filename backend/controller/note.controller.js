@@ -24,9 +24,56 @@ export const deleteNote = async (req, res) => {
 
     try {
         await Note.findByIdAndDelete(_id);
-        res.status(200).json({message: `Note: ${Note.name} Deleted successfully`});
+        res.status(200).json({ message: `Note: ${Note.name} Deleted successfully` });
     } catch (error) {
         console.log("Error in deleteNote controller\n", Error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
+export const getNote = async (req, res) => {
+    const { _id } = req.params;
+    if (!_id) {
+        return res.status(400).json({ message: "note_id not provided" });
+    }
+    try {
+        const note = await Note.findById(_id);
+        res.status(200).json({ note })
+    } catch (error) {
+        console.log("Error in getNote controller.\n", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+export const updateContent = async (req, res) => {
+    const { content, _id } = req.body;
+    try {
+        const note = await Note.findById(_id);
+        note.content = content;
+        await note.save();
+        res.status(200).json({ note })
+    } catch (error) {
+        console.log("Error in updateContent controller.\n", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+
+export const renameNote = async (req, res) => {
+    const {_id, newName} = req.body;
+    if (!_id || !newName) {
+        return res.status(400).json({ message: "_id and newName are required." });
+    }
+    try {
+        const note = await Note.findById(_id);
+        if (!note) {
+            return res.status(404).json({ message: "note not found." });
+        }
+
+        note.name = newName;
+        await note.save();
+        res.status(200).json({ message: "note renamed successfully.", note });
+    } catch (error) {
+        console.log("Error in renameNote controller.\n", error);
         res.status(500).json({ message: "Internal server error" });
     }
 }

@@ -94,9 +94,6 @@ const AppSidebar = (props) => {
                 </div>
               </PopoverContent>
             </Popover>
-            <Button className="text-sidebar-accent-foreground/70" size="icon" variant="ghost">
-              <FilePlus2 />
-            </Button>
           </div>
         </div>
       </SidebarHeader>

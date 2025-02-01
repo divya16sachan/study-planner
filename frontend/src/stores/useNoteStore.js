@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { axiosInstance } from "../lib/axios";
 import { toast } from "sonner";
+import { data } from "react-router-dom";
 
 export const useNoteStore = create((set, get) => ({
   // BOOLEANS
@@ -101,7 +102,6 @@ export const useNoteStore = create((set, get) => ({
   },
 
   deleteNote: async (noteId) => {
-    console.log(noteId);
     try {
       const res = await axiosInstance.delete(`note/${noteId}`);
       set(state => ({
@@ -111,6 +111,27 @@ export const useNoteStore = create((set, get) => ({
         }))
       }))
       toast.success(res.message);
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response.data.message);
+    }
+  },
+
+  renameNote: async (data) => {
+    console.log(data);
+    try {
+      const res = await axiosInstance.put('note/rename', data);
+      const { note, message } = res.data;
+      set(state => ({
+        collections: state.collections.map((collection) => ({
+          ...collection,
+          notes: collection.notes.map((n) => (
+            n._id === note._id? note : n
+          ))
+        }))
+      }))
+
+      toast.success(message);
     } catch (error) {
       console.log(error);
       toast.error(error.response.data.message);

@@ -22,11 +22,7 @@ import {
 
 
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
     DropdownMenuSeparator,
-    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
 import {
@@ -54,10 +50,11 @@ import { useState } from "react"
 
 const NavMain = ({ collections }) => {
     const { isMobile } = useSidebar();
-    const [collectionNewName, setcollectionNewName] = useState('');
+    const [collectionNewName, setCollectionNewName] = useState('');
+    const [noteNewName, setNoteNewName] = useState('');
     const [noteName, setNoteName] = useState('');
 
-    const { deleteCollection, renameCollection, createNote, deleteNote } = useNoteStore();
+    const { deleteCollection, renameCollection, createNote, deleteNote, renameNote} = useNoteStore();
 
     return (
         <SidebarGroup>
@@ -82,13 +79,13 @@ const NavMain = ({ collections }) => {
 
                                 <Popover>
                                     <PopoverTrigger asChild>
-                                        <SidebarMenuAction showOnHover>
+                                        <SidebarMenuAction>
                                             <MoreHorizontal />
                                             <span className="sr-only">More</span>
                                         </SidebarMenuAction>
                                     </PopoverTrigger>
                                     <PopoverContent
-                                        className="w-48 rounded-lg p-2"
+                                        className="w-48 rounded-lg p-1"
                                         side={isMobile ? "bottom" : "right"}
                                         align={isMobile ? "end" : "start"}
                                     >
@@ -114,7 +111,7 @@ const NavMain = ({ collections }) => {
                                                                 defaultValue={collection.name}
                                                                 placeholder="newname"
                                                                 value={collectionNewName}
-                                                                onChange={e => setcollectionNewName(e.target.value)}
+                                                                onChange={e => setCollectionNewName(e.target.value)}
                                                             />
                                                         </div>
                                                     </div>
@@ -171,7 +168,7 @@ const NavMain = ({ collections }) => {
 
                                         <DropdownMenuSeparator />
                                         <Button variant="ghost" className="font-normal p-2 h-auto w-full justify-start" onClick={() => deleteCollection(collection._id)}>
-                                            <Trash2 />
+                                            <Trash2 className="text-muted-foreground" />
                                             <span>Delete Collection</span>
                                         </Button>
                                     </PopoverContent>
@@ -181,19 +178,19 @@ const NavMain = ({ collections }) => {
                             <CollapsibleContent>
                                 <SidebarMenuSub>
                                     {collection.notes?.map((note) => (
-                                        <SidebarMenuSubItem key={note.name}>
+                                        <SidebarMenuSubItem  key={note.name}>
                                             <SidebarMenuSubButton asChild>
                                                 <div>
                                                     {note.name}
                                                     <Popover>
                                                         <PopoverTrigger asChild>
                                                             <SidebarMenuAction showOnHover>
-                                                                <MoreHorizontal />
+                                                                <MoreHorizontal/>
                                                                 <span className="sr-only">More</span>
                                                             </SidebarMenuAction>
                                                         </PopoverTrigger>
                                                         <PopoverContent
-                                                            className="w-48 rounded-lg p-2"
+                                                            className="w-48 rounded-lg p-1"
                                                             side={isMobile ? "bottom" : "right"}
                                                             align={isMobile ? "end" : "start"}
                                                         >
@@ -214,19 +211,18 @@ const NavMain = ({ collections }) => {
                                                                         <div className="grid gap-2">
                                                                             <div className="flex items-center gap-4">
                                                                                 <Input
-                                                                                    id="collectionName"
                                                                                     className="col-span-2 h-8"
-                                                                                    defaultValue={collection.name}
+                                                                                    defaultValue={note.name}
                                                                                     placeholder="newname"
-                                                                                    value={collectionNewName}
-                                                                                    onChange={e => setcollectionNewName(e.target.value)}
+                                                                                    value={noteNewName}
+                                                                                    onChange={e => setNoteNewName(e.target.value)}
                                                                                 />
                                                                             </div>
                                                                         </div>
                                                                         <Button
                                                                             variant="secondary"
                                                                             onClick={() =>
-                                                                                renameCollection({ _id: collection._id, newName: collectionNewName })
+                                                                                renameNote({ _id: note._id, newName: noteNewName })
                                                                             }
                                                                         >
                                                                             Rename
@@ -279,7 +275,7 @@ const NavMain = ({ collections }) => {
                                                             variant="ghost" 
                                                             className="font-normal p-2 h-auto w-full justify-start" 
                                                             onClick={() => deleteNote(note._id)}>
-                                                                <Trash2 />
+                                                                <Trash2 className="text-muted-foreground" />
                                                                 <span>Delete Note</span>
                                                             </Button>
                                                         </PopoverContent>
