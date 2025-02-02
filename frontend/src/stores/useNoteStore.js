@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { axiosInstance } from "../lib/axios";
 import { toast } from "sonner";
-import { data } from "react-router-dom";
 
 export const useNoteStore = create((set, get) => ({
   // BOOLEANS
@@ -11,6 +10,40 @@ export const useNoteStore = create((set, get) => ({
   isCreatingNote: false,
 
   collections: [],
+
+  // ======= Utility methods for collections =======
+  insertNoteInCollection: (collectionId, note) => {
+    set((state) => ({
+      collections: state.collections.map((collection) =>
+        collection._id === collectionId
+          ? { ...collection, notes: [...collection.notes, note] }
+          : collection
+      ),
+    }));
+  },
+
+  deleteNoteFromCollection: (noteId) => {
+    set((state) => ({
+      collections: state.collections.map((collection) => ({
+        ...collection,
+        notes: collection.notes.filter((note) => note._id !== noteId),
+      })),
+    }));
+  },
+
+  replaceNoteFromCollection: (updatedNote) => {
+    set((state) => ({
+      collections: state.collections.map((collection) => ({
+        ...collection,
+        notes: collection.notes.map((note) =>
+          note._id === updatedNote._id ? updatedNote : note
+        ),
+      })),
+    }));
+  },
+
+  // ======= Utility methods for collections =======
+
 
   createCollection: async (data) => {
     set({ isCreatingCollection: true });
@@ -83,14 +116,9 @@ export const useNoteStore = create((set, get) => ({
     try {
       const res = await axiosInstance.post('note/', data);
       const { note, message } = res.data;
-      // add this note to the appropriate collection
-      set((state) => ({
-        collections: state.collections.map((collection) =>
-          collection._id === collectionId
-            ? { ...collection, notes: [...collection.notes, note] }
-            : collection
-        ),
-      }));
+      
+      // Add note to the appropriate collection
+      get().insertNoteInCollection(collectionId, note);
 
       toast.success(message);
     } catch (error) {
@@ -104,13 +132,11 @@ export const useNoteStore = create((set, get) => ({
   deleteNote: async (noteId) => {
     try {
       const res = await axiosInstance.delete(`note/${noteId}`);
-      set(state => ({
-        collections: state.collections.map((collection) => ({
-          ...collection,
-          notes: collection.notes.filter(note => note._id !== noteId)
-        }))
-      }))
-      toast.success(res.message);
+
+      // Remove the deleted note
+      get().deleteNoteFromCollection(noteId);
+
+      toast.success(res.data.message);
     } catch (error) {
       console.log(error);
       toast.error(error.response.data.message);
@@ -118,18 +144,28 @@ export const useNoteStore = create((set, get) => ({
   },
 
   renameNote: async (data) => {
-    console.log(data);
     try {
       const res = await axiosInstance.put('note/rename', data);
-      const { note, message } = res.data;
-      set(state => ({
-        collections: state.collections.map((collection) => ({
-          ...collection,
-          notes: collection.notes.map((n) => (
-            n._id === note._id? note : n
-          ))
-        }))
-      }))
+      const { note: updatedNote, message } = res.data;
+
+      // Replace note with updated note
+      get().replaceNoteFromCollection(updatedNote);
+
+      toast.success(message);
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response.data.message);
+    }
+  },
+
+  moveTo: async (data) => {
+    try {
+      const res = await axiosInstance.post('/note/move-to', data);
+      const { note: updatedNote, message } = res.data;
+
+      // Remove the note from the old collection and add it to the new collection
+      get().deleteNoteFromCollection(updatedNote._id);
+      get().insertNoteInCollection(updatedNote.collectionId, updatedNote);
 
       toast.success(message);
     } catch (error) {

@@ -59,7 +59,7 @@ export const updateContent = async (req, res) => {
 
 
 export const renameNote = async (req, res) => {
-    const {_id, newName} = req.body;
+    const { _id, newName } = req.body;
     if (!_id || !newName) {
         return res.status(400).json({ message: "_id and newName are required." });
     }
@@ -77,3 +77,23 @@ export const renameNote = async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 }
+
+export const moveTo = async (req, res) => {
+    const { noteId, collectionId } = req.body;
+    if (!noteId) {
+        return res.status(400).json({ message: "noteId not provided." });
+    }
+    if (!collectionId) {
+        return res.status(400).json({ message: "collectionId not provided." });
+    }
+
+    try {
+        const note = await Note.findById(noteId);
+        note.collectionId = collectionId;
+        note.save();
+        res.status(200).json({ message: "note move to new collection.", note });
+    } catch (error) {
+        console.log("Error in moveTo note controller.\n", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+} 

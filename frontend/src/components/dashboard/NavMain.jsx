@@ -37,24 +37,48 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react"
 
-// items: {
-//     title,
-//     url,
-//     icon ?: LucideIcon
-//     isActive ?: boolean
-//     items ?: {
-//         title,
-//         url,
-//     }
-// }
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from "@/components/ui/command"
+
+const statuses = [
+    {
+        value: "backlog",
+        label: "Backlog",
+    },
+    {
+        value: "todo",
+        label: "Todo",
+    },
+    {
+        value: "in progress",
+        label: "In Progress",
+    },
+    {
+        value: "done",
+        label: "Done",
+    },
+    {
+        value: "canceled",
+        label: "Canceled",
+    },
+]
 
 const NavMain = ({ collections }) => {
     const { isMobile } = useSidebar();
     const [collectionNewName, setCollectionNewName] = useState('');
     const [noteNewName, setNoteNewName] = useState('');
     const [noteName, setNoteName] = useState('');
+    const [open, setOpen] = useState(false);
+    const [selectedStatus, setSelectedStatus] = useState(null);
 
-    const { deleteCollection, renameCollection, createNote, deleteNote, renameNote} = useNoteStore();
+
+    const { deleteCollection, renameCollection, createNote, deleteNote, renameNote, moveTo} = useNoteStore();
 
     return (
         <SidebarGroup>
@@ -86,7 +110,7 @@ const NavMain = ({ collections }) => {
                                     </PopoverTrigger>
                                     <PopoverContent
                                         className="w-48 rounded-lg p-1"
-                                        side={isMobile ? "bottom" : "right"}
+                                        side="bottom"
                                         align={isMobile ? "end" : "start"}
                                     >
                                         < Popover >
@@ -98,8 +122,8 @@ const NavMain = ({ collections }) => {
                                             </PopoverTrigger>
                                             <PopoverContent
                                                 className="w-70 rounded-lg"
-                                                side="bottom"
-                                                align="end"
+                                                side="top"
+                                                align="start"
                                             >
                                                 <div className="grid gap-4">
 
@@ -178,14 +202,14 @@ const NavMain = ({ collections }) => {
                             <CollapsibleContent>
                                 <SidebarMenuSub>
                                     {collection.notes?.map((note) => (
-                                        <SidebarMenuSubItem  key={note.name}>
+                                        <SidebarMenuSubItem key={note.name}>
                                             <SidebarMenuSubButton asChild>
                                                 <div>
                                                     {note.name}
                                                     <Popover>
                                                         <PopoverTrigger asChild>
                                                             <SidebarMenuAction showOnHover>
-                                                                <MoreHorizontal/>
+                                                                <MoreHorizontal />
                                                                 <span className="sr-only">More</span>
                                                             </SidebarMenuAction>
                                                         </PopoverTrigger>
@@ -203,8 +227,8 @@ const NavMain = ({ collections }) => {
                                                                 </PopoverTrigger>
                                                                 <PopoverContent
                                                                     className="w-70 rounded-lg"
-                                                                    side="bottom"
-                                                                    align="end"
+                                                                    side="right"
+                                                                    align="start"
                                                                 >
                                                                     <div className="grid gap-4">
 
@@ -231,50 +255,45 @@ const NavMain = ({ collections }) => {
                                                                 </PopoverContent>
                                                             </Popover >
 
-                                                            < Popover >
+                                                            <Popover open={open} onOpenChange={setOpen}>
                                                                 <PopoverTrigger asChild>
-                                                                    <Button variant="ghost" className="font-normal p-2 h-auto w-full justify-start">
+                                                                    <Button variant={open? "secondary" : "ghost"} className="font-normal p-2 h-auto w-full justify-start">
                                                                         <FolderOutput className="text-muted-foreground" />
                                                                         <span>Move to</span>
                                                                     </Button>
                                                                 </PopoverTrigger>
-                                                                <PopoverContent
-                                                                    className="w-70 rounded-lg"
-                                                                    side="bottom"
-                                                                    align="end">
-                                                                    <div className="grid gap-4">
-                                                                        <div className="space-y-2">
-                                                                            <h4 className="font-medium leading-none">Insert Note</h4>
-                                                                            <p className="text-sm text-muted-foreground">Set Collection name</p>
-                                                                        </div>
-                                                                        <div className="grid gap-2">
-                                                                            <div className="flex items-center gap-4">
-                                                                                <Label htmlFor="collectionName">Name</Label>
-                                                                                <Input
-                                                                                    id="collectionName"
-                                                                                    className="col-span-2 h-8"
-                                                                                    value={noteName}
-                                                                                    onChange={e => setNoteName(e.target.value)}
-                                                                                />
-                                                                            </div>
-                                                                        </div>
-                                                                        <Button
-                                                                            variant="secondary"
-                                                                            onClick={() => createNote({ name: noteName, collectionId: collection._id })}
-                                                                        >
-                                                                            <Plus /> Add
-                                                                        </Button>
-                                                                    </div>
+                                                                <PopoverContent className="p-0" side="right" align="start">
+                                                                    <Command>
+                                                                        <CommandInput placeholder="Change status..." />
+                                                                        <CommandList>
+                                                                            <CommandEmpty>No results found.</CommandEmpty>
+                                                                            <CommandGroup>
+                                                                                {collections.filter(c=>c._id !== collection._id)
+                                                                                .map((collection) => (
+                                                                                    <CommandItem
+                                                                                        key={collection._id}
+                                                                                        value={collection._id}
+                                                                                        onSelect={ async(value) => {
+                                                                                            await moveTo({collectionId : value, noteId : note._id})
+                                                                                            setOpen(false)
+                                                                                        }}
+                                                                                    >
+                                                                                        <Folder className="text-muted-foreground"/> {collection.name}
+                                                                                    </CommandItem>
+                                                                                ))}
+                                                                            </CommandGroup>
+                                                                        </CommandList>
+                                                                    </Command>
                                                                 </PopoverContent>
-                                                            </Popover >
+                                                            </Popover>
 
 
 
                                                             <DropdownMenuSeparator />
-                                                            <Button 
-                                                            variant="ghost" 
-                                                            className="font-normal p-2 h-auto w-full justify-start" 
-                                                            onClick={() => deleteNote(note._id)}>
+                                                            <Button
+                                                                variant="ghost"
+                                                                className="font-normal p-2 h-auto w-full justify-start"
+                                                                onClick={() => deleteNote(note._id)}>
                                                                 <Trash2 className="text-muted-foreground" />
                                                                 <span>Delete Note</span>
                                                             </Button>
