@@ -1,13 +1,13 @@
 import { Color } from '@tiptap/extension-color'
 import ListItem from '@tiptap/extension-list-item'
 import TextStyle from '@tiptap/extension-text-style'
-import { EditorProvider, useCurrentEditor, ReactNodeViewRenderer } from '@tiptap/react'
+import { EditorProvider, useCurrentEditor, ReactNodeViewRenderer, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Highlight from '@tiptap/extension-highlight'
 import Underline from '@tiptap/extension-underline'
 import ListKeymap from '@tiptap/extension-list-keymap'
 import TextAlign from '@tiptap/extension-text-align'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
@@ -65,6 +65,7 @@ import {
     Italic,
     List,
     ListOrdered,
+    Loader2,
     Outdent,
     Palette,
     Pilcrow,
@@ -72,8 +73,10 @@ import {
     Redo,
     Strikethrough,
     UnderlineIcon,
-    Undo
+    Undo,
+    UploadCloudIcon
 } from 'lucide-react'
+import { useNoteStore } from '@/stores/useNoteStore'
 
 const formatingGroup = [
     {
@@ -195,7 +198,7 @@ const colors = ['#fb7185', '#fdba74', '#d9f99d', '#a7f3d0', '#a5f3fc', '#a5b4fc'
 
 const MenuBar = () => {
     const { editor } = useCurrentEditor()
-
+    const { updateContent, selectedNote, isContentUploading } = useNoteStore();
     if (!editor) {
         return null
     }
@@ -297,13 +300,13 @@ const MenuBar = () => {
                     <SelectTrigger className="w-16">
                         <SelectValue placeholder={
                             editor.isActive('heading', { level: 1 }) ? <Heading1 className='size-5' /> :
-                            editor.isActive('heading', { level: 2 }) ? <Heading2 className='size-5' /> :
-                            editor.isActive('heading', { level: 3 }) ? <Heading3 className='size-5' /> :
-                            editor.isActive('heading', { level: 4 }) ? <Heading4 className='size-5' /> :
-                            editor.isActive('heading', { level: 5 }) ? <Heading5 className='size-5' /> :
-                            editor.isActive('heading', { level: 6 }) ? <Heading6 className='size-5' /> :
-                            editor.isActive('paragraph') ? <Pilcrow className='size-4' /> :
-                            <Heading className='size-4'/>
+                                editor.isActive('heading', { level: 2 }) ? <Heading2 className='size-5' /> :
+                                    editor.isActive('heading', { level: 3 }) ? <Heading3 className='size-5' /> :
+                                        editor.isActive('heading', { level: 4 }) ? <Heading4 className='size-5' /> :
+                                            editor.isActive('heading', { level: 5 }) ? <Heading5 className='size-5' /> :
+                                                editor.isActive('heading', { level: 6 }) ? <Heading6 className='size-5' /> :
+                                                    editor.isActive('paragraph') ? <Pilcrow className='size-4' /> :
+                                                        <Heading className='size-4' />
                         } />
                     </SelectTrigger>
                     <SelectContent className="flex-col">
@@ -346,7 +349,7 @@ const MenuBar = () => {
                                         <button
                                             key={color}
                                             onClick={() => editor.chain().focus().setHighlight({ color }).run()}
-                                            className={`relative w-8 h-8 ${editor.isActive('textStyle', { color }) ? 'bg-primary' : ''} hover:bg-primary/90 rounded-md cursor-pointer`}
+                                            className={`relative w-8 h-8 ${editor.isActive('textStyle', { color }) ? 'bg-primary' : ''} hover:bg-accent rounded-md cursor-pointer`}
                                         >
                                             <div
                                                 className="absolute inset-[6px] rounded-sm"
@@ -387,7 +390,7 @@ const MenuBar = () => {
                                         <button
                                             key={color}
                                             onClick={() => editor.chain().focus().setColor(color).run()}
-                                            className={`relative w-8 h-8 ${editor.isActive('textStyle', { color }) ? 'bg-primary' : ''} hover:bg-primary/90 rounded-md cursor-pointer`}
+                                            className={`relative w-8 h-8 ${editor.isActive('textStyle', { color }) ? 'bg-primary' : ''} hover:bg-accent rounded-md cursor-pointer`}
                                         >
                                             <div
                                                 className="absolute inset-[6px] rounded-sm"
@@ -406,6 +409,22 @@ const MenuBar = () => {
                             </PopoverContent>
                         </Popover>
                     </div>
+                </TooltipWrapper>
+
+                <TooltipWrapper message={"Save Content"}>
+                    <Button
+                        variant="outline"
+                        disabled={!selectedNote || isContentUploading}
+                        onClick={() =>
+                            updateContent({ content: editor.getHTML(), noteId: selectedNote }
+                            )}
+                    >
+                        {
+                            isContentUploading ?
+                                <Loader2 className='animate-spin' /> :
+                                <><UploadCloudIcon />Save</>
+                        }
+                    </Button>
                 </TooltipWrapper>
             </div>
         </div >
@@ -440,36 +459,8 @@ const extensions = [
     ListKeymap,
 ]
 
-const content = `
-<h2>Hi there,</h2>
-<p>
-  this is a <em>basic</em> example of <strong>Tiptap</strong>. Sure, there are all kind of basic text styles you’d probably expect from a text editor. But wait until you see the lists:
-</p>
-<ul>
-  <li>
-    That’s a bullet list with one …
-  </li>
-  <li>
-    … or two list items.
-  </li>
-</ul>
-<p>
-  Isn’t that great? And all of that is editable. But wait, there’s more. Let’s try a code block:
-</p>
-<pre><code class="language-css">body {
-  display: none;
-}</code></pre>
-<p>
-  I know, I know, this is impressive. It’s only the tip of the iceberg though. Give it a try and click a little bit around. Don’t forget to check the other examples too.
-</p>
-<blockquote>
-  Wow, that’s amazing. Good work, boy! 👏
-  <br />
-  — Mom
-</blockquote>
-`
 
-const Tiptap = () => {
+const Tiptap = ({content}) => {
     return (
         <EditorProvider
             slotBefore={<MenuBar />}
@@ -478,5 +469,4 @@ const Tiptap = () => {
         />
     )
 }
-
 export default Tiptap;

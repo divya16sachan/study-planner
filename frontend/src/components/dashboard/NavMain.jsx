@@ -1,6 +1,6 @@
 "use client"
 
-import { ChevronRight, FilePlus2, Folder, FolderOutput, FolderPlus, Forward, MoreHorizontal, Pencil, Plus, Trash2 } from "lucide-react"
+import { ChevronRight, File, FilePlus2, Folder, FolderOutput, FolderPlus, Forward, MoreHorizontal, Pencil, Plus, Trash2 } from "lucide-react"
 
 import {
     Collapsible,
@@ -78,7 +78,16 @@ const NavMain = ({ collections }) => {
     const [selectedStatus, setSelectedStatus] = useState(null);
 
 
-    const { deleteCollection, renameCollection, createNote, deleteNote, renameNote, moveTo} = useNoteStore();
+    const { 
+        deleteCollection,
+        renameCollection,
+        createNote,
+        deleteNote,
+        renameNote,
+        moveTo,
+        selectedNote,
+        setselectedNote,
+    } = useNoteStore();
 
     return (
         <SidebarGroup>
@@ -202,9 +211,10 @@ const NavMain = ({ collections }) => {
                             <CollapsibleContent>
                                 <SidebarMenuSub>
                                     {collection.notes?.map((note) => (
-                                        <SidebarMenuSubItem key={note.name}>
-                                            <SidebarMenuSubButton asChild>
-                                                <div>
+                                        <SidebarMenuSubItem key={note._id}>
+                                            <SidebarMenuSubButton asChild onClick={(e)=>{setselectedNote(note._id)}}>
+                                                <div className={`cursor-pointer ${selectedNote === note._id && 'bg-accent'}`}>
+                                                    <File className="opacity-50"/>
                                                     {note.name}
                                                     <Popover>
                                                         <PopoverTrigger asChild>

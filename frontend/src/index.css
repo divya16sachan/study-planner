@@ -87,7 +87,7 @@
 
 
 .tiptap {
-  @apply border border-input mx-auto bg-background text-gray-100 font-sans leading-relaxed max-w-screen-lg p-4;
+  @apply border-none outline-none mx-auto bg-background text-primary font-sans leading-relaxed max-w-screen-md min-h-svh p-4;
 
   .code-block {
     @apply relative;
@@ -148,7 +148,7 @@
 
 
   pre {
-    @apply bg-[#171717] border-input border rounded-md my-12 p-2 pt-14;
+    @apply bg-[#171717] text-[#e6edf3] dark:text-primary border-input border rounded-md my-12 p-2 pt-14 overflow-x-auto;
 
     code {
       background: #171717;
@@ -159,7 +159,7 @@
     /* Code styling */
     .hljs-comment,
     .hljs-quote {
-      color: #616161;
+      color: #616161 !important;
     }
 
     .hljs-variable,
@@ -211,7 +211,8 @@
   }
 
   code {
-    @apply bg-accent p-1 rounded whitespace-nowrap;
+    @apply bg-accent p-0.5 px-1 rounded;
+    white-space: pre !important;
   }
 
   blockquote {
@@ -237,5 +238,11 @@
 
   td {
     @apply bg-gray-900;
+  }
+}
+
+.homepage .tiptap{
+  pre {
+    @apply p-4;
   }
 }

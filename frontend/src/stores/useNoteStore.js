@@ -8,10 +8,68 @@ export const useNoteStore = create((set, get) => ({
   isCreatingCollection: false,
   isDeletingCollection: false,
   isCreatingNote: false,
+  selectedNote: null,
+  isContentLoading: false,
+  isContentUploading: false,
 
   collections: [],
+  notesContent: {
+    //noteId : 'content'
+  },
+
+  getNoteContent: async (noteId) => {
+    const { notesContent } = get();
+    if (noteId in notesContent) {
+      return notesContent[noteId] || '';
+    }
+
+    // ondemand loading.
+    set({ isContentLoading: true });
+    try {
+      const res = await axiosInstance.get(`note/${noteId}`);
+      const { content } = res.data.note;
+      set({
+        notesContent: {
+          ...notesContent,
+          [noteId]: content,
+        }
+      })
+      return content || '';
+    } catch (error) {
+      console.error("Error fetching note content", error);
+      return "what's in your ming";
+    } finally {
+      set({ isContentLoading: false });
+    }
+  },
+
+  updateContent: async (data) => {
+    set({ isContentUploading: true });
+    try {
+      const res = await axiosInstance.put('/note/', data);
+      const { note, message } = res.data;
+      set(state => ({
+        notesContent: {
+          ...state.notesContent,
+          [note._id]: note.content,
+        }
+      }));
+      toast.success(message);
+    } catch (error) {
+      console.log('Error in updating content', error);
+      toast.error(error.response.data.message);
+    } finally {
+      set({ isContentUploading: false });
+    }
+  },
+
+  setselectedNote: (noteId) => {
+    set({ selectedNote: noteId });
+  },
 
   // ======= Utility methods for collections =======
+
+
   insertNoteInCollection: (collectionId, note) => {
     set((state) => ({
       collections: state.collections.map((collection) =>
@@ -116,7 +174,7 @@ export const useNoteStore = create((set, get) => ({
     try {
       const res = await axiosInstance.post('note/', data);
       const { note, message } = res.data;
-      
+
       // Add note to the appropriate collection
       get().insertNoteInCollection(collectionId, note);
 
@@ -172,6 +230,7 @@ export const useNoteStore = create((set, get) => ({
       console.log(error);
       toast.error(error.response.data.message);
     }
-  }
+  },
+
 
 }));

@@ -1,10 +1,15 @@
 import mongoose from "mongoose";
+import ora from 'ora';
+
 const connectToDb = async()=>{
-    try{
+    const spinner = ora('Connecting to MongoDB...').start();
+
+    try {
         const conn = await mongoose.connect(process.env.MONGODB_URI);
-        console.log(`connected to mongodb ${conn.connection.host}`);
-    } catch(error){
-        console.error('error in connectToDb: ', error);
+        spinner.succeed(`Connected to MongoDB ${conn.connection.host}`);
+    } catch (error) {
+        spinner.fail('Failed to connect to MongoDB');
+        console.error('Error in connectToDb: ', error);
     }
 }
 

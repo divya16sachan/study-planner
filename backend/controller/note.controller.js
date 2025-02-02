@@ -45,12 +45,12 @@ export const getNote = async (req, res) => {
 }
 
 export const updateContent = async (req, res) => {
-    const { content, _id } = req.body;
+    const { content, noteId } = req.body;
     try {
-        const note = await Note.findById(_id);
+        const note = await Note.findById(noteId);
         note.content = content;
         await note.save();
-        res.status(200).json({ note })
+        res.status(200).json({ message: "Notes updated successfully.", note })
     } catch (error) {
         console.log("Error in updateContent controller.\n", error);
         res.status(500).json({ message: "Internal server error" });
@@ -59,12 +59,12 @@ export const updateContent = async (req, res) => {
 
 
 export const renameNote = async (req, res) => {
-    const { _id, newName } = req.body;
-    if (!_id || !newName) {
-        return res.status(400).json({ message: "_id and newName are required." });
+    const { noteId, newName } = req.body;
+    if (!noteId || !newName) {
+        return res.status(400).json({ message: "noteId and newName are required." });
     }
     try {
-        const note = await Note.findById(_id);
+        const note = await Note.findById(noteId);
         if (!note) {
             return res.status(404).json({ message: "note not found." });
         }
