@@ -50,11 +50,17 @@ const HomePage = () => {
                   {parse(content)}
                 </div>
               ) : (
-                <div className="h-full">
-                  <h1 className="text-2xl font-semibold flex items-center gap-2">
+                <div className="h-full p-4 max-w-screen-md mx-auto">
+                  <strong className="text-xl mb-8 font-semibold flex items-center gap-2">
                     <span>Welcome</span>
                     <span className="text-[#a5b4fc]">{authUser.fullName.split(/\s/)[0]}</span>
-                  </h1>
+                  </strong>
+                  <strong className='text-2xl mb-2'>Whatare you up to?</strong>
+                  <p className='w-[500px] my-4'>The shocking impoact of matrix was precisely the valid possibility that what we believe to be reality was but our perception</p>
+                  <div className='w-full flex flex-col items-center text-center gap-4'>
+                    <img className='opacity grayscale-[100] opacity-30 w-56 object-contain mt-20' src="./empty-note-state.svg" alt="" />
+                    <p className='w-80 text-muted-foreground my-6'>You have not selected any note yet!</p>
+                  </div>
                 </div>
               )}
       </div>
