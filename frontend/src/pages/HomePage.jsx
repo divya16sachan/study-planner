@@ -18,6 +18,10 @@ const HomePage = () => {
     document.querySelectorAll('pre code').forEach((block) => {
       hljs.highlightBlock(block);
     });
+    document.querySelectorAll('input[type="checkbox').forEach(checkbox=>{
+      checkbox.setAttribute('disabled', true);
+      checkbox.style.cursor = "default"
+    })
   }, [content]);
 
   useEffect(() => {

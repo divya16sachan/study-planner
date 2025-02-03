@@ -7,6 +7,9 @@ import Highlight from '@tiptap/extension-highlight'
 import Underline from '@tiptap/extension-underline'
 import ListKeymap from '@tiptap/extension-list-keymap'
 import TextAlign from '@tiptap/extension-text-align'
+import TaskItem from '@tiptap/extension-task-item'
+import TaskList from '@tiptap/extension-task-list'
+
 import React, { useEffect, useState } from 'react'
 
 
@@ -64,6 +67,7 @@ import {
     Indent,
     Italic,
     List,
+    ListChecks,
     ListOrdered,
     Loader2,
     Outdent,
@@ -118,22 +122,29 @@ const listGroup = [
         command: 'toggleBulletList',
         tooltip: "Ctrl + Shift + 8",
     },
+    {
+        name: 'taskList',
+        icon: <ListChecks />,
+        command: 'toggleTaskList',
+        tooltip: "Ctrl + Shift + 9",
+    }
 ]
 
 const listController = [
     {
-        name: 'listItem',
+        name: ['listItem', 'taskItem'],
         icon: <Outdent />,
         command: 'liftListItem',
-        tooltip: "Lift list item",
+        tooltip: "Lift list item/task item",
     },
     {
-        name: 'listItem',
+        name: ['listItem', 'taskItem'],
         icon: <Indent />,
         command: 'sinkListItem',
-        tooltip: "Sink list item",
+        tooltip: "Sink list item/task item",
     },
 ];
+
 
 const blockGroup = [
     {
@@ -249,22 +260,29 @@ const MenuBar = () => {
                             </Button>
                         </TooltipWrapper>
                     ))
-
                 }
+
                 {
                     listController.map(({ icon, command, tooltip, name }, index) => (
                         <TooltipWrapper key={index} message={tooltip}>
                             <Button
                                 size="icon"
                                 variant="ghost"
-                                onClick={() => editor.chain().focus()[command](name).run()}
-                                disabled={!editor.can()[command](name)}
+                                onClick={() => {
+                                    if (editor.can()[command](name[0])) {
+                                        editor.chain().focus()[command](name[0]).run();
+                                    } else if (editor.can()[command](name[1])) {
+                                        editor.chain().focus()[command](name[1]).run();
+                                    }
+                                }}
+                                disabled={!editor.can()[command](name[0]) && !editor.can()[command](name[1])}
                             >
                                 {icon}
                             </Button>
                         </TooltipWrapper>
                     ))
                 }
+
 
                 {
                     controller.map(({ icon, command, tooltip }, index) => (
@@ -457,10 +475,14 @@ const extensions = [
     }),
     Underline,
     ListKeymap,
+    TaskList,
+    TaskItem.configure({
+        nested: true,
+    }),
 ]
 
 
-const Tiptap = ({content}) => {
+const Tiptap = ({ content }) => {
     return (
         <EditorProvider
             slotBefore={<MenuBar />}
