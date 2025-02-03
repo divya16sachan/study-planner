@@ -9,6 +9,10 @@ import ListKeymap from '@tiptap/extension-list-keymap'
 import TextAlign from '@tiptap/extension-text-align'
 import TaskItem from '@tiptap/extension-task-item'
 import TaskList from '@tiptap/extension-task-list'
+import Table from '@tiptap/extension-table'
+import TableCell from '@tiptap/extension-table-cell'
+import TableHeader from '@tiptap/extension-table-header'
+import TableRow from '@tiptap/extension-table-row'
 
 import React, { useEffect, useState } from 'react'
 
@@ -33,7 +37,7 @@ lowlight.register('css', css)
 lowlight.register('js', js)
 lowlight.register('ts', ts)
 
-import { Button } from './ui/button'
+import { Button } from './ui/Button'
 import {
     Popover,
     PopoverContent,
@@ -52,9 +56,15 @@ import {
     AlignJustify,
     AlignLeft,
     AlignRight,
+    ArrowDownToLine,
+    ArrowLeftToLine,
+    ArrowRightToLine,
+    ArrowUpToLine,
     Bold,
     Code,
     CodeSquare,
+    Ellipsis,
+    EllipsisVertical,
     Eraser,
     Heading,
     Heading1,
@@ -63,6 +73,7 @@ import {
     Heading4,
     Heading5,
     Heading6,
+    HeadingIcon,
     HighlighterIcon,
     Indent,
     Italic,
@@ -76,11 +87,14 @@ import {
     Quote,
     Redo,
     Strikethrough,
+    TableIcon,
+    Trash,
     UnderlineIcon,
     Undo,
     UploadCloudIcon
 } from 'lucide-react'
 import { useNoteStore } from '@/stores/useNoteStore'
+import { DropdownMenuItem } from '@radix-ui/react-dropdown-menu'
 
 const formatingGroup = [
     {
@@ -205,10 +219,69 @@ const alignments = [
         tooltip: 'Ctrl + Shift + J',
     },
 ]
+
+const tableGroup = [
+    {
+        icon: <TableIcon />,
+        command: "insertTable",
+        tooltip: "Insert talbe",
+        params: {
+            rows: 3, cols: 3, withHeaderRow: true
+        },
+    },
+    {
+        icon: <HeadingIcon />,
+        command: "toggleHeaderRow",
+        tooltip: "Toggle header",
+    },
+    {
+        icon: <Trash />,
+        command: "deleteTable",
+        tooltip: "Delete table",
+    },
+];
+
+const tableRowController = [
+    {
+        icon: <ArrowUpToLine />,
+        command: "addRowBefore",
+        tooltip: "Add row before",
+    },
+    {
+        icon: <ArrowDownToLine />,
+        command: "addRowAfter",
+        tooltip: "Add row after",
+    },
+    {
+        icon: <Trash />,
+        command: "deleteRow",
+        tooltip: "Delete row",
+    },
+];
+
+const tableColumnController = [
+    {
+        icon: <ArrowLeftToLine />,
+        command: "addColumnBefore",
+        tooltip: "Add column before",
+    },
+    {
+        icon: <ArrowRightToLine />,
+        command: "addColumnAfter",
+        tooltip: "Add column after",
+    },
+    {
+        icon: <Trash />,
+        command: "deleteColumn",
+        tooltip: "Delete column",
+    },
+];
+
 const colors = ['#fb7185', '#fdba74', '#d9f99d', '#a7f3d0', '#a5f3fc', '#a5b4fc'];
 
 const MenuBar = () => {
     const { editor } = useCurrentEditor()
+
     const { updateContent, selectedNote, isContentUploading } = useNoteStore();
     if (!editor) {
         return null
@@ -364,7 +437,7 @@ const MenuBar = () => {
                             <PopoverContent className="w-auto flex items-center gap-1 p-2">
                                 {
                                     colors.map(color => (
-                                        <button
+                                        <Button
                                             key={color}
                                             onClick={() => editor.chain().focus().setHighlight({ color }).run()}
                                             className={`relative w-8 h-8 ${editor.isActive('textStyle', { color }) ? 'bg-primary' : ''} hover:bg-accent rounded-md cursor-pointer`}
@@ -373,7 +446,7 @@ const MenuBar = () => {
                                                 className="absolute inset-[6px] rounded-sm"
                                                 style={{ backgroundColor: color }}
                                             />
-                                        </button>
+                                        </Button>
                                     ))
                                 }
                                 <Button
@@ -405,7 +478,7 @@ const MenuBar = () => {
                             <PopoverContent className="w-auto flex items-center gap-1 p-2">
                                 {
                                     colors.map(color => (
-                                        <button
+                                        <Button
                                             key={color}
                                             onClick={() => editor.chain().focus().setColor(color).run()}
                                             className={`relative w-8 h-8 ${editor.isActive('textStyle', { color }) ? 'bg-primary' : ''} hover:bg-accent rounded-md cursor-pointer`}
@@ -414,7 +487,7 @@ const MenuBar = () => {
                                                 className="absolute inset-[6px] rounded-sm"
                                                 style={{ backgroundColor: color }}
                                             />
-                                        </button>
+                                        </Button>
                                     ))
                                 }
                                 <Button
@@ -428,6 +501,23 @@ const MenuBar = () => {
                         </Popover>
                     </div>
                 </TooltipWrapper>
+
+                <div className='border rounded-lg'>
+                    <TableGroup
+                        controllers={tableGroup}
+                        triggerIcon={<TableIcon />}
+                    />
+                    <TableGroup
+                        controllers={tableColumnController}
+                        triggerIcon={<Ellipsis />}
+                    />
+                    <TableGroup
+                        controllers={tableRowController}
+                        triggerIcon={<EllipsisVertical />}
+                    />
+                </div>
+
+
 
                 <TooltipWrapper message={"Save Content"}>
                     <Button
@@ -448,6 +538,34 @@ const MenuBar = () => {
         </div >
     )
 }
+
+
+function TableGroup({ controllers, triggerIcon }) {
+    return (
+        <Popover>
+            <PopoverTrigger>
+                <TooltipWrapper message={"Table"}>
+                    <Button variant="ghost" size="icon">
+                        {triggerIcon}
+                    </Button>
+                </TooltipWrapper>
+            </PopoverTrigger>
+            <PopoverContent className="p-1 w-min" align="start">
+                {
+                    controllers.map(controller => (
+                        <Button
+                            variant="ghost"
+                            className="w-full justify-start p-2 font-normal leading-tight h-8"
+                            onClick={() => editor.chain().focus()[controller.command]().run()}
+                        >
+                            {controller.icon} {controller.tooltip}
+                        </Button>
+                    ))
+                }
+            </PopoverContent>
+        </Popover>
+    )
+};
 
 const extensions = [
     Color.configure({ types: [TextStyle.name, ListItem.name] }),
@@ -479,6 +597,12 @@ const extensions = [
     TaskItem.configure({
         nested: true,
     }),
+    Table.configure({
+        resizable: true,
+    }),
+    TableRow,
+    TableHeader,
+    TableCell,
 ]
 
 

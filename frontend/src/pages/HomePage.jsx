@@ -18,6 +18,8 @@ const HomePage = () => {
     document.querySelectorAll('pre code').forEach((block) => {
       hljs.highlightBlock(block);
     });
+
+    // Prevent the checkbox modification outside tiptap editor
     document.querySelectorAll('input[type="checkbox').forEach(checkbox=>{
       checkbox.setAttribute('disabled', true);
       checkbox.style.cursor = "default"
