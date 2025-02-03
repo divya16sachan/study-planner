@@ -85,9 +85,22 @@
   }
 }
 
+*::-webkit-scrollbar {
+  @apply w-2 h-2 opacity-0;
+}
+*:hover::-webkit-scrollbar {
+  @apply opacity-100;
+}
+
+*::-webkit-scrollbar-track{
+  @apply bg-accent;
+}
+*::-webkit-scrollbar-thumb {
+  @apply bg-muted-foreground;
+}
 
 .tiptap {
-  @apply border-none outline-none mx-auto bg-background text-primary font-sans leading-relaxed max-w-screen-md min-h-svh p-4;
+  @apply overflow-hidden border-none outline-none mx-auto bg-background text-primary font-sans leading-relaxed max-w-screen-md min-h-svh p-4;
 
   .code-block {
     @apply relative;
@@ -198,7 +211,7 @@
 
 
   pre {
-    @apply bg-[#171717] text-[#e6edf3] dark:text-primary border-input border rounded-md my-12 p-2 pt-14 overflow-x-auto;
+    @apply bg-[#171717] text-[#e6edf3] dark:text-primary border-input border rounded-md my-12 p-2 pt-16 overflow-x-auto;
 
     code {
       background: #171717;
@@ -261,8 +274,7 @@
   }
 
   code {
-    @apply bg-accent p-0.5 px-1 rounded;
-    white-space: pre !important;
+    @apply bg-accent p-0.5 px-1 rounded whitespace-pre-wrap;
   }
 
   blockquote {
@@ -294,13 +306,13 @@
   table {
     border-collapse: collapse;
     margin: 0;
-    overflow: hidden;
+    width: max-content !important;
     table-layout: fixed;
     width: 100%;
 
     td,
     th {
-      @apply border border-input bg-background;
+      @apply border border-input bg-background whitespace-nowrap;
       /* min-width: 1em;
       padding: 6px 8px;
       position: relative;
@@ -312,7 +324,7 @@
     }
 
     th {
-      @apply bg-accent font-semibold text-left;
+      @apply bg-accent/70 font-semibold text-left;
     }
 
     .selectedCell:after {
@@ -346,8 +358,3 @@
   }
 }
 
-.homepage .tiptap {
-  pre {
-    @apply p-4;
-  }
-}

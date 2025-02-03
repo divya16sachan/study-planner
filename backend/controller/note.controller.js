@@ -11,7 +11,7 @@ export const createNote = async (req, res) => {
         const note = await Note.create({ name, collectionId, userId: user._id });
         res.status(201).json({ message: "note created successfully", note })
     } catch (error) {
-        console.log("Error in createNote controller\n", Error);
+        console.log("Error in createNote controller\n", error);
         res.status(500).json({ message: "Internal server error" });
     }
 }

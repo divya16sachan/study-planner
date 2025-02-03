@@ -504,14 +504,17 @@ const MenuBar = () => {
 
                 <div className='border rounded-lg'>
                     <TableGroup
+                        editor={editor}
                         controllers={tableGroup}
                         triggerIcon={<TableIcon />}
                     />
                     <TableGroup
+                        editor={editor}
                         controllers={tableColumnController}
                         triggerIcon={<Ellipsis />}
                     />
                     <TableGroup
+                        editor={editor}
                         controllers={tableRowController}
                         triggerIcon={<EllipsisVertical />}
                     />
@@ -540,7 +543,7 @@ const MenuBar = () => {
 }
 
 
-function TableGroup({ controllers, triggerIcon }) {
+function TableGroup({ controllers, triggerIcon, editor }) {
     return (
         <Popover>
             <PopoverTrigger>
