@@ -81,8 +81,8 @@ export default ({ node: { attrs: { language: defaultLanguage } }, updateAttribut
         </Popover>
 
         <div className='flex gap-2'>
-          <Button variant="ghost" disabled={copied} onClick={handleCopy}>
-            {copied ? <>copied <CopyCheck/></>  : <Copy/>}
+          <Button variant="ghost" size="icon" disabled={copied} onClick={handleCopy}>
+            {copied ? <CopyCheck/>  : <Copy/>}
           </Button>
         </div>
 

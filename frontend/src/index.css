@@ -215,6 +215,7 @@
 
     code {
       background: #171717;
+      white-space: pre;
       color: inherit;
       padding: 0;
     }
@@ -274,7 +275,8 @@
   }
 
   code {
-    @apply bg-accent p-0.5 px-1 rounded whitespace-pre-wrap;
+    @apply bg-accent p-0.5 px-1 rounded;
+    white-space: pre !important;
   }
 
   blockquote {

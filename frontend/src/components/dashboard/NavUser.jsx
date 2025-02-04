@@ -6,6 +6,7 @@ import {
     ChevronsUpDown,
     CreditCard,
     LogOut,
+    Settings,
     Sparkles,
 } from "lucide-react"
 
@@ -101,10 +102,12 @@ const NavUser = () => {
                                 <BadgeCheck />
                                 Account
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <CreditCard />
-                                Billing
-                            </DropdownMenuItem>
+                            <Link to='/settings'>
+                                <DropdownMenuItem>
+                                    <Settings />
+                                    Settings
+                                </DropdownMenuItem>
+                            </Link>
                             <DropdownMenuItem>
                                 <Bell />
                                 Notifications
