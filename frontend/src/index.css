@@ -99,8 +99,26 @@
   @apply bg-muted-foreground;
 }
 
+.tiptap.empty::before{
+  content: 'No Content';
+  text-align: center;
+  position: absolute;
+  opacity: .2;
+  filter: grayscale(100);
+  width: 250px;
+  height: 250px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-image: url('./empty-note-state.svg');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  background-blend-mode: multiply;
+}
+
 .tiptap {
-  @apply overflow-hidden border-none outline-none mx-auto bg-background text-primary font-sans leading-relaxed max-w-screen-md min-h-svh p-4;
+  @apply relative overflow-hidden border-none outline-none mx-auto bg-background text-primary font-sans leading-relaxed max-w-screen-md min-h-svh p-4;
 
   .code-block {
     @apply relative;
@@ -358,5 +376,21 @@
     cursor: ew-resize;
     cursor: col-resize;
   }
+  p.is-editor-empty:first-child::before {
+    @apply text-muted-foreground/40;
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+  }
+
+  /* Placeholder (on every new line) */
+  /* .is-empty::before {
+    color: var(--gray-4);
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+  } */
 }
 

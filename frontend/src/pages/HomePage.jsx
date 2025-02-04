@@ -96,7 +96,7 @@ const HomePage = () => {
           :
           selectedNote ?
             (
-              <div className='tiptap relative'>
+              <div className={`tiptap relative ${!content.trim()? 'empty' : ''}`}>
                 <Button
                   variant="secondary"
                   className="fixed z-10 shadow-md bottom-2 right-4 font-bold"

@@ -13,6 +13,7 @@ import Table from '@tiptap/extension-table'
 import TableCell from '@tiptap/extension-table-cell'
 import TableHeader from '@tiptap/extension-table-header'
 import TableRow from '@tiptap/extension-table-row'
+import Placeholder from '@tiptap/extension-placeholder'
 
 import React, { useEffect, useState } from 'react'
 
@@ -374,7 +375,7 @@ const MenuBar = () => {
 
                 {
                     alignments.map(({ icon, command, tooltip, name }, index) => (
-                        <TooltipWrapper message={tooltip}>
+                        <TooltipWrapper key={index} message={tooltip}>
                             <Button
                                 size="icon"
                                 onClick={() => editor.chain().focus()[command](name).run()}
@@ -546,17 +547,16 @@ const MenuBar = () => {
 function TableGroup({ controllers, triggerIcon, editor }) {
     return (
         <Popover>
-            <PopoverTrigger>
-                <TooltipWrapper message={"Table"}>
-                    <Button variant="ghost" size="icon">
-                        {triggerIcon}
-                    </Button>
-                </TooltipWrapper>
+            <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon">
+                    {triggerIcon}
+                </Button>
             </PopoverTrigger>
             <PopoverContent className="p-1 w-min" align="start">
                 {
-                    controllers.map(controller => (
+                    controllers.map((controller, index) => (
                         <Button
+                            key={index}
                             variant="ghost"
                             className="w-full justify-start p-2 font-normal leading-tight h-8"
                             onClick={() => editor.chain().focus()[controller.command]().run()}
@@ -606,10 +606,14 @@ const extensions = [
     TableRow,
     TableHeader,
     TableCell,
+    Placeholder.configure({
+        placeholder: "Write someting ...",
+    }),
 ]
 
 
 const Tiptap = ({ content }) => {
+    content = ''
     return (
         <EditorProvider
             slotBefore={<MenuBar />}
