@@ -96,6 +96,8 @@ import {
 } from 'lucide-react'
 import { useNoteStore } from '@/stores/useNoteStore'
 import { DropdownMenuItem } from '@radix-ui/react-dropdown-menu'
+import { useNavigate, useParams } from 'react-router-dom'
+import NoteSkeleton from './sekeletons/NoteSkeleton'
 
 const formatingGroup = [
     {
@@ -280,14 +282,32 @@ const tableColumnController = [
 
 const colors = ['#fb7185', '#fdba74', '#d9f99d', '#a7f3d0', '#a5f3fc', '#a5b4fc'];
 
-const MenuBar = () => {
+const MenuBar = ({noteId}) => {
     const { editor } = useCurrentEditor()
+    const navigate = useNavigate();
 
-    const { updateContent, selectedNote, isContentUploading } = useNoteStore();
+    const { updateContent, isContentUploading } = useNoteStore();
     if (!editor) {
         return null
     }
     const headers = [1, 2, 3, 4, 5, 6];
+    const isEmptyContent = (htmlString) => {
+        const contentRegex = /<[^>]*>(\s*[^<]*\S\s*)<\/[^>]*>/;
+        return !contentRegex.test(htmlString);
+    }
+    const handleContentSave = async() => {
+        let content = editor.getHTML().replace(/<table/g, '<div class="tableWrapper"><table')
+            .replace(/<\/table>/g, '</table></div>')
+            .replace(/<pre/g, "<div class='relative pre-wrapper'><pre")
+            .replace(/<\/pre>/g, '</pre></div>');
+
+        if (isEmptyContent(content)) content = '';
+        await updateContent({
+            content,
+            noteId: noteId
+        });
+        navigate(-1);
+    }
 
     return (
         <div className="control-group mb-2 sticky top-0 z-10 bg-background border-b border-input">
@@ -526,10 +546,8 @@ const MenuBar = () => {
                 <TooltipWrapper message={"Save Content"}>
                     <Button
                         variant="outline"
-                        disabled={!selectedNote || isContentUploading}
-                        onClick={() =>
-                            updateContent({ content: editor.getHTML(), noteId: selectedNote }
-                            )}
+                        disabled={!noteId || isContentUploading}
+                        onClick={handleContentSave}
                     >
                         {
                             isContentUploading ?
@@ -612,14 +630,33 @@ const extensions = [
 ]
 
 
-const Tiptap = ({ content }) => {
-    content = ''
+const Tiptap = () => {
+    const { getNoteContent, isContentLoading } = useNoteStore();
+    const { id: noteId } = useParams();
+    const [content, setContent] = useState('');
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            if (noteId) {
+                const noteContent = await getNoteContent(noteId);
+                setContent(noteContent);
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, [noteId, getNoteContent]);
+
+    if (isContentLoading || loading) {
+        return <NoteSkeleton />;
+    }
+
     return (
-        <EditorProvider
-            slotBefore={<MenuBar />}
-            extensions={extensions}
-            content={content}
-        />
-    )
-}
+            <EditorProvider
+                slotBefore={<MenuBar noteId={noteId}/>}
+                extensions={extensions}
+                content={content}
+            />
+    );
+};
 export default Tiptap;

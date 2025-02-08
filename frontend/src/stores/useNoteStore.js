@@ -71,6 +71,7 @@ export const useNoteStore = create((set, get) => ({
 
 
   insertNoteInCollection: (collectionId, note) => {
+    console.log(get().collections);
     set((state) => ({
       collections: state.collections.map((collection) =>
         collection._id === collectionId
@@ -108,6 +109,7 @@ export const useNoteStore = create((set, get) => ({
     try {
       const res = await axiosInstance.post('/collection', data);
       const { collection, message } = res.data;
+      console.log(collection);
       set((state) => ({
         collections: [...state.collections, collection],
       }));

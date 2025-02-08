@@ -4,6 +4,7 @@ import {
     createNote,
     deleteNote,
     getNote,
+    getNotes,
     updateContent,
     renameNote,
     moveTo
@@ -13,6 +14,7 @@ const router = express.Router();
 
 router.use(protectRoute);
 
+router.get('/', getNotes);
 router.get('/:_id', getNote);
 router.post('/', createNote);
 router.delete('/:_id', deleteNote);

@@ -14,7 +14,10 @@ export const createCollection = async (req, res) => {
 
     try {
         const collection = await Collection.create({ name, userId: user._id });
-        res.status(201).json({ message: "Collection created successfully", collection });
+        res.status(201).json({ 
+            message: "Collection created successfully", 
+            collection: {...collection._doc, notes: []}
+        });
     } catch (error) {
         res.status(500).json({ message: "Internal server error." });
         console.error("Error in createCollection controller\n", error);

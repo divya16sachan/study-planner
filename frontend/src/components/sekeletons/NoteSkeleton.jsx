@@ -27,7 +27,7 @@ const NoteSkeleton = () => {
                     <Skeleton className={`h-8 w-48 mb-4`} />
                     {
                         Array(3).fill(null).map((p, index) => (
-                            <Skeleton className={`w-full h-3`} />
+                            <Skeleton key={index} className={`w-full h-3`} />
                         ))
                     }
                     <Skeleton className={`w-[30vw] h-4`} />

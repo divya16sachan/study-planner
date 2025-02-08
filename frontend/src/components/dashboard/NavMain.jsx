@@ -45,6 +45,8 @@ import {
     CommandItem,
     CommandList,
 } from "@/components/ui/command"
+import { Link } from "react-router-dom"
+import SidebarSkeleton from "../sekeletons/SidebarSkeleton"
 
 const statuses = [
     {
@@ -71,14 +73,14 @@ const statuses = [
 
 const NavMain = ({ collections }) => {
     const { isMobile } = useSidebar();
+    const {isSidebarLoading} = useNoteStore();
     const [collectionNewName, setCollectionNewName] = useState('');
     const [noteNewName, setNoteNewName] = useState('');
     const [noteName, setNoteName] = useState('');
     const [open, setOpen] = useState(false);
-    const [selectedStatus, setSelectedStatus] = useState(null);
 
 
-    const { 
+    const {
         deleteCollection,
         renameCollection,
         createNote,
@@ -88,6 +90,10 @@ const NavMain = ({ collections }) => {
         selectedNote,
         setselectedNote,
     } = useNoteStore();
+
+    if(isSidebarLoading){
+        return <SidebarSkeleton/>
+    }
 
     return (
         <SidebarGroup>
@@ -212,10 +218,11 @@ const NavMain = ({ collections }) => {
                                 <SidebarMenuSub>
                                     {collection.notes?.map((note) => (
                                         <SidebarMenuSubItem key={note._id}>
-                                            <SidebarMenuSubButton asChild onClick={(e)=>{setselectedNote(note._id)}}>
-                                                <div className={`cursor-pointer ${selectedNote === note._id && 'bg-accent'}`}>
-                                                    <File className="opacity-50"/>
+                                            <SidebarMenuSubButton  asChild onClick={(e) => { setselectedNote(note._id)  }}>
+                                                <Link to={`/note/${note._id}`} className={`cursor-pointer ${selectedNote === note._id && 'bg-accent'}`}>
+                                                    <File className="opacity-50 size-4" />
                                                     {note.name}
+
                                                     <Popover>
                                                         <PopoverTrigger asChild>
                                                             <SidebarMenuAction showOnHover>
@@ -256,7 +263,7 @@ const NavMain = ({ collections }) => {
                                                                         <Button
                                                                             variant="secondary"
                                                                             onClick={() =>
-                                                                                renameNote({ _id: note._id, newName: noteNewName })
+                                                                                renameNote({ noteId: note._id, newName: noteNewName })
                                                                             }
                                                                         >
                                                                             Rename
@@ -267,7 +274,7 @@ const NavMain = ({ collections }) => {
 
                                                             <Popover open={open} onOpenChange={setOpen}>
                                                                 <PopoverTrigger asChild>
-                                                                    <Button variant={open? "secondary" : "ghost"} className="font-normal p-2 h-auto w-full justify-start">
+                                                                    <Button variant={open ? "secondary" : "ghost"} className="font-normal p-2 h-auto w-full justify-start">
                                                                         <FolderOutput className="text-muted-foreground" />
                                                                         <span>Move to</span>
                                                                     </Button>
@@ -278,19 +285,19 @@ const NavMain = ({ collections }) => {
                                                                         <CommandList>
                                                                             <CommandEmpty>No results found.</CommandEmpty>
                                                                             <CommandGroup>
-                                                                                {collections.filter(c=>c._id !== collection._id)
-                                                                                .map((collection) => (
-                                                                                    <CommandItem
-                                                                                        key={collection._id}
-                                                                                        value={collection._id}
-                                                                                        onSelect={ async(value) => {
-                                                                                            await moveTo({collectionId : value, noteId : note._id})
-                                                                                            setOpen(false)
-                                                                                        }}
-                                                                                    >
-                                                                                        <Folder className="text-muted-foreground"/> {collection.name}
-                                                                                    </CommandItem>
-                                                                                ))}
+                                                                                {collections.filter(c => c._id !== collection._id)
+                                                                                    .map((collection) => (
+                                                                                        <CommandItem
+                                                                                            key={collection._id}
+                                                                                            value={collection._id}
+                                                                                            onSelect={async (value) => {
+                                                                                                await moveTo({ collectionId: value, noteId: note._id })
+                                                                                                setOpen(false)
+                                                                                            }}
+                                                                                        >
+                                                                                            <Folder className="text-muted-foreground" /> {collection.name}
+                                                                                        </CommandItem>
+                                                                                    ))}
                                                                             </CommandGroup>
                                                                         </CommandList>
                                                                     </Command>
@@ -309,7 +316,7 @@ const NavMain = ({ collections }) => {
                                                             </Button>
                                                         </PopoverContent>
                                                     </Popover>
-                                                </div>
+                                                </Link>
                                             </SidebarMenuSubButton>
                                         </SidebarMenuSubItem>
                                     ))}

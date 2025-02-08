@@ -1,125 +1,149 @@
 import React, { useEffect, useState } from 'react';
-import Tiptap from '../components/Tiptap';
-import { useNoteStore } from '@/stores/useNoteStore';
 import { useAuthStore } from '@/stores/useAuthStore';
-import parse from 'html-react-parser';
+import { Bold, ChevronRight, Code2, EllipsisVertical, Hash, ListChecksIcon, Plus, Table } from 'lucide-react';
+import { axiosInstance } from '@/lib/axios';
+import { Link } from 'react-router-dom';
+import { formatTime, formatDate } from '@/lib/utils.js';
 import { Button } from '@/components/ui/button';
-import { Copy, CopyCheck, Pencil } from 'lucide-react';
-import hljs from 'highlight.js';
-import { createRoot } from 'react-dom/client';
-import { toast } from 'sonner';
-import NoteSkeleton from '@/components/sekeletons/NoteSkeleton';
+import NotesSkeleton from '@/components/sekeletons/NotesSkeleton';
+import { useNoteStore } from '@/stores/useNoteStore';
+import { Popover, PopoverContent, PopoverTrigger } from '@radix-ui/react-popover';
+import NotesOption from '@/components/NotesOption';
+import { Badge } from '@/components/ui/badge';
 
+// Feature card data
+const featureCards = [
+  {
+    title: 'Formatting',
+    description: 'Enhance the presentation of your text using various formatting options to create clear and structured documents.',
+    icon: <Bold />
+  },
+  {
+    title: 'Markdown Shortcuts',
+    description: 'Quickly apply formatting to your text with Markdown shortcuts, streamlining the editing process.',
+    icon: <Hash />
+  },
+  {
+    title: 'Tables',
+    description: 'Create and customize tables to organize data efficiently and present information in a structured format.',
+    icon: <Table />
+  },
+  {
+    title: 'Syntax Highlighting',
+    description: 'Highlight your code with syntax highlighting, making it easier to read and debug.',
+    icon: <Code2 />
+  },
+  {
+    title: 'Tasks',
+    description: 'Keep track of your tasks effectively using the built-in task management features.',
+    icon: <ListChecksIcon />
+  },
+];
+
+const FeatureCard = ({ title, description, icon }) => (
+  <div className='flex gap-2 items-start p-4 border rounded-lg'>
+    <Button className="size-8" variant="secondary" disabled>
+      {icon}
+    </Button>
+    <div className='overflow-hidden w-full'>
+      <strong>{title}</strong>
+      <p className='line-clamp-2 text-sm text-muted-foreground'>{description}</p>
+    </div>
+  </div>
+);
+
+const NoteCard = ({ note, collectionName }) => (
+
+  <div className='flex gap-2 items-start p-4 border rounded-lg'>
+    {/* <Button variant="secondary" disabled className="size-8"><Hash /></Button> */}
+    <div className='overflow-hidden w-full'>
+      <div className='flex justify-between items-start'>
+        <Link to={`/note/${note._id}`}  className='mb-4 w-full text-[#a8abff]  transition-colors'>
+          <strong className='truncate block w-full'>{note.name}</strong>
+          <Badge variant="secondary" className={"hover:bg-secondary text-xs font-normal "}>{collectionName}</Badge>
+        </Link>
+
+        <NotesOption
+          trigger={<EllipsisVertical />}
+          note={note}
+        />
+      </div>
+      <div className='flex gap-2 items-center justify-between'>
+        <p className='text-sm text-muted-foreground'>{formatDate(note.createdAt)}</p>
+        <p className='text-sm text-muted-foreground'>{formatTime(note.createdAt)}</p>
+      </div>
+    </div>
+  </div>
+);
+
+const EmptyState = () => (
+  <div className='mx-auto mb-12 w-[200px] space-y-4 text-center'>
+    <img className='grayscale-[100] opacity-50' src="/empty-note-state.svg" alt="Empty state" />
+    <p className="w-52 text-muted-foreground">
+      No notes yet? Start capturing your ideas now.
+    </p>
+    <Button size="lg"><Plus /> Add Note</Button>
+  </div>
+);
+
+// Main component
 const HomePage = () => {
-  const { selectedNote, getNoteContent, isContentLoading } = useNoteStore();
   const { authUser } = useAuthStore();
-  const [content, setContent] = useState('');
-  const [edit, setEdit] = useState(false);
+  const { collections } = useNoteStore();
+
+  const [notes, setNotes] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchNotes = async () => {
+    try {
+      const res = await axiosInstance.get('/note');
+      setNotes(res.data.notes);
+    } catch (error) {
+      console.error('Error fetching notes', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    // Apply syntax highlighting after content is rendered
-    document.querySelectorAll('pre code').forEach((block) => {
-      hljs.highlightElement(block);
-    });
-
-    // Prevent the checkbox modification outside tiptap editor
-    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-      checkbox.setAttribute('disabled', true);
-      checkbox.style.cursor = "default"
-    })
-
-    // Add header with copy button to each pre tag
-    document.querySelectorAll('pre').forEach((pre) => {
-      if (!pre.querySelector('.pre-header')) {
-        const codeElement = pre.querySelector('code');
-        const languageClass = Array.from(codeElement.classList).find(cls => cls.startsWith('language-'));
-        const language = languageClass ? languageClass.replace('language-', '') : 'unknown';
-
-        const header = document.createElement('header');
-        header.className = 'pre-header absolute top-0 left-0 w-full bg-background rounded-t-md flex items-center justify-between p-2 border border-b-input';
-        header.innerHTML = `<span>${language}</span>`;
-        pre.insertBefore(header, pre.firstChild);
-
-        const buttonContainer = document.createElement('div');
-        header.appendChild(buttonContainer);
-
-        const CopyButton = () => {
-          const [copied, setCopied] = useState(false);
-
-          const handleCopy = async () => {
-            const codeContent = codeElement.innerText;
-            await navigator.clipboard.writeText(codeContent);
-            toast.success('Content copied to clipboard!');
-            setCopied(true);
-            setTimeout(() => setCopied(false), 3000);
-          };
-
-          return (
-            <Button variant="ghost" size="icon" onClick={handleCopy} disabled={copied}>
-              {copied ? <CopyCheck /> : <Copy />}
-            </Button>
-          );
-        };
-
-        const root = createRoot(buttonContainer);
-        root.render(<CopyButton />);
-      }
-    });
-
-  }, [content]);
+    setIsLoading(true);
+    fetchNotes();
+  }, []);
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (selectedNote) {
-        let noteContent = await getNoteContent(selectedNote);
-        // WRAPPING TABLES AND CODEBLOCK WITH WRAPPER
-        noteContent = noteContent.replace(/<table/g, '<div class="tableWrapper"><table')
-          .replace(/<\/table>/g, '</table></div>')
-          .replace(/<pre/g, "<div class='relative pre-wrapper'><pre")
-          .replace(/<\/pre>/g, '</pre></div>')
+    fetchNotes();
+  }, [collections]);
 
-
-        setContent(noteContent || '');
-      }
-    };
-    fetchData();
-  }, [selectedNote, getNoteContent]);
-
-  if (isContentLoading) {
-    return <NoteSkeleton />
-  }
   return (
-    <div className='homepage flex-grow overflow-auto'>
-      {
-        edit ?
-          <Tiptap content={content} />
-          :
-          selectedNote ?
-            (
-              <div className={`tiptap relative ${!content.trim()? 'empty' : ''}`}>
-                <Button
-                  variant="secondary"
-                  className="fixed z-10 shadow-md bottom-2 right-4 font-bold"
-                  onClick={() => setEdit(true)}
-                >
-                  <Pencil /> Edit
-                </Button>
-                {parse(content)}
-              </div>
-            ) : (
-              <div className="h-full p-4 max-w-screen-md mx-auto">
-                <strong className="text-xl mb-8 font-semibold flex items-center gap-2">
-                  <span>Welcome</span>
-                  <span className="text-[#a5b4fc]">{authUser.fullName.split(/\s/)[0]}</span>
-                </strong>
-                <strong className='text-2xl mb-2'>What are you up to?</strong>
-                <p className='max-w-[500px] my-4'>The shocking impact of matrix was precisely the valid possibility that what we believe to be reality was but our perception</p>
-                <div className='w-full flex flex-col items-center text-center gap-4'>
-                  <img className='opacity grayscale-[100] opacity-30 w-56 object-contain mt-20' src="./empty-note-state.svg" alt="" />
-                  <p className='w-80 text-muted-foreground my-6'>You have not selected any note yet!</p>
+    <div className='p-4 h-full overflow-y-auto'>
+      <div className='mb-8 text-2xl font-bold'>
+        <span>Welcome </span>
+        <span>{authUser.fullName.trim().split(/\s+/)[0]}</span>
+      </div>
+
+      <div className='space-y-8 max-w-screen-lg mx-auto'>
+        {
+          isLoading ? <NotesSkeleton /> :
+            notes.length === 0 ? (
+              <>
+                <EmptyState />
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                  {featureCards.map(({ icon, title, description }, index) => (
+                    <FeatureCard key={index} icon={icon} title={title} description={description} />
+                  ))}
                 </div>
-              </div>
-            )}
+              </>
+            ) :
+              (
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                  {notes.map((note, index) => (
+                    <NoteCard key={index} note={note}
+                      collectionName={collections.find(collection => collection._id === note.collectionId)?.name}
+                    />
+                  ))}
+                </div>
+              )}
+      </div>
     </div>
   );
 };

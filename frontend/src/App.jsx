@@ -19,6 +19,7 @@ import { Loader } from 'lucide-react';
 import Dashboard from './pages/dashboard';
 import ForgetPasswordPage from './pages/ForgetPasswordPage';
 import { TooltipProvider } from '@radix-ui/react-tooltip';
+import NotePage from './pages/NotePage';
 
 
 function App() {
@@ -51,6 +52,8 @@ function App() {
             {/* Nested routes inside Dashboard */}
             <Route path="/" element={authUser ? <Dashboard /> : <Navigate to="/login" />}>
               <Route index element={<HomePage />} />
+              <Route path="note/:id" element={<NotePage />} />
+              <Route path="editor/:id" element={<Tiptap />} />
               <Route path="profile" element={<ProfilePage />} />
               <Route path="settings" element={<SettingsPage />} />
             </Route>

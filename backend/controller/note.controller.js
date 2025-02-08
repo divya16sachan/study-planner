@@ -44,6 +44,24 @@ export const getNote = async (req, res) => {
     }
 }
 
+export const getNotes = async(req, res)=>{
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    try {
+        const notes = await Note.find()
+        .sort({ updatedAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .select('-content');
+
+        res.status(200).json({ notes });
+    } catch (error) {
+        console.log("Error in getNotes controller.\n", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
 export const updateContent = async (req, res) => {
     const { content, noteId } = req.body;
     try {
@@ -60,6 +78,7 @@ export const updateContent = async (req, res) => {
 
 export const renameNote = async (req, res) => {
     const { noteId, newName } = req.body;
+    console.log(noteId, newName);
     if (!noteId || !newName) {
         return res.status(400).json({ message: "noteId and newName are required." });
     }

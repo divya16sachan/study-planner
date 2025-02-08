@@ -27,6 +27,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { toast } from "sonner";
+import { Link } from "react-router-dom";
 
 const AppSidebar = (props) => {
   const { getHierarchy, createCollection, collections } = useNoteStore();
@@ -34,7 +35,6 @@ const AppSidebar = (props) => {
 
   useEffect(() => {
     getHierarchy();
-    console.log(collections);
   }, [getHierarchy]);
 
   const handleCreateCollection = useCallback(async () => {
@@ -52,11 +52,11 @@ const AppSidebar = (props) => {
       <SidebarHeader>
         <div className="flex items-center justify-between">
           <div className="flex gap-2">
-            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+            <Link to='/' className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
               <GalleryVerticalEnd className="size-4" />
-            </div>
+            </Link>
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">NoteHub</span>
+              <Link to='/' className="truncate font-semibold">NoteHub</Link>
               <span className="truncate text-xs">hello</span>
             </div>
           </div>
@@ -97,9 +97,11 @@ const AppSidebar = (props) => {
           </div>
         </div>
       </SidebarHeader>
+
       <SidebarContent>
         <MemoizedNavMain collections={collections} />
       </SidebarContent>
+      
       <SidebarFooter>
         <NavUser />
       </SidebarFooter>
