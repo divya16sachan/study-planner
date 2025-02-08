@@ -7,6 +7,7 @@ export const generateToken = (userId, res)=>{
     });
     res.cookie('jwt', token, {
         httpOnly: true,
+        sameSite: 'Strict',
         expires : new Date(expirationTime),
         secure: process.env.NODE_ENV === 'production',
     });
