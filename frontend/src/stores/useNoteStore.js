@@ -42,6 +42,16 @@ export const useNoteStore = create((set, get) => ({
       set({ isContentLoading: false });
     }
   },
+  getNoteName: (noteId) => {
+    const { collections } = get();
+    for (const collection of collections) {
+      const note = collection.notes.find((note) => note._id === noteId);
+      if (note) {
+        return note.name;
+      }
+    }
+    return '';
+  },
 
   updateContent: async (data) => {
     set({ isContentUploading: true });

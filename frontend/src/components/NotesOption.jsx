@@ -42,7 +42,7 @@ const NotesOption = ({ trigger, note }) => {
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-                <Button size="icon" className="p-1 bg-transparent hover:bg-transparent text-primary">
+                <Button size="icon" className="p-1 bg-transparent text-muted-foreground hover:text-primary hover:bg-transparent">
                     {trigger}
                 </Button>
             </PopoverTrigger>

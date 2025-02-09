@@ -53,7 +53,7 @@ function App() {
             <Route path="/" element={authUser ? <Dashboard /> : <Navigate to="/login" />}>
               <Route index element={<HomePage />} />
               <Route path="note/:id" element={<NotePage />} />
-              <Route path="editor/:id" element={<Tiptap />} />
+              <Route path="note/:id/editor" element={<Tiptap />} />
               <Route path="profile" element={<ProfilePage />} />
               <Route path="settings" element={<SettingsPage />} />
             </Route>

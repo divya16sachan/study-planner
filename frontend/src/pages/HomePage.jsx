@@ -58,10 +58,14 @@ const NoteCard = ({ note, collectionName }) => (
     {/* <Button variant="secondary" disabled className="size-8"><Hash /></Button> */}
     <div className='overflow-hidden w-full'>
       <div className='flex justify-between items-start'>
-        <Link to={`/note/${note._id}`}  className='mb-4 w-full text-[#a8abff]  transition-colors'>
-          <strong className='truncate block w-full'>{note.name}</strong>
-          <Badge variant="secondary" className={"hover:bg-secondary text-xs font-normal "}>{collectionName}</Badge>
+        <Link
+          to={`/note/${note._id}`}
+          className='mb-4 w-full text-blue-800 dark:text-[#a8abff] transition-colors group'
+        >
+          <strong className='truncate block w-full group-hover:underline'>{note.name}</strong>
+          <Badge variant="secondary" className="hover:bg-secondary text-xs font-normal">{collectionName}</Badge>
         </Link>
+
 
         <NotesOption
           trigger={<EllipsisVertical />}

@@ -282,7 +282,7 @@ const tableColumnController = [
 
 const colors = ['#fb7185', '#fdba74', '#d9f99d', '#a7f3d0', '#a5f3fc', '#a5b4fc'];
 
-const MenuBar = ({noteId}) => {
+const MenuBar = ({ noteId }) => {
     const { editor } = useCurrentEditor()
     const navigate = useNavigate();
 
@@ -295,7 +295,7 @@ const MenuBar = ({noteId}) => {
         const contentRegex = /<[^>]*>(\s*[^<]*\S\s*)<\/[^>]*>/;
         return !contentRegex.test(htmlString);
     }
-    const handleContentSave = async() => {
+    const handleContentSave = async () => {
         let content = editor.getHTML().replace(/<table/g, '<div class="tableWrapper"><table')
             .replace(/<\/table>/g, '</table></div>')
             .replace(/<pre/g, "<div class='relative pre-wrapper'><pre")
@@ -647,16 +647,24 @@ const Tiptap = () => {
         fetchData();
     }, [noteId, getNoteContent]);
 
+    useEffect(() => {
+        const tiptapWrapper = document.querySelector('.tiptap.ProseMirror')?.parentElement;
+        if(tiptapWrapper){
+            tiptapWrapper.classList.add('tiptap-wrapper');
+        }
+    }, [content]);
+
     if (isContentLoading || loading) {
         return <NoteSkeleton />;
     }
 
     return (
-            <EditorProvider
-                slotBefore={<MenuBar noteId={noteId}/>}
-                extensions={extensions}
-                content={content}
-            />
+        <EditorProvider
+            className="h-full opacity-0"
+            slotBefore={<MenuBar noteId={noteId} />}
+            extensions={extensions}
+            content={content}
+        />
     );
 };
 export default Tiptap;

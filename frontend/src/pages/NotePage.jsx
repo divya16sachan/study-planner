@@ -104,7 +104,7 @@ const NotePage = () => {
 
         <div className={`tiptap ${!content.trim() ? 'empty' : ''}`}>
             <Button
-                onClick={() => navigate(`/editor/${id}`)}
+                onClick={() => navigate(`editor`)}
                 variant="secondary"
                 className="fixed z-10 shadow-md bottom-2 right-4 font-bold"
             >

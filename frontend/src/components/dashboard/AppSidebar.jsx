@@ -52,12 +52,12 @@ const AppSidebar = (props) => {
       <SidebarHeader>
         <div className="flex items-center justify-between">
           <div className="flex gap-2">
-            <Link to='/' className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
               <GalleryVerticalEnd className="size-4" />
-            </Link>
+            </div>
             <div className="grid flex-1 text-left text-sm leading-tight">
               <Link to='/' className="truncate font-semibold">NoteHub</Link>
-              <span className="truncate text-xs">hello</span>
+              <span className="truncate text-xs">folder</span>
             </div>
           </div>
           <div className="flex buttons-container">

@@ -221,11 +221,11 @@ const NavMain = ({ collections }) => {
                                             <SidebarMenuSubButton  asChild onClick={(e) => { setselectedNote(note._id)  }}>
                                                 <Link to={`/note/${note._id}`} className={`cursor-pointer ${selectedNote === note._id && 'bg-accent'}`}>
                                                     <File className="opacity-50 size-4" />
-                                                    {note.name}
+                                                    <span className="whitespace-nowrap truncate">{note.name}</span>
 
                                                     <Popover>
                                                         <PopoverTrigger asChild>
-                                                            <SidebarMenuAction showOnHover>
+                                                            <SidebarMenuAction className="bg-inherit" showOnHover>
                                                                 <MoreHorizontal />
                                                                 <span className="sr-only">More</span>
                                                             </SidebarMenuAction>

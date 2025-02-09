@@ -15,11 +15,39 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { Outlet, Route, Router, Routes } from "react-router-dom";
-import ProfilePage from "./ProfilePage";
-import HomePage from "./HomePage";
+import { Link, Outlet, useLocation } from "react-router-dom";
+import { useRouteStore } from "@/stores/useRouteStore";
+import { use, useEffect } from "react";
+import { useNoteStore } from "@/stores/useNoteStore";
 
 const Dashboard = () => {
+  const { setRoutes, routes } = useRouteStore();
+  const { getNoteName } = useNoteStore();
+  const location = useLocation();
+
+  useEffect(() => {
+    let path = '/';
+
+    const segments = location.pathname.split('/').filter(Boolean);
+    const routes = [
+      { name: 'NoteHub', path: '/' },
+    ];
+    for (let i = 0; i < segments.length; i++) {
+      let segment = segments[i];
+      path += `${segment}/`;
+      if (segment === 'note') {
+        const noteId = segments[++i];
+        path += `${noteId}/`;
+        const noteName = getNoteName(noteId);
+        routes.push({ name: noteName, path });
+      } else {
+        const name = segment;
+        routes.push({ name, path });
+      }
+    }
+    setRoutes(routes);
+  }, [location]);
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -31,15 +59,19 @@ const Dashboard = () => {
             <Separator orientation="vertical" className="mr-2 h-4" />
             <Breadcrumb>
               <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    Building Your Application
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-                </BreadcrumbItem>
+                {
+                  routes.map((route, index) => (
+                    <>
+                      <BreadcrumbItem key={index}>
+                        <Link to={route.path} className="text-primary">
+                          {route.name}
+                        </Link>
+                      </BreadcrumbItem>
+                      <BreadcrumbSeparator />
+                    </>
+                  ))
+                }
+                
               </BreadcrumbList>
             </Breadcrumb>
           </div>
@@ -49,7 +81,7 @@ const Dashboard = () => {
         </header>
 
         {/* ================ Route ================  */}
-        <Outlet/>
+        <Outlet />
 
       </SidebarInset>
     </SidebarProvider>
