@@ -560,7 +560,7 @@ const MenuBar = ({ noteId }) => {
                         <Button variant="outline"><ImageIcon /></Button>
                     </DialogTrigger>
                     <DialogContent>
-                    <DialogTitle style={{display:"none"}}>Add Image</DialogTitle>
+                        <DialogTitle style={{ display: "none" }}>Add Image</DialogTitle>
                         <FileDropZone editor={editor} />
                     </DialogContent>
                 </Dialog>
@@ -657,7 +657,7 @@ const Tiptap = () => {
     const { getNoteContent, isContentLoading } = useNoteStore();
     const { id: noteId } = useParams();
     const [content, setContent] = useState('');
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -670,17 +670,10 @@ const Tiptap = () => {
         fetchData();
     }, [noteId, getNoteContent]);
 
-    useEffect(() => {
-        const tiptapWrapper = document.querySelector('.tiptap.ProseMirror')?.parentElement;
-        if (tiptapWrapper) {
-            tiptapWrapper.classList.add('tiptap-wrapper');
-        }
-    }, [content]);
 
     if (isContentLoading || loading) {
         return <NoteSkeleton />;
     }
-
     return (
         <EditorProvider
             className="h-full opacity-0"

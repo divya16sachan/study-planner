@@ -2,18 +2,16 @@ import { ImageIcon, Loader2, Upload, X } from 'lucide-react';
 import React, { useEffect, useState, useCallback } from 'react';
 import { FileDrop } from 'react-file-drop';
 import { Skeleton } from './ui/skeleton';
-import { useNoteStore } from '@/stores/useNoteStore';
 import { Button } from './ui/button';
 import { useImageStore } from '@/stores/useImageStore';
 import { toast } from 'sonner';
 
 const FileDropZone = ({ editor }) => {
     const { getImages, imageUrls, uploadImage, removeImage } = useImageStore();
-    const { } = useNoteStore();
     useEffect(() => {
         getImages();
     }, []);
-    console.count('hello');
+    
     const [isUploading, setIsUploading] = useState(false);
     const [isRemoving, setIsRemoving] = useState(null);
     const [isDragOver, setIsDragOver] = useState(false);
@@ -56,7 +54,9 @@ const FileDropZone = ({ editor }) => {
     };
 
     const handleSetImage = useCallback((url) => {
-        editor.chain().focus().setImage({ src: url }).run();
+        if(editor){
+            editor.chain().focus().setImage({ src: url }).run();
+        }
     }, [editor]);
 
     return (

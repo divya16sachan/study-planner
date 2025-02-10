@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useAuthStore } from '@/stores/useAuthStore';
-import { Bold, ChevronRight, Code2, EllipsisVertical, Hash, ListChecksIcon, Plus, Table } from 'lucide-react';
+import { Bold, Code2, EllipsisVertical, Hash, ListChecksIcon, Plus, Table } from 'lucide-react';
 import { axiosInstance } from '@/lib/axios';
 import { Link } from 'react-router-dom';
 import { formatTime, formatDate } from '@/lib/utils.js';
 import { Button } from '@/components/ui/button';
 import NotesSkeleton from '@/components/sekeletons/NotesSkeleton';
 import { useNoteStore } from '@/stores/useNoteStore';
-import { Popover, PopoverContent, PopoverTrigger } from '@radix-ui/react-popover';
 import NotesOption from '@/components/NotesOption';
 import { Badge } from '@/components/ui/badge';
-import FileDropZone from '@/components/FileDropZone';
 
 // Feature card data
 const featureCards = [
@@ -122,7 +120,6 @@ const HomePage = () => {
   return (
     <div className='p-4 h-full overflow-y-auto'>
       <div className='space-y-8 max-w-screen-lg mx-auto'>
-        <FileDropZone />
         <div className='mb-8 text-2xl font-bold'>
           <span>Welcome </span>
           <span>{authUser.fullName.trim().split(/\s+/)[0]}</span>
