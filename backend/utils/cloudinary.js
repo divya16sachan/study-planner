@@ -19,7 +19,6 @@ const removeCloudinaryImage = async (imageUrl) => {
     if(!imageName){
         return {success: false, status: 500, message: 'Could not extract image name from the url'};
     }
-
     const result = await cloudinary.uploader.destroy(imageName);
     if(result.result !== "ok"){
         return {success: false, status: 500, message: `failed to remove image`};

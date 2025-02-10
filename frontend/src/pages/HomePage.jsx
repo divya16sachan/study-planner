@@ -10,6 +10,7 @@ import { useNoteStore } from '@/stores/useNoteStore';
 import { Popover, PopoverContent, PopoverTrigger } from '@radix-ui/react-popover';
 import NotesOption from '@/components/NotesOption';
 import { Badge } from '@/components/ui/badge';
+import FileDropZone from '@/components/FileDropZone';
 
 // Feature card data
 const featureCards = [
@@ -120,12 +121,12 @@ const HomePage = () => {
 
   return (
     <div className='p-4 h-full overflow-y-auto'>
-      <div className='mb-8 text-2xl font-bold'>
-        <span>Welcome </span>
-        <span>{authUser.fullName.trim().split(/\s+/)[0]}</span>
-      </div>
-
       <div className='space-y-8 max-w-screen-lg mx-auto'>
+        <FileDropZone />
+        <div className='mb-8 text-2xl font-bold'>
+          <span>Welcome </span>
+          <span>{authUser.fullName.trim().split(/\s+/)[0]}</span>
+        </div>
         {
           isLoading ? <NotesSkeleton /> :
             notes.length === 0 ? (

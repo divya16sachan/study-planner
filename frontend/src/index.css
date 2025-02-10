@@ -108,14 +108,17 @@
 .tiptap::-webkit-scrollbar {
   @apply hidden;
 }
-.tiptap-wrapper{
+
+div:has(> .tiptap.ProseMirror) {
   flex: 1;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 .tiptap {
   @apply relative w-full border-none outline-none mx-auto bg-background text-primary font-sans leading-relaxed max-w-screen-md overflow-x-hidden p-4;
 
-
+  img{
+    max-height: 50vh;
+  }
   .code-block {
     @apply relative;
 

@@ -25,7 +25,6 @@ export const createCollection = async (req, res) => {
 };
 
 
-
 export const deleteCollection = async (req, res) => {
     const { _id } = req.params;
     const { user } = req;
@@ -103,6 +102,7 @@ export const getHierarchy = async (req, res) => {
                     isGeneral: 1,
                     createdAt: 1,
                     updatedAt: 1,
+                    imageUrls: 1,
                     notes: {
                         _id: 1,
                         name: 1,

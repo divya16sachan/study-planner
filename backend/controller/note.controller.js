@@ -1,4 +1,5 @@
 import Note from "../model/note.model.js";
+import { cloudinary } from "../utils/cloudinary.js";
 
 export const createNote = async (req, res) => {
     const { name, collectionId } = req.body;
@@ -44,17 +45,17 @@ export const getNote = async (req, res) => {
     }
 }
 
-export const getNotes = async(req, res)=>{
+export const getNotes = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
 
     try {
         const notes = await Note.find()
-        .sort({ updatedAt: -1 })
-        .skip(skip)
-        .limit(limit)
-        .select('-content');
+            .sort({ updatedAt: -1 })
+            .skip(skip)
+            .limit(limit)
+            .select('-content');
 
         res.status(200).json({ notes });
     } catch (error) {
@@ -62,6 +63,7 @@ export const getNotes = async(req, res)=>{
         res.status(500).json({ message: "Internal server error" });
     }
 }
+
 export const updateContent = async (req, res) => {
     const { content, noteId } = req.body;
     try {
@@ -115,4 +117,4 @@ export const moveTo = async (req, res) => {
         console.log("Error in moveTo note controller.\n", error);
         res.status(500).json({ message: "Internal server error" });
     }
-} 
+}

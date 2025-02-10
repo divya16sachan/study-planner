@@ -17,6 +17,10 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true,
     },
+    imageUrls: {
+        type: Array,
+        default: [],
+    },
     avatarUrl: {
         type: String,
         default: '',

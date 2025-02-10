@@ -177,7 +177,7 @@ export const uploadAvatar = async (req, res) => {
         
         const publicId = `user_${user._id}_avatar`;
         const result = await cloudinary.uploader.upload(avatarBase64, {
-            public_id: publicId,
+            public_id: `avatar/${publicId}`,
             overwrite: true,
             resource_type: 'image' 
         })
@@ -193,9 +193,14 @@ export const uploadAvatar = async (req, res) => {
 }
 
 export const removeAvatar = async (req, res) => {
+    const {user} = req;
     try {
-        const { success, status, message } = await removeCloudinaryImage(res.user.avatarUrl);
-        res.status(status).json({ message });
+        const { success, status, message } = await removeCloudinaryImage(user.avatarUrl);
+        if(success){
+            user.avatarUrl = '';
+            user.save();
+        }
+        res.status(status).json({ user,  message });
     } catch (error) {
         console.error('Error in removeAvatar controller: ', error);
         res.status(500).json({ message: "Internal server error" });

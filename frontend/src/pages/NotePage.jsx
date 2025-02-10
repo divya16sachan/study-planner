@@ -83,7 +83,7 @@ const NotePage = () => {
         return (
             <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground">
                 <Button
-                    onClick={() => navigate(`/editor/${id}`)}
+                    onClick={() => navigate(`/note/${id}/editor`)}
                     variant="secondary"
                     size="lg"
                     className="shadow-md bottom-2 right-4 font-bold"
@@ -106,7 +106,7 @@ const NotePage = () => {
             <Button
                 onClick={() => navigate(`editor`)}
                 variant="secondary"
-                className="fixed z-10 shadow-md bottom-2 right-4 font-bold"
+                className="fixed right-2  bottom-2 shadow-md z-10 font-bold"
             >
                 <Pencil /> Edit
             </Button>

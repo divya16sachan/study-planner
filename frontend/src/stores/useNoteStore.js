@@ -244,5 +244,6 @@ export const useNoteStore = create((set, get) => ({
     }
   },
 
-
-}));
+  
+}
+));

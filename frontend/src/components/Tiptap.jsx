@@ -14,6 +14,7 @@ import TableCell from '@tiptap/extension-table-cell'
 import TableHeader from '@tiptap/extension-table-header'
 import TableRow from '@tiptap/extension-table-row'
 import Placeholder from '@tiptap/extension-placeholder'
+import Image from '@tiptap/extension-image'
 
 import React, { useEffect, useState } from 'react'
 
@@ -51,6 +52,16 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+
 import TooltipWrapper from "./TooltipWrapper";
 import {
     AlignCenter,
@@ -76,6 +87,7 @@ import {
     Heading6,
     HeadingIcon,
     HighlighterIcon,
+    ImageIcon,
     Indent,
     Italic,
     List,
@@ -92,12 +104,14 @@ import {
     Trash,
     UnderlineIcon,
     Undo,
+    Upload,
     UploadCloudIcon
 } from 'lucide-react'
 import { useNoteStore } from '@/stores/useNoteStore'
 import { DropdownMenuItem } from '@radix-ui/react-dropdown-menu'
 import { useNavigate, useParams } from 'react-router-dom'
 import NoteSkeleton from './sekeletons/NoteSkeleton'
+import FileDropZone from './FileDropZone'
 
 const formatingGroup = [
     {
@@ -541,7 +555,15 @@ const MenuBar = ({ noteId }) => {
                     />
                 </div>
 
-
+                <Dialog>
+                    <DialogTrigger asChild>
+                        <Button variant="outline"><ImageIcon /></Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                    <DialogTitle style={{display:"none"}}>Add Image</DialogTitle>
+                        <FileDropZone editor={editor} />
+                    </DialogContent>
+                </Dialog>
 
                 <TooltipWrapper message={"Save Content"}>
                     <Button
@@ -627,6 +649,7 @@ const extensions = [
     Placeholder.configure({
         placeholder: "Write someting ...",
     }),
+    Image,
 ]
 
 
@@ -634,7 +657,7 @@ const Tiptap = () => {
     const { getNoteContent, isContentLoading } = useNoteStore();
     const { id: noteId } = useParams();
     const [content, setContent] = useState('');
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -649,7 +672,7 @@ const Tiptap = () => {
 
     useEffect(() => {
         const tiptapWrapper = document.querySelector('.tiptap.ProseMirror')?.parentElement;
-        if(tiptapWrapper){
+        if (tiptapWrapper) {
             tiptapWrapper.classList.add('tiptap-wrapper');
         }
     }, [content]);

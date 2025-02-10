@@ -35,8 +35,8 @@ const ProfilePage = () => {
       const reader = new FileReader();
       reader.readAsDataURL(compressedFile);
       reader.onloadend = async ()=>{
-        const base64Image = reader.result;
-        await uploadUserAvatar({avatarBase64 : base64Image});
+        const imageBase64 = reader.result;
+        await uploadUserAvatar({avatarBase64 : imageBase64});
       }
     } catch (error) {
       console.error('Error compressing or uploading avatar:\n', error);
