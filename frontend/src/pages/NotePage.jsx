@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { useNoteStore } from '@/stores/useNoteStore';
-import { Copy, CopyCheck, Pencil } from 'lucide-react';
+import { Copy, CopyCheck, Download, Pencil, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import parse from 'html-react-parser';
@@ -11,10 +11,49 @@ import { createRoot } from 'react-dom/client';
 import { toast } from 'sonner';
 
 
+import {
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+    CarouselNext,
+    CarouselPrevious,
+} from "@/components/ui/carousel"
+
+function ImageViewer({ defaultIndex, images = [], closeImageViewer }) {
+    const downloadImage = ()=>{
+
+    }
+    return (
+        <div className='z-50 fixed top-0 left-0 w-full h-full bg-background'>
+            <Carousel className="relative w-full  h-full max-w-screen-md m-auto" defaultIndex={defaultIndex} onSelect={(index)=>{console.count(index)}}>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute top-1 left-1 z-10"
+                    onClick={closeImageViewer}
+                ><X /></Button>
+
+                <CarouselContent>
+                    {images.map((src, index) => (
+                        <CarouselItem key={index} className="overflow-hidden h-svh">
+                            <img className='h-full w-full object-contain' src={src} />
+                        </CarouselItem>
+                    ))}
+                </CarouselContent>
+                <CarouselPrevious className="left-1" />
+                <CarouselNext className="right-1" />
+            </Carousel>
+        </div>
+    )
+
+}
+
+
 const NotePage = () => {
     const { id } = useParams();
     const { getNoteContent, isContentLoading } = useNoteStore();
     const [content, setContent] = useState('');
+    const [imageOpen, setImageOpen] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -34,6 +73,7 @@ const NotePage = () => {
             document.querySelectorAll('pre code').forEach((block) => {
                 hljs.highlightElement(block);
             });
+
 
             // Add header with copy button to each pre tag
             document.querySelectorAll('pre').forEach((pre) => {
@@ -72,6 +112,25 @@ const NotePage = () => {
                     root.render(<CopyButton />);
                 }
             });
+
+            // add image interaction
+            const images = [...document.querySelectorAll('.tiptap > img')];
+            const handleImageClick = (index) => {
+                setImageOpen({
+                    defaultIndex: index,
+                    images: images.map(img => img.src),
+                    closeImageViewer: () => setImageOpen(null),
+                })
+            }
+            images.forEach((img, index) => {
+                img.addEventListener('click', () => handleImageClick(index));
+            })
+
+            return () => {
+                images.forEach(img => {
+                    img.removeEventListener('click', handleImageClick);
+                })
+            }
         }
     }, [content]);
 
@@ -103,6 +162,7 @@ const NotePage = () => {
     return (
 
         <div className={`tiptap ${!content.trim() ? 'empty' : ''}`}>
+            {imageOpen && <ImageViewer {...imageOpen} />}
             <Button
                 onClick={() => navigate(`editor`)}
                 variant="secondary"

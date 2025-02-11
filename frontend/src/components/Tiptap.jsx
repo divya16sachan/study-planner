@@ -334,7 +334,7 @@ const MenuBar = ({ noteId }) => {
                                 size="icon"
                                 onClick={() => editor.chain().focus()[command]().run()}
                                 disabled={!editor.can().chain().focus()[command]().run()}
-                                variant={editor.isActive(name) ? '' : 'ghost'}
+                                variant={editor.isActive(name) ? 'secondary' : 'ghost'}
                             >
                                 {icon}
                             </Button>
@@ -347,7 +347,7 @@ const MenuBar = ({ noteId }) => {
                             <Button
                                 size="icon"
                                 onClick={() => editor.chain().focus()[command]().run()}
-                                variant={editor.isActive(name) ? '' : 'ghost'}
+                                variant={editor.isActive(name) ? 'secondary' : 'ghost'}
                                 disabled={name === 'code' && !editor.can().chain().focus()[command]().run()}
                             >
                                 {icon}
@@ -362,7 +362,7 @@ const MenuBar = ({ noteId }) => {
                             <Button
                                 size="icon"
                                 onClick={() => editor.chain().focus()[command]().run()}
-                                variant={editor.isActive(name) ? '' : 'ghost'}
+                                variant={editor.isActive(name) ? 'secondary' : 'ghost'}
                             >
                                 {icon}
                             </Button>
@@ -413,7 +413,7 @@ const MenuBar = ({ noteId }) => {
                             <Button
                                 size="icon"
                                 onClick={() => editor.chain().focus()[command](name).run()}
-                                variant={editor.isActive({ textAlign: name }) ? '' : 'ghost'}
+                                variant={editor.isActive({ textAlign: name }) ? 'secondary' : 'ghost'}
                             >
                                 {icon}
                             </Button>
@@ -441,7 +441,7 @@ const MenuBar = ({ noteId }) => {
                                 <TooltipWrapper key={index} message={`Heading ${level}`}>
                                     <Button
                                         onClick={() => editor.chain().focus().toggleHeading({ level }).run()}
-                                        variant={editor.isActive('heading', { level }) ? '' : 'ghost'}
+                                        variant={editor.isActive('heading', { level }) ? 'secondary' : 'ghost'}
                                     >
                                         H{level}
                                     </Button>
@@ -450,7 +450,7 @@ const MenuBar = ({ noteId }) => {
                         }
                         <Button
                             onClick={() => editor.chain().focus().setParagraph().run()}
-                            variant={editor.isActive('paragraph') ? '' : 'ghost'}
+                            variant={editor.isActive('paragraph') ? 'secondary' : 'ghost'}
                         >
                             <Pilcrow />
                         </Button>
@@ -567,7 +567,6 @@ const MenuBar = ({ noteId }) => {
 
                 <TooltipWrapper message={"Save Content"}>
                     <Button
-                        variant="outline"
                         disabled={!noteId || isContentUploading}
                         onClick={handleContentSave}
                     >

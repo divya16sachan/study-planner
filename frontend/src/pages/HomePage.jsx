@@ -71,9 +71,9 @@ const NoteCard = ({ note, collectionName }) => (
           note={note}
         />
       </div>
-      <div className='flex gap-2 items-center justify-between'>
-        <p className='text-sm text-muted-foreground'>{formatDate(note.createdAt)}</p>
-        <p className='text-sm text-muted-foreground'>{formatTime(note.createdAt)}</p>
+      <div className='flex gap-2 items-center text-muted-foreground text-xs justify-between'>
+        <p>{formatDate(note.createdAt)}</p>
+        <p>{formatTime(note.createdAt)}</p>
       </div>
     </div>
   </div>

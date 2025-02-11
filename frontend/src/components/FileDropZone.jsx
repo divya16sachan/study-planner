@@ -7,11 +7,11 @@ import { useImageStore } from '@/stores/useImageStore';
 import { toast } from 'sonner';
 
 const FileDropZone = ({ editor }) => {
-    const { getImages, imageUrls, uploadImage, removeImage } = useImageStore();
+    const { getImages, imageUrls, isImageUrlsLoading, uploadImage, removeImage } = useImageStore();
     useEffect(() => {
         getImages();
     }, []);
-    
+
     const [isUploading, setIsUploading] = useState(false);
     const [isRemoving, setIsRemoving] = useState(null);
     const [isDragOver, setIsDragOver] = useState(false);
@@ -20,7 +20,7 @@ const FileDropZone = ({ editor }) => {
         event.preventDefault();
         const file = droppedFiles[0];
         if (!file) return;
-        if(isUploading) return toast.error('wait till uploading');
+        if (isUploading) return toast.error('wait till uploading');
         setIsUploading(true);
         const reader = new FileReader();
         reader.readAsDataURL(file);
@@ -34,7 +34,7 @@ const FileDropZone = ({ editor }) => {
     const handleInputChange = (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        if(isUploading) return toast.error('wait till uploading');
+        if (isUploading) return toast.error('wait till uploading');
 
 
         setIsUploading(true);
@@ -54,7 +54,7 @@ const FileDropZone = ({ editor }) => {
     };
 
     const handleSetImage = useCallback((url) => {
-        if(editor){
+        if (editor) {
             editor.chain().focus().setImage({ src: url }).run();
         }
     }, [editor]);
@@ -76,7 +76,7 @@ const FileDropZone = ({ editor }) => {
                     <p className="text-sm mb-2">Drag and drop or</p>
                     <Button disabled={isUploading || isRemoving} className="pointer">
                         <label htmlFor="upload-photo" className="p-4 flex items-center gap-2 cursor-pointer">
-                            <Upload /> {isUploading? "uploading..." : "Upload an image"}
+                            <Upload /> {isUploading ? "uploading..." : "Upload an image"}
                             <input
                                 type="file"
                                 hidden
@@ -91,30 +91,37 @@ const FileDropZone = ({ editor }) => {
             <div className='max-h-[300px] grid grid-cols-3 gap-1 overflow-auto'>
                 {isUploading && (<Skeleton className={"aspect-square"} />)}
                 {
-                    imageUrls.map((url, index) => (
-                        <div
-                            key={index}
-                            className='relative rounded aspect-square bg-muted/30 overflow-hidden flex items-center justify-center group'
-                        >
-                            <img src={url}
-                                onClick={() => handleSetImage(url)}
-                                className='w-full h-full object-cover' alt="note" />
-                            {isRemoving === url && (
-                                <div className='absolute z-10 inset-0 bg-black/50 flex items-center justify-center gap-2 text-white/70'>
-                                    Removing <Loader2 className='size-5 animate-spin' />
-                                </div>
-                            )}
-                            <Button
-                                size="icon"
-                                variant="secondary"
-                                disabled={isRemoving}
-                                className="cursor-pointer rounded-full opacity-0 group-hover:opacity-100 transition-opacity size-6 absolute top-0 right-0"
-                                onClick={() => handleRemove(url)}
+                    isImageUrlsLoading ?
+                        <>
+                            <Skeleton className={"aspect-square"} />
+                            <Skeleton className={"aspect-square"} />
+                            <Skeleton className={"aspect-square"} />
+                        </> 
+                        :
+                        imageUrls.map((url, index) => (
+                            <div
+                                key={index}
+                                className='relative rounded aspect-square bg-muted/30 overflow-hidden flex items-center justify-center group'
                             >
-                                <X />
-                            </Button>
-                        </div>
-                    ))
+                                <img src={url}
+                                    onClick={() => handleSetImage(url)}
+                                    className='w-full h-full object-cover' alt="note" />
+                                {isRemoving === url && (
+                                    <div className='absolute z-10 inset-0 bg-black/50 flex items-center justify-center gap-2 text-white/70'>
+                                        Removing <Loader2 className='size-5 animate-spin' />
+                                    </div>
+                                )}
+                                <Button
+                                    size="icon"
+                                    variant="secondary"
+                                    disabled={isRemoving}
+                                    className="cursor-pointer rounded-full opacity-0 group-hover:opacity-100 transition-opacity size-6 absolute top-0 right-0"
+                                    onClick={() => handleRemove(url)}
+                                >
+                                    <X />
+                                </Button>
+                            </div>
+                        ))
                 }
             </div>
         </div>
