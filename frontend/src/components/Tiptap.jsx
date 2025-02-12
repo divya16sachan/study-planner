@@ -306,7 +306,7 @@ const MenuBar = ({ noteId }) => {
     }
     const headers = [1, 2, 3, 4, 5, 6];
     const isEmptyContent = (htmlString) => {
-        const contentRegex = /<[^>]*>(\s*[^<]*\S\s*)<\/[^>]*>/;
+        const contentRegex = /<[^>]*>(\s*[^<]*\S\s*|<img\s+[^>]*>.*?)<\/[^>]*>/;
         return !contentRegex.test(htmlString);
     }
     const handleContentSave = async () => {

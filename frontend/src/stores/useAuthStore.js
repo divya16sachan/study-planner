@@ -4,7 +4,7 @@ import { toast } from "sonner";
 
 export const useAuthStore = create((set, get) => ({
   authUser: null,
-  isCheckingAuth: false,
+  isCheckingAuth: true,
   isSigningUp: false,
   isLoggingIn: false,
   isVerifyingEmail: false,
@@ -13,7 +13,6 @@ export const useAuthStore = create((set, get) => ({
 
   checkAuth: async () => {
     set({ isCheckingAuth: true });
-    const { authUser } = get();
     try {
       const res = await axiosInstance.get('/user/check/auth');
       set({ authUser: res.data });

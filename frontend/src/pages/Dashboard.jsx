@@ -15,38 +15,11 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import { useRouteStore } from "@/stores/useRouteStore";
-import { use, useEffect } from "react";
-import { useNoteStore } from "@/stores/useNoteStore";
 
 const Dashboard = () => {
-  const { setRoutes, routes } = useRouteStore();
-  const { getNoteName } = useNoteStore();
-  const location = useLocation();
-
-  useEffect(() => {
-    let path = '/';
-
-    const segments = location.pathname.split('/').filter(Boolean);
-    const routes = [
-      { name: 'NoteHub', path: '/' },
-    ];
-    for (let i = 0; i < segments.length; i++) {
-      let segment = segments[i];
-      path += `${segment}/`;
-      if (segment === 'note') {
-        const noteId = segments[++i];
-        path += `${noteId}/`;
-        const noteName = getNoteName(noteId);
-        routes.push({ name: noteName, path });
-      } else {
-        const name = segment;
-        routes.push({ name, path });
-      }
-    }
-    setRoutes(routes);
-  }, [location]);
+  const { routes } = useRouteStore();
 
   return (
     <SidebarProvider>
@@ -71,7 +44,7 @@ const Dashboard = () => {
                     </>
                   ))
                 }
-                
+
               </BreadcrumbList>
             </Breadcrumb>
           </div>

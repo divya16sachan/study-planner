@@ -73,7 +73,7 @@ const statuses = [
 
 const NavMain = ({ collections }) => {
     const { isMobile } = useSidebar();
-    const {isSidebarLoading} = useNoteStore();
+    const {isCollectionsLoading} = useNoteStore();
     const [collectionNewName, setCollectionNewName] = useState('');
     const [noteNewName, setNoteNewName] = useState('');
     const [noteName, setNoteName] = useState('');
@@ -91,7 +91,7 @@ const NavMain = ({ collections }) => {
         setselectedNote,
     } = useNoteStore();
 
-    if(isSidebarLoading){
+    if(isCollectionsLoading){
         return <SidebarSkeleton/>
     }
 

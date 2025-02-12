@@ -4,7 +4,7 @@ import { toast } from "sonner";
 
 export const useNoteStore = create((set, get) => ({
   // BOOLEANS
-  isSidebarLoading: false,
+  isCollectionsLoading: false,
   isCreatingCollection: false,
   isDeletingCollection: false,
   isCreatingNote: false,
@@ -149,15 +149,21 @@ export const useNoteStore = create((set, get) => ({
   },
 
   getHierarchy: async () => {
-    set({ isSidebarLoading: true });
+    set({ isCollectionsLoading: true });
     try {
       const res = await axiosInstance.get('collection/hierarchy');
-      set({ collections: res.data.collections });
+      const { collections } = res.data;
+      set({ collections });
+
+      // count no of notes
+      const notesLength = collections.map(c => c.notes.length);
+      localStorage.setItem("notesLength", JSON.stringify(notesLength));
+
     } catch (error) {
       console.log(error);
       toast.error(error.response.data.message);
     } finally {
-      set({ isSidebarLoading: false });
+      set({ isCollectionsLoading: false });
     }
   },
 
@@ -244,6 +250,6 @@ export const useNoteStore = create((set, get) => ({
     }
   },
 
-  
+
 }
 ));
