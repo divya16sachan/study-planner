@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/sidebar"
 import { Link, Outlet } from "react-router-dom";
 import { useRouteStore } from "@/stores/useRouteStore";
+import React from "react";
 
 const Dashboard = () => {
   const { routes } = useRouteStore();
@@ -31,17 +32,17 @@ const Dashboard = () => {
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
             <Breadcrumb>
-              <BreadcrumbList>
+              <BreadcrumbList className="flex-nowrap">
                 {
                   routes.map((route, index) => (
-                    <>
-                      <BreadcrumbItem key={index}>
+                    <React.Fragment key={index}>
+                      <BreadcrumbItem>
                         <Link to={route.path} className="text-primary">
                           {route.name}
                         </Link>
                       </BreadcrumbItem>
                       <BreadcrumbSeparator />
-                    </>
+                    </React.Fragment>
                   ))
                 }
 

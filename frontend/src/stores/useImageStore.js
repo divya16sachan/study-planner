@@ -11,6 +11,7 @@ export const useImageStore = create((set, get) => ({
         try {
             const res = await axiosInstance.get('/images');
             const { imageUrls } = res.data;
+            localStorage.setItem("imageCount", imageUrls.length);
             set({ imageUrls: imageUrls });
         } catch (error) {
             console.log(error);
@@ -23,6 +24,7 @@ export const useImageStore = create((set, get) => ({
         try {
             const res = await axiosInstance.post('/upload-image', { imageBase64 });
             const { message, imageUrls } = res.data;
+            localStorage.setItem("imageCount", imageUrls.length);
             set({ imageUrls: imageUrls });
             toast.success(message);
         } catch (error) {
@@ -35,6 +37,7 @@ export const useImageStore = create((set, get) => ({
             const res = await axiosInstance.post('/remove-image', { imageUrl });
             const { message, imageUrls, success } = res.data;
             if (success) {
+                localStorage.setItem("imageCount", imageUrls.length);
                 set({ imageUrls: imageUrls });
                 toast.success(message);
             }

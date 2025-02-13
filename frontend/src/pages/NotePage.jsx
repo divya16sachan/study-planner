@@ -83,7 +83,7 @@ const NotePage = () => {
                     const language = languageClass ? languageClass.replace('language-', '') : 'unknown';
 
                     const header = document.createElement('header');
-                    header.className = 'pre-header absolute top-0 left-0 w-full bg-[#09090b] rounded-t-md flex items-center justify-between p-2 border border-b-input';
+                    header.className = 'pre-header absolute top-0 left-0 w-full bg-[#09090b] rounded-t-md flex items-center justify-between p-2 border border-b-[#27272a]';
                     header.innerHTML = `<span>${language}</span>`;
                     pre.insertBefore(header, pre.firstChild);
 

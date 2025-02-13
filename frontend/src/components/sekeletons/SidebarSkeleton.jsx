@@ -2,7 +2,7 @@ import React from 'react'
 import { Skeleton } from '../ui/skeleton'
 
 const SidebarSkeleton = () => {
-    const notesLength = JSON.parse(localStorage.getItem('notesLength'));
+    const notesLength = JSON.parse(localStorage.getItem('notesLength')) || [];
     return (
         <div className='h-full pt-8 w-full border  p-2'>
             {

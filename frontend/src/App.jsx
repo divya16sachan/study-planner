@@ -48,8 +48,6 @@ function App() {
         const noteId = segments[++i];
         path += `${noteId}/`;
         const noteName = getNoteName(noteId);
-        console.log({noteId, noteName});
-        console.log(noteName);
         routes.push({ name: noteName, path });
       } else {
         const name = segment;

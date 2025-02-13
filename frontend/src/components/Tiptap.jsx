@@ -1,3 +1,4 @@
+import React, { useEffect, useRef, useState } from 'react'
 import { Color } from '@tiptap/extension-color'
 import ListItem from '@tiptap/extension-list-item'
 import TextStyle from '@tiptap/extension-text-style'
@@ -15,8 +16,8 @@ import TableHeader from '@tiptap/extension-table-header'
 import TableRow from '@tiptap/extension-table-row'
 import Placeholder from '@tiptap/extension-placeholder'
 import Image from '@tiptap/extension-image'
+import { SlashCommand } from './SlashCommand'
 
-import React, { useEffect, useState } from 'react'
 
 
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
@@ -112,6 +113,7 @@ import { DropdownMenuItem } from '@radix-ui/react-dropdown-menu'
 import { useNavigate, useParams } from 'react-router-dom'
 import NoteSkeleton from './sekeletons/NoteSkeleton'
 import FileDropZone from './FileDropZone'
+import SuggestionList from './SuggestionList'
 
 const formatingGroup = [
     {
@@ -305,6 +307,7 @@ const MenuBar = ({ noteId }) => {
         return null
     }
     const headers = [1, 2, 3, 4, 5, 6];
+    const imageTrigger = useRef(null);
     const isEmptyContent = (htmlString) => {
         const contentRegex = /<[^>]*>(\s*[^<]*\S\s*|<img\s+[^>]*>.*?)<\/[^>]*>/;
         return !contentRegex.test(htmlString);
@@ -341,6 +344,7 @@ const MenuBar = ({ noteId }) => {
                         </TooltipWrapper>
                     ))
                 }
+                {<SuggestionList editor={editor} imageTrigger={imageTrigger}/>}
                 {
                     blockGroup.map(({ icon, command, tooltip, name }, index) => (
                         <TooltipWrapper key={index} message={tooltip}>
@@ -557,7 +561,7 @@ const MenuBar = ({ noteId }) => {
 
                 <Dialog>
                     <DialogTrigger asChild>
-                        <Button variant="outline"><ImageIcon /></Button>
+                        <Button ref={imageTrigger} variant="outline"><ImageIcon /></Button>
                     </DialogTrigger>
                     <DialogContent>
                         <DialogTitle style={{ display: "none" }}>Add Image</DialogTitle>
@@ -646,9 +650,10 @@ const extensions = [
     TableHeader,
     TableCell,
     Placeholder.configure({
-        placeholder: "Write someting ...",
+        placeholder: "Type / for options",
     }),
     Image,
+    SlashCommand,
 ]
 
 

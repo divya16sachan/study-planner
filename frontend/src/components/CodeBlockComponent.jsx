@@ -33,7 +33,7 @@ export default ({ node: { attrs: { language: defaultLanguage } }, updateAttribut
 
   return (
     <NodeViewWrapper className="code-block">
-      <header className='bg-background rounded-t-md absolute left-0 top-0 w-full flex items-center justify-between p-2 border border-b-input'>
+      <header className='bg-[#09090b] rounded-t-md absolute left-0 top-0 w-full flex items-center justify-between p-2 border border-b-[#27272a]'>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button

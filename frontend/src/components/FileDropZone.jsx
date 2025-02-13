@@ -59,6 +59,12 @@ const FileDropZone = ({ editor }) => {
         }
     }, [editor]);
 
+    const imageCount = localStorage.getItem("imageCount") || 3;
+    const skeletons = [];
+    for(let i = 0; i < imageCount; ++i){
+        skeletons.push(<Skeleton key={i} className={"aspect-square"} />)
+    }
+
     return (
         <div className="file-drop-container m-1 space-y-4">
 
@@ -92,11 +98,7 @@ const FileDropZone = ({ editor }) => {
                 {isUploading && (<Skeleton className={"aspect-square"} />)}
                 {
                     isImageUrlsLoading ?
-                        <>
-                            <Skeleton className={"aspect-square"} />
-                            <Skeleton className={"aspect-square"} />
-                            <Skeleton className={"aspect-square"} />
-                        </> 
+                        skeletons
                         :
                         imageUrls.map((url, index) => (
                             <div

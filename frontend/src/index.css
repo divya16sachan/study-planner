@@ -74,7 +74,9 @@
     --sidebar-ring: 217.2 91.2% 59.8%
   }
 }
-
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; 
+}
 @layer base {
   * {
     @apply border-border;
@@ -85,15 +87,18 @@
   }
 }
 
+.scrollbar-sm::-webkit-scrollbar {
+  @apply w-1 h-1;
+}
 *::-webkit-scrollbar {
   @apply w-2 h-2;
 }
 
 *::-webkit-scrollbar-track{
-  @apply bg-accent;
+  @apply bg-accent rounded-full;
 }
 *::-webkit-scrollbar-thumb {
-  @apply bg-muted-foreground;
+  @apply bg-muted-foreground/50 rounded-full;
 }
 
 .line-clamp-2 {
@@ -131,7 +136,9 @@ div:has(> .tiptap.ProseMirror) {
       top: 0.5rem;
     }
   }
-
+  li{
+    margin-bottom: 8px;
+  }
   ul[data-type="taskList"] {
     list-style: none;
     margin-left: 0;
@@ -159,8 +166,8 @@ div:has(> .tiptap.ProseMirror) {
     }
     
     li {
-      align-items: flex-start;
-      display: flex;
+      @apply flex items-start mt-8;
+
       p{
         @apply font-semibold
       }
@@ -222,9 +229,6 @@ div:has(> .tiptap.ProseMirror) {
     @apply list-decimal px-8 my-8;
   }
 
-  li {
-    @apply my-1
-  }
 
   code {
     @apply bg-accent p-0.5 px-1 rounded whitespace-pre-wrap;
@@ -232,12 +236,10 @@ div:has(> .tiptap.ProseMirror) {
   pre {
     @apply bg-[#171717] text-[#e6edf3] dark:text-primary border-input border rounded-md my-12 p-2 pt-16 overflow-x-auto;
 
-    code {
-      background: #171717;
-      white-space: pre;
-      color: inherit;
-      padding: 0;
-    }
+    code{
+      @apply bg-[#171717]   whitespace-nowrap p-0;
+    } 
+    
 
     /* Code styling */
     .hljs-comment,
@@ -298,7 +300,7 @@ div:has(> .tiptap.ProseMirror) {
 
 
   blockquote {
-    @apply border-l-4 border-input pl-4 italic text-gray-400 my-6;
+    @apply border-l-4 border-input pl-4 italic  text-muted-foreground my-6;
   }
 
   hr {
@@ -376,21 +378,30 @@ div:has(> .tiptap.ProseMirror) {
     cursor: ew-resize;
     cursor: col-resize;
   }
-  p.is-editor-empty:first-child::before {
-    @apply text-muted-foreground/40;
+  p.is-editor-empty::before {
+    @apply text-muted-foreground/40 float-left h-0 pointer-events-none;
     content: attr(data-placeholder);
-    float: left;
-    height: 0;
-    pointer-events: none;
   }
 
   /* Placeholder (on every new line) */
-  /* .is-empty::before {
-    color: var(--gray-4);
+  p.is-empty::before {
+    @apply text-muted-foreground/40 float-left h-0 pointer-events-none;
     content: attr(data-placeholder);
-    float: left;
-    height: 0;
-    pointer-events: none;
-  } */
+  } 
 }
-
+.tippy-arrow::before{
+  @apply hidden;
+}
+.tippy-content{
+  @apply bg-popover text-popover-foreground border shadow-md rounded-lg p-1 max-h-[300px] overflow-y-auto;
+  padding: 4px !important;
+}
+.tippy-box{
+  width: 256px;
+  overflow: hidden !important;
+  background-color: transparent !important;
+  padding: 0 !important;
+}
+.tippy-content::-webkit-scrollbar {
+  @apply w-1 h-1
+}
