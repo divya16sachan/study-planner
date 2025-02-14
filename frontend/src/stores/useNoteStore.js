@@ -124,6 +124,7 @@ export const useNoteStore = create((set, get) => ({
         collections: [...state.collections, collection],
       }));
       toast.success(message);
+      return collection;
     } catch (error) {
       toast.error(error.response.data.message);
     } finally {

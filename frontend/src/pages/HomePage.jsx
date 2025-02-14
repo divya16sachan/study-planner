@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { Bold, Code2, EllipsisVertical, Hash, ListChecksIcon, Plus, Table } from 'lucide-react';
 import { axiosInstance } from '@/lib/axios';
@@ -9,6 +9,7 @@ import NotesSkeleton from '@/components/sekeletons/NotesSkeleton';
 import { useNoteStore } from '@/stores/useNoteStore';
 import NotesOption from '@/components/NotesOption';
 import { Badge } from '@/components/ui/badge';
+import AddNoteDialog from '@/components/AddNoteDialog';
 
 // Feature card data
 const featureCards = [
@@ -51,33 +52,47 @@ const FeatureCard = ({ title, description, icon }) => (
   </div>
 );
 
-const NoteCard = ({ note, collectionName }) => (
+const NoteCard = ({ note, collectionName }) => {
+  const nameRef = useRef(null);
+  const [isRenaming, setIsRenaming] = useState(false);
 
-  <div className='flex gap-2 items-start p-4 border rounded-lg'>
-    {/* <Button variant="secondary" disabled className="size-8"><Hash /></Button> */}
-    <div className='overflow-hidden w-full'>
-      <div className='flex justify-between items-start'>
-        <Link
-          to={`/note/${note._id}`}
-          className='mb-4 w-full text-blue-800 dark:text-[#a8abff] transition-colors group'
-        >
-          <strong className='truncate block w-full group-hover:underline'>{note.name}</strong>
-          <Badge variant="secondary" className="hover:bg-secondary text-xs font-normal">{collectionName}</Badge>
-        </Link>
+  return (
+    <div className='flex gap-2 items-start p-4 border rounded-lg'>
+      {/* <Button variant="secondary" disabled className="size-8"><Hash /></Button> */}
+      <div className='overflow-hidden w-full'>
+        <div className='flex justify-between items-start'>
+          <Link
+            to={`/note/${note._id}`}
+            className='mb-4 w-full text-blue-800 dark:text-[#a8abff] transition-colors group'
+          >
+            <strong
+              contentEditable={isRenaming}
+              ref={nameRef}
+              suppressContentEditableWarning={true}
+              className={`truncate block w-full group-hover:underline ${isRenaming ? 'bg-slate-600/20 p-1 outline-none border-none' : ''}`}
+            >
+              {note.name}
+            </strong>
+
+            <Badge variant="secondary" className="hover:bg-secondary text-xs font-normal">{collectionName}</Badge>
+          </Link>
 
 
-        <NotesOption
-          trigger={<EllipsisVertical />}
-          note={note}
-        />
-      </div>
-      <div className='flex gap-2 items-center text-muted-foreground text-xs justify-between'>
-        <p>{formatDate(note.createdAt)}</p>
-        <p>{formatTime(note.createdAt)}</p>
+          <NotesOption
+            trigger={<EllipsisVertical />}
+            note={note}
+            nameRef={nameRef}
+            setIsRenaming={setIsRenaming}
+          />
+        </div>
+        <div className='flex gap-2 items-center text-muted-foreground text-xs justify-between'>
+          <p>{formatDate(note.createdAt)}</p>
+          <p>{formatTime(note.createdAt)}</p>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+}
 
 const EmptyState = () => (
   <div className='mx-auto mb-12 w-[200px] space-y-4 text-center'>
@@ -85,7 +100,9 @@ const EmptyState = () => (
     <p className="w-52 text-muted-foreground">
       No notes yet? Start capturing your ideas now.
     </p>
-    <Button size="lg"><Plus /> Add Note</Button>
+    <AddNoteDialog trigger={
+      <Button size="lg"><Plus /> Add Note</Button>
+    } />
   </div>
 );
 

@@ -166,7 +166,7 @@ div:has(> .tiptap.ProseMirror) {
     }
     
     li {
-      @apply flex items-start mt-8;
+      @apply flex items-start;
 
       p{
         @apply font-semibold

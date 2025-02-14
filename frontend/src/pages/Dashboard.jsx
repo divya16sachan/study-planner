@@ -18,10 +18,12 @@ import {
 import { Link, Outlet } from "react-router-dom";
 import { useRouteStore } from "@/stores/useRouteStore";
 import React from "react";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import AddNoteDialog from "@/components/AddNoteDialog";
 
 const Dashboard = () => {
   const { routes } = useRouteStore();
-
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -49,7 +51,13 @@ const Dashboard = () => {
               </BreadcrumbList>
             </Breadcrumb>
           </div>
-          <div className="px-4">
+          <div className="mr-4 flex gap-2">
+            <AddNoteDialog trigger={
+              <Button className={`size-9 sm:size-auto`} >
+                <Plus />
+                <span className={`hidden sm:block `}>Add Note</span>
+              </Button>
+            } />
             <ModeToggle />
           </div>
         </header>
