@@ -2,7 +2,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@radix-ui/react-popover
 import React from 'react'
 import { Button } from '../ui/button'
 
-const TablePopover = ({ editor, controllers, triggerIcon }) => {
+export const TablePopover = ({ editor, controllers, triggerIcon }) => {
     return (
         <Popover>
             <PopoverTrigger asChild>
@@ -28,4 +28,3 @@ const TablePopover = ({ editor, controllers, triggerIcon }) => {
     )
 }
 
-export default TablePopover

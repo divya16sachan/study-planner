@@ -4,7 +4,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@radix-ui/react-popover
 import { Button } from '../ui/button';
 import { Eraser } from 'lucide-react';
 
-const ColorPicker = ({
+export const ColorPicker = ({
     icon: Icon,
     tooltipMessage,
     colors,
@@ -53,5 +53,3 @@ const ColorPicker = ({
         </TooltipWrapper>
     );
 };
-
-export default ColorPicker;

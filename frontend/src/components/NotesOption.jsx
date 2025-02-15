@@ -80,7 +80,7 @@ const NotesOption = ({ trigger, note, nameRef, setIsRenaming }) => {
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon" className="p-1 bg-transparent text-muted-foreground hover:text-primary hover:bg-transparent">
+                <Button variant="ghost" className="p-1 size-6  text-muted-foreground hover:text-primary hover:bg-transparent">
                     {trigger}
                 </Button>
             </PopoverTrigger>

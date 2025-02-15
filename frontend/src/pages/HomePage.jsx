@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useAuthStore } from '@/stores/useAuthStore';
-import { Bold, Code2, EllipsisVertical, Hash, ListChecksIcon, Plus, Table } from 'lucide-react';
+import { Bold, Code2, EllipsisVertical, File, Folder, Hash, ListChecksIcon, Plus, Table } from 'lucide-react';
 import { axiosInstance } from '@/lib/axios';
 import { Link } from 'react-router-dom';
 import { formatTime, formatDate } from '@/lib/utils.js';
@@ -63,18 +63,18 @@ const NoteCard = ({ note, collectionName }) => {
         <div className='flex justify-between items-start'>
           <Link
             to={`/note/${note._id}`}
-            className='mb-4 w-full text-blue-800 dark:text-[#a8abff] transition-colors group'
+            className='text-blue-800 flex items-center gap-1 dark:text-[#a8abff] transition-colors group'
           >
+            <File />
             <strong
               contentEditable={isRenaming}
               ref={nameRef}
               suppressContentEditableWarning={true}
-              className={`truncate block w-full group-hover:underline ${isRenaming ? 'bg-slate-600/20 p-1 outline-none border-none' : ''}`}
+              className={`truncate w-full group-hover:underline ${isRenaming ? 'bg-slate-600/20 p-1 outline-none border-none' : ''}`}
             >
               {note.name}
             </strong>
 
-            <Badge variant="secondary" className="hover:bg-secondary text-xs font-normal">{collectionName}</Badge>
           </Link>
 
 
@@ -85,6 +85,8 @@ const NoteCard = ({ note, collectionName }) => {
             setIsRenaming={setIsRenaming}
           />
         </div>
+
+        <Badge variant="secondary" className="mb-4 hover:bg-secondary text-xs font-normal">{collectionName}</Badge>
         <div className='flex gap-2 items-center text-muted-foreground text-xs justify-between'>
           <p>{formatDate(note.createdAt)}</p>
           <p>{formatTime(note.createdAt)}</p>

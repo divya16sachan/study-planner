@@ -56,6 +56,13 @@ export const FORMATTING_BUTTONS = [
     },
 ]
 
+const onClickHandler = () => {
+
+}
+const disabledHandler = () => {
+
+}
+
 export const LIST_BUTTONS = [
     {
         name: 'orderedList',
