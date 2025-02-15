@@ -17,14 +17,12 @@ import {
 } from "@/components/ui/command"
 import { Input } from "@/components/ui/input"
 import { Folder, FolderPlus, Loader2, Plus } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useNoteStore } from "@/stores/useNoteStore"
-import TooltipWrapper from "./TooltipWrapper"
 
 const AddNoteDialog = ({ trigger }) => {
     const [noteName, setNoteName] = useState('');
     const [collectionName, setCollectionName] = useState('');
-    const [errors, setErrors] = useState({});
     const [open, setOpen] = useState(false);
 
     const {
@@ -40,15 +38,6 @@ const AddNoteDialog = ({ trigger }) => {
 
 
     const handleAddNote = async () => {
-        setNoteName(noteName.trim());
-        if (!noteName) {
-            setErrors({ noteName: "noteName must required" });
-            return;
-        }
-        if (!selectedCollection) {
-            setErrors({ collection: "Choose a collection first" });
-            return;
-        }
         await createNote({
             name: noteName,
             collectionId: selectedCollection._id,
@@ -74,26 +63,27 @@ const AddNoteDialog = ({ trigger }) => {
                     <DialogTitle className="hidden">Create Note</DialogTitle>
                 </DialogHeader>
                 <div className="py-4">
-
                     <div className="mb-5 space-y-2">
-                        {errors.noteName && <p className="text-destructive text-sm font-semibold -mb-2">{errors.noteName}</p>}
-                        <Input
-                            placeholder="Note Title"
-                            id="name"
-                            value={noteName}
-                            onChange={e => setNoteName(e.target.value)}
-                        />
+                        <div>
+                            {!noteName.trim() && <p className="text-sm mb-1 text-red-500">Note Name required</p>}
+                            <Input
+                                placeholder="Note Title"
+                                id="name"
+                                value={noteName}
+                                onChange={e => setNoteName(e.target.value)}
+                            />
+                        </div>
                         <Input
                             readOnly
-                            placeholder="Choose a collection"
+                            placeholder="No collection Selected"
                             className="pointer-events-none"
                             value={selectedCollection?.name}
                         />
                     </div>
 
-                    <div className="space-y-1">
-                        <Command className="border max-h-52">
-                            <CommandInput placeholder="Search ..." />
+                    <div className="">
+                        <Command className="border max-h-52 rounded-b-none">
+                            <CommandInput placeholder="Choose a Collection ..." />
                             <CommandList>
                                 <CommandEmpty>No results found.</CommandEmpty>
                                 <CommandGroup>
@@ -111,34 +101,33 @@ const AddNoteDialog = ({ trigger }) => {
                                 </CommandGroup>
                             </CommandList>
                         </Command>
-                        <div className="flex gap-2 ">
+                        <div className="relative">
                             <Input
+                                className="pr-10 rounded-t-none border-t-0"
                                 placeholder="Add Collection"
                                 value={collectionName}
                                 onChange={(e) => setCollectionName(e.target.value)}
                             />
-                            <TooltipWrapper message="Create New Collection">
-                                <Button
-                                    disabled={isCreatingCollection}
-                                    variant="outline"
-                                    className="flex-shrink-0 relative overflow-hidden"
-                                    onClick={handleAddCollection}
-                                    size="icon"
-                                >
-                                    {
-                                        isCreatingCollection ?
-                                            <Loader2 className="animate-spin" /> :
-                                            <FolderPlus />
-                                    }
-                                </Button>
-                            </TooltipWrapper>
+                            <Button
+                                disabled={isCreatingCollection || !collectionName.trim()}
+                                variant="outline"
+                                className="absolute top-0 right-0 rounded-s-none overflow-hidden"
+                                onClick={handleAddCollection}
+                                size="icon"
+                            >
+                                {
+                                    isCreatingCollection ?
+                                        <Loader2 className="animate-spin" /> :
+                                        <FolderPlus />
+                                }
+                            </Button>
                         </div>
                     </div>
                 </div>
 
                 <DialogFooter>
                     <Button
-                        disabled={!selectedCollection || isCreatingNote}
+                        disabled={!selectedCollection || isCreatingNote || !noteName.trim()}
                         onClick={handleAddNote}>
                         {
                             isCreatingNote ?
