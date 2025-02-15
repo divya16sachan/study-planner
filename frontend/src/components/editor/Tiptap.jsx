@@ -16,7 +16,7 @@ import TableHeader from '@tiptap/extension-table-header'
 import TableRow from '@tiptap/extension-table-row'
 import Placeholder from '@tiptap/extension-placeholder'
 import Image from '@tiptap/extension-image'
-import { SlashCommand } from './SlashCommand'
+import { SlashCommand } from '../SlashCommand'
 
 
 
@@ -29,7 +29,7 @@ import html from 'highlight.js/lib/languages/xml'
 import { all, createLowlight } from 'lowlight'
 
 // eslint-disable-next-line
-import CodeBlockComponent from './CodeBlockComponent'
+import CodeBlockComponent from '../CodeBlockComponent'
 
 // create a lowlight instance
 const lowlight = createLowlight(all)
@@ -40,12 +40,8 @@ lowlight.register('css', css)
 lowlight.register('js', js)
 lowlight.register('ts', ts)
 
-import { Button } from './ui/Button'
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover"
+import { Button } from '../ui/Button'
+
 import {
     Select,
     SelectContent,
@@ -56,29 +52,14 @@ import {
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
 
-import TooltipWrapper from "./TooltipWrapper";
+import TooltipWrapper from "../TooltipWrapper";
 import {
-    AlignCenter,
-    AlignJustify,
-    AlignLeft,
-    AlignRight,
-    ArrowDownToLine,
-    ArrowLeftToLine,
-    ArrowRightToLine,
-    ArrowUpToLine,
-    Bold,
-    Code,
-    CodeSquare,
     Ellipsis,
     EllipsisVertical,
-    Eraser,
     Heading,
     Heading1,
     Heading2,
@@ -86,217 +67,36 @@ import {
     Heading4,
     Heading5,
     Heading6,
-    HeadingIcon,
     HighlighterIcon,
     ImageIcon,
-    Indent,
-    Italic,
-    List,
-    ListChecks,
-    ListOrdered,
     Loader2,
-    Outdent,
     Palette,
     Pilcrow,
-    Quote,
-    Redo,
-    Strikethrough,
     TableIcon,
-    Trash,
-    UnderlineIcon,
-    Undo,
-    Upload,
     UploadCloudIcon
 } from 'lucide-react'
 import { useNoteStore } from '@/stores/useNoteStore'
-import { DropdownMenuItem } from '@radix-ui/react-dropdown-menu'
 import { useNavigate, useParams } from 'react-router-dom'
-import NoteSkeleton from './sekeletons/NoteSkeleton'
-import FileDropZone from './FileDropZone'
-import SuggestionList from './SuggestionList'
+import NoteSkeleton from '../sekeletons/NoteSkeleton'
+import FileDropZone from '../FileDropZone'
+import SuggestionList from '../SuggestionList'
 
-const formatingGroup = [
-    {
-        name: 'bold',
-        icon: <Bold />,
-        command: 'toggleBold',
-        tooltip: 'Ctrl + B',
-    },
-    {
-        name: 'italic',
-        icon: <Italic />,
-        command: 'toggleItalic',
-        tooltip: 'Ctrl + I',
-    },
-    {
-        name: 'underline',
-        icon: <UnderlineIcon />,
-        command: 'toggleUnderline',
-        tooltip: 'Ctrl + U',
-    },
-    {
-        name: 'strike',
-        icon: < Strikethrough />,
-        command: 'toggleStrike',
-        tooltip: 'Ctrl + Shift + S',
-    },
-]
+import {
+    COLORS,
+    FORMATTING_BUTTONS,
+    LIST_BUTTONS,
+    LIST_CONTROL_BUTTONS,
+    BLOCK_BUTTONS,
+    CONTROL_BUTTONS,
+    ALIGNMENT_BUTTONS,
+    TABLE_BUTTONS,
+    TABLE_ROW_CONTROLS,
+    TABLE_COLUMN_CONTROLS,
+} from './editor.config.jsx'
 
-const listGroup = [
-    {
-        name: 'orderedList',
-        icon: <ListOrdered />,
-        command: 'toggleOrderedList',
-        tooltip: "Ctrl + Shift + 7",
-    },
-    {
-        name: 'bulletList',
-        icon: <List />,
-        command: 'toggleBulletList',
-        tooltip: "Ctrl + Shift + 8",
-    },
-    {
-        name: 'taskList',
-        icon: <ListChecks />,
-        command: 'toggleTaskList',
-        tooltip: "Ctrl + Shift + 9",
-    }
-]
+import TablePopover from './TablePopover'
+import ColorPicker from './ColorPicker'
 
-const listController = [
-    {
-        name: ['listItem', 'taskItem'],
-        icon: <Outdent />,
-        command: 'liftListItem',
-        tooltip: "Lift list item/task item",
-    },
-    {
-        name: ['listItem', 'taskItem'],
-        icon: <Indent />,
-        command: 'sinkListItem',
-        tooltip: "Sink list item/task item",
-    },
-];
-
-
-const blockGroup = [
-    {
-        name: 'codeBlock',
-        icon: <CodeSquare />,
-        command: 'toggleCodeBlock',
-        tooltip: 'Code Block"',
-    },
-    {
-        name: 'code',
-        icon: <Code />,
-        command: 'toggleCode',
-        tooltip: 'Code',
-    },
-    {
-        name: 'blockquote',
-        icon: <Quote />,
-        command: 'toggleBlockquote',
-        tooltip: 'blockquote',
-    },
-];
-
-const controller = [
-    {
-        icon: <Undo />,
-        command: 'undo',
-        tooltip: 'Ctrl + Z',
-    },
-    {
-        icon: <Redo />,
-        command: 'redo',
-        tooltip: 'Ctrl + Y',
-    },
-]
-const alignments = [
-    {
-        name: 'left',
-        icon: <AlignLeft />,
-        command: 'setTextAlign',
-        tooltip: 'Ctrl + Shift + L',
-    },
-    {
-        name: 'center',
-        icon: <AlignCenter />,
-        command: 'setTextAlign',
-        tooltip: 'Ctrl + Shift + E',
-    },
-    {
-        name: 'right',
-        icon: <AlignRight />,
-        command: 'setTextAlign',
-        tooltip: 'Ctrl + Shift + R',
-    },
-    {
-        name: 'justify',
-        icon: <AlignJustify />,
-        command: 'setTextAlign',
-        tooltip: 'Ctrl + Shift + J',
-    },
-]
-
-const tableGroup = [
-    {
-        icon: <TableIcon />,
-        command: "insertTable",
-        tooltip: "Insert talbe",
-        params: {
-            rows: 3, cols: 3, withHeaderRow: true
-        },
-    },
-    {
-        icon: <HeadingIcon />,
-        command: "toggleHeaderRow",
-        tooltip: "Toggle header",
-    },
-    {
-        icon: <Trash />,
-        command: "deleteTable",
-        tooltip: "Delete table",
-    },
-];
-
-const tableRowController = [
-    {
-        icon: <ArrowUpToLine />,
-        command: "addRowBefore",
-        tooltip: "Add row before",
-    },
-    {
-        icon: <ArrowDownToLine />,
-        command: "addRowAfter",
-        tooltip: "Add row after",
-    },
-    {
-        icon: <Trash />,
-        command: "deleteRow",
-        tooltip: "Delete row",
-    },
-];
-
-const tableColumnController = [
-    {
-        icon: <ArrowLeftToLine />,
-        command: "addColumnBefore",
-        tooltip: "Add column before",
-    },
-    {
-        icon: <ArrowRightToLine />,
-        command: "addColumnAfter",
-        tooltip: "Add column after",
-    },
-    {
-        icon: <Trash />,
-        command: "deleteColumn",
-        tooltip: "Delete column",
-    },
-];
-
-const colors = ['#fb7185', '#fdba74', '#d9f99d', '#a7f3d0', '#a5f3fc', '#a5b4fc'];
 
 const MenuBar = ({ noteId }) => {
     const { editor } = useCurrentEditor()
@@ -331,7 +131,7 @@ const MenuBar = ({ noteId }) => {
             <div className="Button-group flex flex-wrap gap-1">
 
                 {
-                    formatingGroup.map(({ icon, command, tooltip, name }, index) => (
+                    FORMATTING_BUTTONS.map(({ icon, command, tooltip, name }, index) => (
                         <TooltipWrapper key={index} message={tooltip}>
                             <Button
                                 size="icon"
@@ -344,9 +144,9 @@ const MenuBar = ({ noteId }) => {
                         </TooltipWrapper>
                     ))
                 }
-                {<SuggestionList editor={editor} imageTrigger={imageTrigger}/>}
+                {<SuggestionList editor={editor} imageTrigger={imageTrigger} />}
                 {
-                    blockGroup.map(({ icon, command, tooltip, name }, index) => (
+                    BLOCK_BUTTONS.map(({ icon, command, tooltip, name }, index) => (
                         <TooltipWrapper key={index} message={tooltip}>
                             <Button
                                 size="icon"
@@ -361,7 +161,7 @@ const MenuBar = ({ noteId }) => {
                 }
 
                 {
-                    listGroup.map(({ icon, command, tooltip, name }, index) => (
+                    LIST_BUTTONS.map(({ icon, command, tooltip, name }, index) => (
                         <TooltipWrapper key={index} message={tooltip}>
                             <Button
                                 size="icon"
@@ -375,7 +175,7 @@ const MenuBar = ({ noteId }) => {
                 }
 
                 {
-                    listController.map(({ icon, command, tooltip, name }, index) => (
+                    LIST_CONTROL_BUTTONS.map(({ icon, command, tooltip, name }, index) => (
                         <TooltipWrapper key={index} message={tooltip}>
                             <Button
                                 size="icon"
@@ -397,7 +197,7 @@ const MenuBar = ({ noteId }) => {
 
 
                 {
-                    controller.map(({ icon, command, tooltip }, index) => (
+                    CONTROL_BUTTONS.map(({ icon, command, tooltip }, index) => (
                         <TooltipWrapper key={index} message={tooltip}>
                             <Button
                                 size="icon"
@@ -412,7 +212,7 @@ const MenuBar = ({ noteId }) => {
                 }
 
                 {
-                    alignments.map(({ icon, command, tooltip, name }, index) => (
+                    ALIGNMENT_BUTTONS.map(({ icon, command, tooltip, name }, index) => (
                         <TooltipWrapper key={index} message={tooltip}>
                             <Button
                                 size="icon"
@@ -461,100 +261,40 @@ const MenuBar = ({ noteId }) => {
                     </SelectContent>
                 </Select>
 
-                <TooltipWrapper message={"Highlighter"}>
-                    <div>
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <Button variant="ghost"
-                                    style={{
-                                        backgroundColor: colors.find((color) => editor.isActive('highlight', { color })) || 'transparent'
-                                    }}
-                                >
-                                    <HighlighterIcon />
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto flex items-center gap-1 p-2">
-                                {
-                                    colors.map(color => (
-                                        <Button
-                                            key={color}
-                                            onClick={() => editor.chain().focus().setHighlight({ color }).run()}
-                                            className={`relative w-8 h-8 ${editor.isActive('textStyle', { color }) ? 'bg-primary' : ''} hover:bg-accent rounded-md cursor-pointer`}
-                                        >
-                                            <div
-                                                className="absolute inset-[6px] rounded-sm"
-                                                style={{ backgroundColor: color }}
-                                            />
-                                        </Button>
-                                    ))
-                                }
-                                <Button
-                                    variant="ghost"
-                                    onClick={() => editor.chain().focus().unsetHighlight().run()}
-                                    data-testid="unsetHighlight"
-                                >
-                                    <Eraser />
-                                </Button>
-                            </PopoverContent>
-                        </Popover>
-                    </div>
-                </TooltipWrapper>
+                <ColorPicker
+                    icon={HighlighterIcon}
+                    tooltipMessage="Highlighter"
+                    colors={COLORS}
+                    activeColor={COLORS.find((color) => editor.isActive('highlight', { color }))}
+                    onColorSelect={(color) => editor.chain().focus().setHighlight({ color }).run()}
+                    onUnsetColor={() => editor.chain().focus().unsetHighlight().run()}
+                    isActive={(color) => editor.isActive('highlight', { color })}
+                />
 
-
-
-                <TooltipWrapper message={"Set Color"}>
-                    <div>
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <Button variant="ghost"
-                                    style={{
-                                        backgroundColor: colors.find((color) => editor.isActive('textStyle', { color })) || 'transparent'
-                                    }}
-                                >
-                                    <Palette />
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto flex items-center gap-1 p-2">
-                                {
-                                    colors.map(color => (
-                                        <Button
-                                            key={color}
-                                            onClick={() => editor.chain().focus().setColor(color).run()}
-                                            className={`relative w-8 h-8 ${editor.isActive('textStyle', { color }) ? 'bg-primary' : ''} hover:bg-accent rounded-md cursor-pointer`}
-                                        >
-                                            <div
-                                                className="absolute inset-[6px] rounded-sm"
-                                                style={{ backgroundColor: color }}
-                                            />
-                                        </Button>
-                                    ))
-                                }
-                                <Button
-                                    variant="ghost"
-                                    onClick={() => editor.chain().focus().unsetColor().run()}
-                                    data-testid="unsetColor"
-                                >
-                                    <Eraser />
-                                </Button>
-                            </PopoverContent>
-                        </Popover>
-                    </div>
-                </TooltipWrapper>
+                <ColorPicker
+                    icon={Palette}
+                    tooltipMessage="Set Color"
+                    colors={COLORS}
+                    activeColor={COLORS.find((color) => editor.isActive('textStyle', { color }))}
+                    onColorSelect={(color) => editor.chain().focus().setColor(color).run()}
+                    onUnsetColor={() => editor.chain().focus().unsetColor().run()}
+                    isActive={(color) => editor.isActive('textStyle', { color })}
+                />
 
                 <div className='border rounded-lg'>
-                    <TableGroup
+                    <TablePopover
                         editor={editor}
-                        controllers={tableGroup}
+                        controllers={TABLE_BUTTONS}
                         triggerIcon={<TableIcon />}
                     />
-                    <TableGroup
+                    <TablePopover
                         editor={editor}
-                        controllers={tableColumnController}
+                        controllers={TABLE_COLUMN_CONTROLS}
                         triggerIcon={<Ellipsis />}
                     />
-                    <TableGroup
+                    <TablePopover
                         editor={editor}
-                        controllers={tableRowController}
+                        controllers={TABLE_ROW_CONTROLS}
                         triggerIcon={<EllipsisVertical />}
                     />
                 </div>
@@ -586,32 +326,6 @@ const MenuBar = ({ noteId }) => {
     )
 }
 
-
-function TableGroup({ controllers, triggerIcon, editor }) {
-    return (
-        <Popover>
-            <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon">
-                    {triggerIcon}
-                </Button>
-            </PopoverTrigger>
-            <PopoverContent className="p-1 w-min" align="start">
-                {
-                    controllers.map((controller, index) => (
-                        <Button
-                            key={index}
-                            variant="ghost"
-                            className="w-full justify-start p-2 font-normal leading-tight h-8"
-                            onClick={() => editor.chain().focus()[controller.command]().run()}
-                        >
-                            {controller.icon} {controller.tooltip}
-                        </Button>
-                    ))
-                }
-            </PopoverContent>
-        </Popover>
-    )
-};
 
 const extensions = [
     Color.configure({ types: [TextStyle.name, ListItem.name] }),

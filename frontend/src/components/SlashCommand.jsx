@@ -26,6 +26,7 @@ const shortcut = {
     'heading 4': 'h4',
     'heading 5': 'h5',
     'heading 6': 'h6',
+    'image': 'img',
 };
 
 const filterSuggestions = (query, suggestions) => {
@@ -61,7 +62,7 @@ export const SlashCommand = Extension.create({
                         { icon: <Quote />, label: 'Blockquote', command: 'toggleBlockquote' },
                         { icon: <CodeSquare />, label: 'Code Block', command: 'toggleCodeBlock' },
                         { icon: <Table />, label: 'Table', command: 'insertTable' },
-                        { icon: <Image />, label: 'Image', command: 'insertImage' },
+                        { icon: <Image />, label: 'Image', command: 'setImage', props: {src: 'https://placehold.co/600x400'} },
                         { icon: <Minus />, label: 'Horizontal Rule', command: 'setHorizontalRule' },
                     ];
                     return filterSuggestions(query, suggestions);

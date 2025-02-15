@@ -5,7 +5,7 @@ import { useAuthStore } from './stores/useAuthStore';
 import { Toaster } from 'sonner';
 
 import Navbar from './components/Navbar';
-import Tiptap from './components/Tiptap';
+import Tiptap from './components/editor/Tiptap';
 
 //Pages
 import HomePage from './pages/HomePage';
