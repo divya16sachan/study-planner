@@ -31,12 +31,12 @@ function App() {
   }, [checkAuth]);
   
   const { setRoutes } = useRouteStore();
-  const { getNoteName, isCollectionsLoading } = useNoteStore();
+  const { getNoteName, collections, isCollectionsLoading, setselectedNote } = useNoteStore();
   const location = useLocation();
-
   useEffect(() => {
     let path = '/';
-
+    setselectedNote(null);
+    
     const segments = location.pathname.split('/').filter(Boolean);
     const routes = [
       { name: 'NoteHub', path: '/' },
@@ -49,13 +49,15 @@ function App() {
         path += `${noteId}/`;
         const noteName = getNoteName(noteId);
         routes.push({ name: noteName, path });
+        setselectedNote(noteId)
       } else {
         const name = segment;
         routes.push({ name, path });
+        console.log('other');
       }
     }
     setRoutes(routes);
-  }, [location, isCollectionsLoading]);
+  }, [location, collections, isCollectionsLoading]);
 
   if (isCheckingAuth && !authUser) {
     return (

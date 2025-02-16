@@ -65,12 +65,12 @@ const NoteCard = ({ note, collectionName }) => {
             to={`/note/${note._id}`}
             className='text-blue-800 flex items-center gap-1 dark:text-[#a8abff] transition-colors group'
           >
-            <File />
+            <File className='flex-shrink-0 size-4'/>
             <strong
-              contentEditable={isRenaming}
+              contentEditable={Boolean(isRenaming)}
               ref={nameRef}
               suppressContentEditableWarning={true}
-              className={`truncate w-full group-hover:underline ${isRenaming ? 'bg-slate-600/20 p-1 outline-none border-none' : ''}`}
+              className={`truncate w-full group-hover:underline ${Boolean(isRenaming) ? 'bg-slate-600/20 p-1 outline-none border-none' : ''}`}
             >
               {note.name}
             </strong>

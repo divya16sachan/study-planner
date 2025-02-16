@@ -12,21 +12,23 @@ const NotesOption = ({ trigger, note, nameRef, setIsRenaming }) => {
     const { renameNote, moveTo, deleteNote, collections } = useNoteStore();
     const [open, setOpen] = useState(false);
     const [moveOpen, setMoveOpen] = useState(false);
-
     const handleBlur = () => {
-        setIsRenaming(false);
-        if (nameRef.current) {
-            renameNote({
-                noteId: note._id,
-                newName: nameRef.current.textContent.trim(),
-            });
+        if (nameRef?.current) {
+            const newName = nameRef.current.textContent.trim();
+            if (newName !== note.name) {  // Only rename if the name is actually changed
+                renameNote({
+                    noteId: note._id,
+                    newName: newName,
+                });
+            }
         }
+        setIsRenaming(false);
     };
 
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
-            if (nameRef.current) {
+            if (nameRef?.current) {
                 nameRef.current.blur();
             }
         }
@@ -41,9 +43,10 @@ const NotesOption = ({ trigger, note, nameRef, setIsRenaming }) => {
     };
 
     const handleRename = () => {
-        setIsRenaming(true);
+        setIsRenaming(note._id);
         setTimeout(() => {
-            if (nameRef.current) {
+            if (nameRef?.current) {
+                console.log(nameRef);
                 nameRef.current.focus();
                 selectAllText(nameRef.current);
             }
@@ -65,7 +68,7 @@ const NotesOption = ({ trigger, note, nameRef, setIsRenaming }) => {
     };
 
     useEffect(() => {
-        const current = nameRef.current;
+        const current = nameRef?.current;
         if (current) {
             current.addEventListener('blur', handleBlur);
             current.addEventListener('keydown', handleKeyDown);
@@ -80,7 +83,7 @@ const NotesOption = ({ trigger, note, nameRef, setIsRenaming }) => {
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-                <Button variant="ghost" className="p-1 size-6  text-muted-foreground hover:text-primary hover:bg-transparent">
+                <Button variant="ghost" className="flex-shrink-0 p-1 size-6  text-muted-foreground hover:text-primary hover:bg-transparent">
                     {trigger}
                 </Button>
             </PopoverTrigger>

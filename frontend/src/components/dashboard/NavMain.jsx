@@ -103,7 +103,7 @@ const NavMain = ({ collections }) => {
                     <Collapsible
                         key={collection._id}
                         asChild
-                        defaultOpen={index === 0}
+                        defaultOpen={true}
                         className="group/collapsible"
                     >
                         <SidebarMenuItem>
