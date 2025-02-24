@@ -9,6 +9,8 @@ import { useNavigate } from 'react-router-dom';
 import hljs from 'highlight.js';
 import { createRoot } from 'react-dom/client';
 import { toast } from 'sonner';
+import katex from 'katex'
+import 'katex/dist/katex.min.css';
 
 
 import {
@@ -20,12 +22,12 @@ import {
 } from "@/components/ui/carousel"
 
 function ImageViewer({ defaultIndex, images = [], closeImageViewer }) {
-    const downloadImage = ()=>{
+    const downloadImage = () => {
 
     }
     return (
         <div className='z-50 fixed top-0 left-0 w-full h-full bg-background'>
-            <Carousel className="relative w-full  h-full max-w-screen-md m-auto" defaultIndex={defaultIndex} onSelect={(index)=>{console.count(index)}}>
+            <Carousel className="relative w-full  h-full max-w-screen-md m-auto" defaultIndex={defaultIndex} onSelect={(index) => { console.count(index) }}>
                 <Button
                     variant="ghost"
                     size="icon"
@@ -51,7 +53,7 @@ function ImageViewer({ defaultIndex, images = [], closeImageViewer }) {
 
 const NotePage = () => {
     const { id } = useParams();
-    const { getNoteContent, isContentLoading } = useNoteStore();
+    const { getNoteContent, isContentLoading, noteNotFound, setNoteNotFound } = useNoteStore();
     const [content, setContent] = useState('');
     const [imageOpen, setImageOpen] = useState(null);
     const navigate = useNavigate();
@@ -72,6 +74,18 @@ const NotePage = () => {
         if (content) {
             document.querySelectorAll('pre code').forEach((block) => {
                 hljs.highlightElement(block);
+            });
+
+            // Render KaTeX
+            document.querySelectorAll('span[data-latex]').forEach((element) => {
+                try {
+                    const latex = element.getAttribute('data-latex');
+                    katex.render(latex, element, {
+                        throwOnError: false,
+                    });
+                } catch (error) {
+                    console.error('KaTeX render error:', error);
+                }
             });
 
 
@@ -134,6 +148,7 @@ const NotePage = () => {
         }
     }, [content]);
 
+
     if (isContentLoading) {
         return <NoteSkeleton />
     }
@@ -155,6 +170,14 @@ const NotePage = () => {
                     alt=""
                 />
                 <div>No content</div>
+            </div>
+        )
+    }
+
+    if (noteNotFound) {
+        return (
+            <div className='w-full h-full flex items-center justify-center'>
+                <img src='/404-not-found.svg' className='p-4 rounded-lg max-w-[500px]'></img>
             </div>
         )
     }

@@ -58,7 +58,7 @@ const AddNoteDialog = ({ trigger }) => {
             <DialogTrigger asChild>
                 {trigger}
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[525px] scrollbar-sm">
+            <DialogContent className="sm:max-w-[525px] rounded-lg scrollbar-sm">
                 <DialogHeader>
                     <DialogTitle className="hidden">Create Note</DialogTitle>
                 </DialogHeader>

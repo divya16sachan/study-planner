@@ -27,6 +27,7 @@ const shortcut = {
     'heading 5': 'h5',
     'heading 6': 'h6',
     'image': 'img',
+    'Horizontal Rule': 'hr',
 };
 
 const filterSuggestions = (query, suggestions) => {

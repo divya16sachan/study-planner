@@ -20,7 +20,7 @@ import { createLowlight } from 'lowlight';
 import { all } from 'lowlight';
 import CodeBlockComponent from '@/components/CodeBlockComponent';
 import { ReactNodeViewRenderer } from '@tiptap/react';
-
+import { MathExtension } from '@aarkue/tiptap-math-extension';
 const lowlight = createLowlight(all);
 
 export const extensions = [
@@ -64,4 +64,12 @@ export const extensions = [
     }),
     Image,
     SlashCommand,
+    MathExtension.configure({
+        evaluation: true,
+        katexOptions: {
+            macros: { "\\B": "\\mathbb{B}" }
+        }, 
+        delimiters: "dollar"
+    }),
+        
 ];

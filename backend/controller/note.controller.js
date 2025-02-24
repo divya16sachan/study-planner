@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Note from "../model/note.model.js";
 import { cloudinary } from "../utils/cloudinary.js";
 
@@ -22,6 +23,9 @@ export const deleteNote = async (req, res) => {
     if (!_id) {
         res.status(400).json({ message: "Note_id not provided" });
     }
+    if(!mongoose.Types.ObjectId.isValid(_id)){
+        return res.status(400).json({message: "Invalid note_id format"});
+    }
 
     try {
         await Note.findByIdAndDelete(_id);
@@ -36,8 +40,14 @@ export const getNote = async (req, res) => {
     if (!_id) {
         return res.status(400).json({ message: "note_id not provided" });
     }
+    if(!mongoose.Types.ObjectId.isValid(_id)){
+        return res.status(400).json({message: "Invalid note_id format"});
+    }
     try {
         const note = await Note.findById(_id);
+        if(!note){
+            return res.status(404).json({message: `note not found with id ${_id}`});
+        }
         res.status(200).json({ note })
     } catch (error) {
         console.log("Error in getNote controller.\n", error);
@@ -87,7 +97,7 @@ export const renameNote = async (req, res) => {
     try {
         const note = await Note.findById(noteId);
         if (!note) {
-            return res.status(404).json({ message: "note not found." });
+            return res.status(404).json({ message: `note not found with id ${_id}` });
         }
 
         note.name = newName;

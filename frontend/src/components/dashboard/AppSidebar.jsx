@@ -5,6 +5,7 @@ import {
   GalleryVerticalEnd,
   FolderPlus,
   FilePlus2,
+  Map,
 } from "lucide-react";
 
 import NavMain from "@/components/dashboard/NavMain";

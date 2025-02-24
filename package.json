@@ -1,1 +1,9 @@
-{}
+{
+    "name": "notehub",
+    "version": "1.0.0",
+    "scripts": {
+        "start-frontend": "cd frontend && npm run dev",
+        "start-backend": "cd backend && npm run dev",
+        "start": "concurrently \"npm run start-frontend\" \"npm run start-backend\""
+    }
+}

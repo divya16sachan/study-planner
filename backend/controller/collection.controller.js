@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Collection from "../model/collection.model.js";
 import Note from "../model/note.model.js";
 
@@ -28,6 +29,10 @@ export const createCollection = async (req, res) => {
 export const deleteCollection = async (req, res) => {
     const { _id } = req.params;
     const { user } = req;
+
+    if(!mongoose.Types.ObjectId.isValid(_id)){
+        return res.status(400).json({message: "Invalid _id provided"});
+    }
 
     if (!user) {
         return res.status(401).json({ message: "Unauthorized: user not found." });

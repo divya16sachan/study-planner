@@ -17,7 +17,8 @@ import {
     TableIcon,
     Ellipsis,
     EllipsisVertical,
-    ImageIcon
+    ImageIcon,
+    SquareDivide
 } from 'lucide-react';
 import TooltipWrapper from '../TooltipWrapper';
 import { SelectHeading } from './SelectHeading';
@@ -36,12 +37,14 @@ import {
     COLORS
 } from './config/menu.config';
 import FileDropZone from '../FileDropZone';
+import { MathsSymbol } from './MathsSymbol';
 
 export const MenuBar = ({ noteId }) => {
     const { editor } = useCurrentEditor();
     const navigate = useNavigate();
     const { updateContent, isContentUploading } = useNoteStore();
     const imageTrigger = useRef(null);
+
 
     if (!editor) {
         return null;
@@ -165,6 +168,8 @@ export const MenuBar = ({ noteId }) => {
                     ))
                 }
                 <SelectHeading editor={editor} />
+
+                <MathsSymbol  editor={editor}/>
 
                 <ColorPicker
                     icon={HighlighterIcon}

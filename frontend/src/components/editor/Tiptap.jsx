@@ -11,11 +11,15 @@ const Tiptap = () => {
     const { id: noteId } = useParams();
     const [content, setContent] = useState('');
     const [loading, setLoading] = useState(true);
+    const [notFound, setNotFound] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
             if (noteId) {
                 const noteContent = await getNoteContent(noteId);
+                if(noteContent === null){
+                    setNotFound(true);
+                }
                 setContent(noteContent);
                 setLoading(false);
             }
@@ -23,6 +27,13 @@ const Tiptap = () => {
         fetchData();
     }, [noteId, getNoteContent]);
 
+    if (notFound) {
+        return (
+            <div className='w-full h-full flex items-center justify-center'>
+                <img src='/404-not-found.svg' className='p-4 rounded-lg max-w-[500px]'></img>
+            </div>
+        )
+    }
 
     if (isContentLoading || loading) {
         return <NoteSkeleton />;

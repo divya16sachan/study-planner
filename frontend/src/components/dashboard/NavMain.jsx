@@ -1,6 +1,6 @@
 "use client"
 
-import { ChevronRight, File, FilePlus2, Folder, FolderOutput, FolderPlus, Forward, MoreHorizontal, Pencil, Plus, Trash2 } from "lucide-react"
+import { ChevronRight, EllipsisVertical, File, FilePlus2, Folder, FolderOutput, FolderPlus, Forward, MoreHorizontal, Pencil, Plus, Trash2 } from "lucide-react"
 
 import {
     Collapsible,
@@ -35,7 +35,7 @@ import { useNoteStore } from "@/stores/useNoteStore"
 import { Button } from "../ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react"
+import { useRef, useState } from "react"
 
 import {
     Command,
@@ -47,39 +47,21 @@ import {
 } from "@/components/ui/command"
 import { Link } from "react-router-dom"
 import SidebarSkeleton from "../sekeletons/SidebarSkeleton"
+import NotesOption from "../NotesOption"
+import CollectionsOption from "../CollectionsOption"
 
-const statuses = [
-    {
-        value: "backlog",
-        label: "Backlog",
-    },
-    {
-        value: "todo",
-        label: "Todo",
-    },
-    {
-        value: "in progress",
-        label: "In Progress",
-    },
-    {
-        value: "done",
-        label: "Done",
-    },
-    {
-        value: "canceled",
-        label: "Canceled",
-    },
-]
+
 
 const NavMain = ({ collections }) => {
-    const { isMobile } = useSidebar();
-    const {isCollectionsLoading} = useNoteStore();
-    const [collectionNewName, setCollectionNewName] = useState('');
+    const { isCollectionsLoading } = useNoteStore();
     const [noteNewName, setNoteNewName] = useState('');
     const [noteName, setNoteName] = useState('');
     const [open, setOpen] = useState(false);
-
-
+    const noteNameRefs = useRef({});
+    const collectionNameRefs = useRef({});
+    const [isNoteRenaming, setIsNoteRenaming] = useState(false);
+    const [isCollectionRenaming, setIsCollectionRenaming] = useState(false);
+    const [openCollectionsOption, setOpenCollectionsOption] = useState(false);
     const {
         deleteCollection,
         renameCollection,
@@ -91,8 +73,8 @@ const NavMain = ({ collections }) => {
         setselectedNote,
     } = useNoteStore();
 
-    if(isCollectionsLoading){
-        return <SidebarSkeleton/>
+    if (isCollectionsLoading) {
+        return <SidebarSkeleton />
     }
 
     return (
@@ -107,215 +89,59 @@ const NavMain = ({ collections }) => {
                         className="group/collapsible"
                     >
                         <SidebarMenuItem>
-                            <div>
+                            {/* make the diz z index higher when the popover is open  */}
+                            <div className={`relative ${openCollectionsOption === collection._id? 'z-50' : 'z-1'}`}>
                                 <CollapsibleTrigger asChild>
                                     <SidebarMenuButton tooltip={collection.name}>
                                         <ChevronRight className="transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                                         <Folder />
-                                        <span>{collection.name}</span>
+                                        <span
+                                            contentEditable={isCollectionRenaming === collection._id}
+                                            suppressContentEditableWarning={true}
+                                            ref={e => { collectionNameRefs.current[collection._id] = e }}
+                                            className={`${(isCollectionRenaming === collection._id) ? 'bg-slate-600/20 p-1 outline-none border-none' : ''}`}
+                                        >
+                                            {collection.name}
+                                        </span>
                                     </SidebarMenuButton>
                                 </CollapsibleTrigger>
 
-                                <Popover>
-                                    <PopoverTrigger asChild>
+                                <CollectionsOption
+                                    trigger={
                                         <SidebarMenuAction>
                                             <MoreHorizontal />
                                             <span className="sr-only">More</span>
                                         </SidebarMenuAction>
-                                    </PopoverTrigger>
-                                    <PopoverContent
-                                        className="w-48 rounded-lg p-1"
-                                        side="bottom"
-                                        align={isMobile ? "end" : "start"}
-                                    >
-                                        < Popover >
-                                            <PopoverTrigger asChild>
-                                                <Button variant="ghost" className="font-normal p-2 h-auto w-full justify-start">
-                                                    <Pencil className="text-muted-foreground" />
-                                                    <span>Rename</span>
-                                                </Button>
-                                            </PopoverTrigger>
-                                            <PopoverContent
-                                                className="w-70 rounded-lg"
-                                                side="top"
-                                                align="start"
-                                            >
-                                                <div className="grid gap-4">
-
-                                                    <div className="grid gap-2">
-                                                        <div className="flex items-center gap-4">
-                                                            <Input
-                                                                id="collectionName"
-                                                                className="col-span-2 h-8"
-                                                                defaultValue={collection.name}
-                                                                placeholder="newname"
-                                                                value={collectionNewName}
-                                                                onChange={e => setCollectionNewName(e.target.value)}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <Button
-                                                        variant="secondary"
-                                                        onClick={() =>
-                                                            renameCollection({ _id: collection._id, newName: collectionNewName })
-                                                        }
-                                                    >
-                                                        Rename
-                                                    </Button>
-                                                </div>
-                                            </PopoverContent>
-                                        </Popover >
-
-                                        < Popover >
-                                            <PopoverTrigger asChild>
-                                                <Button variant="ghost" className="font-normal p-2 h-auto w-full justify-start">
-                                                    <FilePlus2 className="text-muted-foreground" />
-                                                    <span>Insert Note</span>
-                                                </Button>
-                                            </PopoverTrigger>
-                                            <PopoverContent
-                                                className="w-70 rounded-lg"
-                                                side="bottom"
-                                                align="end">
-                                                <div className="grid gap-4">
-                                                    <div className="space-y-2">
-                                                        <h4 className="font-medium leading-none">Insert Note</h4>
-                                                        <p className="text-sm text-muted-foreground">Set Collection name</p>
-                                                    </div>
-                                                    <div className="grid gap-2">
-                                                        <div className="flex items-center gap-4">
-                                                            <Label htmlFor="collectionName">Name</Label>
-                                                            <Input
-                                                                id="collectionName"
-                                                                className="col-span-2 h-8"
-                                                                value={noteName}
-                                                                onChange={e => setNoteName(e.target.value)}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <Button
-                                                        variant="secondary"
-                                                        onClick={() => createNote({ name: noteName, collectionId: collection._id })}
-                                                    >
-                                                        <Plus /> Add
-                                                    </Button>
-                                                </div>
-                                            </PopoverContent>
-                                        </Popover >
-
-
-
-                                        <DropdownMenuSeparator />
-                                        <Button variant="ghost" className="font-normal p-2 h-auto w-full justify-start" onClick={() => deleteCollection(collection._id)}>
-                                            <Trash2 className="text-muted-foreground" />
-                                            <span>Delete Collection</span>
-                                        </Button>
-                                    </PopoverContent>
-                                </Popover>
+                                    }
+                                    onOpenChange={(e)=> setOpenCollectionsOption(e? collection._id : false)}
+                                    collection={collection}
+                                    setIsRenaming={setIsCollectionRenaming}
+                                    nameRef={{ current: collectionNameRefs.current[collection._id] }}
+                                />
                             </div>
 
                             <CollapsibleContent>
                                 <SidebarMenuSub>
                                     {collection.notes?.map((note) => (
                                         <SidebarMenuSubItem key={note._id}>
-                                            <SidebarMenuSubButton  asChild onClick={(e) => { setselectedNote(note._id)  }}>
-                                                <Link to={`/note/${note._id}`} className={`cursor-pointer ${selectedNote === note._id && 'bg-accent'}`}>
+                                            <SidebarMenuSubButton asChild onClick={(e) => { setselectedNote(note._id) }}>
+                                                <Link to={`/note/${note._id}`} className={`group/menu cursor-pointer ${selectedNote === note._id && 'bg-accent'} pr-0`}>
                                                     <File className="opacity-50 size-4" />
-                                                    <span className="whitespace-nowrap truncate">{note.name}</span>
+                                                    <span
+                                                        ref={e => { noteNameRefs.current[note._id] = e }}
+                                                        contentEditable={isNoteRenaming === note._id}
+                                                        suppressContentEditableWarning={true}
+                                                        className={`truncate w-full  ${(isNoteRenaming === note._id) ? 'bg-muted-foreground/20 p-1 outline-none  text-clip' : ''}`}
+                                                    >{note.name}</span>
 
-                                                    <Popover>
-                                                        <PopoverTrigger asChild>
-                                                            <SidebarMenuAction className="bg-inherit" showOnHover>
-                                                                <MoreHorizontal />
-                                                                <span className="sr-only">More</span>
-                                                            </SidebarMenuAction>
-                                                        </PopoverTrigger>
-                                                        <PopoverContent
-                                                            className="w-48 rounded-lg p-1"
-                                                            side={isMobile ? "bottom" : "right"}
-                                                            align={isMobile ? "end" : "start"}
-                                                        >
-                                                            < Popover >
-                                                                <PopoverTrigger asChild>
-                                                                    <Button variant="ghost" className="font-normal p-2 h-auto w-full justify-start">
-                                                                        <Pencil className="text-muted-foreground" />
-                                                                        <span>Rename</span>
-                                                                    </Button>
-                                                                </PopoverTrigger>
-                                                                <PopoverContent
-                                                                    className="w-70 rounded-lg"
-                                                                    side="right"
-                                                                    align="start"
-                                                                >
-                                                                    <div className="grid gap-4">
-
-                                                                        <div className="grid gap-2">
-                                                                            <div className="flex items-center gap-4">
-                                                                                <Input
-                                                                                    className="col-span-2 h-8"
-                                                                                    defaultValue={note.name}
-                                                                                    placeholder="newname"
-                                                                                    value={noteNewName}
-                                                                                    onChange={e => setNoteNewName(e.target.value)}
-                                                                                />
-                                                                            </div>
-                                                                        </div>
-                                                                        <Button
-                                                                            variant="secondary"
-                                                                            onClick={() =>
-                                                                                renameNote({ noteId: note._id, newName: noteNewName })
-                                                                            }
-                                                                        >
-                                                                            Rename
-                                                                        </Button>
-                                                                    </div>
-                                                                </PopoverContent>
-                                                            </Popover >
-
-                                                            <Popover open={open} onOpenChange={setOpen}>
-                                                                <PopoverTrigger asChild>
-                                                                    <Button variant={open ? "secondary" : "ghost"} className="font-normal p-2 h-auto w-full justify-start">
-                                                                        <FolderOutput className="text-muted-foreground" />
-                                                                        <span>Move to</span>
-                                                                    </Button>
-                                                                </PopoverTrigger>
-                                                                <PopoverContent className="p-0" side="right" align="start">
-                                                                    <Command>
-                                                                        <CommandInput placeholder="Change status..." />
-                                                                        <CommandList>
-                                                                            <CommandEmpty>No results found.</CommandEmpty>
-                                                                            <CommandGroup>
-                                                                                {collections.filter(c => c._id !== collection._id)
-                                                                                    .map((collection) => (
-                                                                                        <CommandItem
-                                                                                            key={collection._id}
-                                                                                            value={collection._id}
-                                                                                            onSelect={async (value) => {
-                                                                                                await moveTo({ collectionId: value, noteId: note._id })
-                                                                                                setOpen(false)
-                                                                                            }}
-                                                                                        >
-                                                                                            <Folder className="text-muted-foreground" /> {collection.name}
-                                                                                        </CommandItem>
-                                                                                    ))}
-                                                                            </CommandGroup>
-                                                                        </CommandList>
-                                                                    </Command>
-                                                                </PopoverContent>
-                                                            </Popover>
-
-
-
-                                                            <DropdownMenuSeparator />
-                                                            <Button
-                                                                variant="ghost"
-                                                                className="font-normal p-2 h-auto w-full justify-start"
-                                                                onClick={() => deleteNote(note._id)}>
-                                                                <Trash2 className="text-muted-foreground" />
-                                                                <span>Delete Note</span>
-                                                            </Button>
-                                                        </PopoverContent>
-                                                    </Popover>
+                                                    <div className="group-hover/menu:visible invisible">
+                                                        <NotesOption
+                                                            trigger={<EllipsisVertical />}
+                                                            note={note}
+                                                            nameRef={{ current: noteNameRefs.current[note._id] }}
+                                                            setIsRenaming={setIsNoteRenaming}
+                                                        />
+                                                    </div>
                                                 </Link>
                                             </SidebarMenuSubButton>
                                         </SidebarMenuSubItem>

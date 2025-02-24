@@ -22,6 +22,7 @@ import { TooltipProvider } from '@radix-ui/react-tooltip';
 import NotePage from './pages/NotePage';
 import { useRouteStore } from './stores/useRouteStore';
 import { useNoteStore } from './stores/useNoteStore';
+import NotFoundPage from './pages/NotFoundPage';
 
 
 function App() {
@@ -47,13 +48,15 @@ function App() {
       if (segment === 'note') {
         const noteId = segments[++i];
         path += `${noteId}/`;
-        const noteName = getNoteName(noteId);
+        let noteName = getNoteName(noteId);
+        if(noteName === null){
+          noteName = "Not found"
+        }
         routes.push({ name: noteName, path });
         setselectedNote(noteId)
       } else {
         const name = segment;
         routes.push({ name, path });
-        console.log('other');
       }
     }
     setRoutes(routes);
@@ -79,7 +82,6 @@ function App() {
             <Route path='/login' element={!authUser ? <LoginPage /> : <Navigate to='/' />} />
             <Route path='/settings' element={<SettingsPage />} />
             <Route path='/forget-password' element={<ForgetPasswordPage />} />
-            <Route path="/editor" element={<Tiptap />} />
 
             {/* Nested routes inside Dashboard */}
             <Route path="/" element={authUser ? <Dashboard /> : <Navigate to="/login" />}>
@@ -90,6 +92,7 @@ function App() {
               <Route path="settings" element={<SettingsPage />} />
             </Route>
 
+            <Route path='*' element={<NotFoundPage/>}/>
           </Routes>
         </div>
         <Toaster />

@@ -13,9 +13,13 @@ const NotesOption = ({ trigger, note, nameRef, setIsRenaming }) => {
     const [open, setOpen] = useState(false);
     const [moveOpen, setMoveOpen] = useState(false);
     const handleBlur = () => {
+        console.log('blur event triggered');
         if (nameRef?.current) {
             const newName = nameRef.current.textContent.trim();
-            if (newName !== note.name) {  // Only rename if the name is actually changed
+            if (!newName) {
+                nameRef.current.textContent = note.name;
+            }
+            else if (newName && newName !== note.name) {
                 renameNote({
                     noteId: note._id,
                     newName: newName,
@@ -46,7 +50,6 @@ const NotesOption = ({ trigger, note, nameRef, setIsRenaming }) => {
         setIsRenaming(note._id);
         setTimeout(() => {
             if (nameRef?.current) {
-                console.log(nameRef);
                 nameRef.current.focus();
                 selectAllText(nameRef.current);
             }
@@ -81,7 +84,7 @@ const NotesOption = ({ trigger, note, nameRef, setIsRenaming }) => {
     }, [nameRef, handleBlur, handleKeyDown]);
 
     return (
-        <Popover open={open} onOpenChange={setOpen}>
+        <Popover modal="true" open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
                 <Button variant="ghost" className="flex-shrink-0 p-1 size-6  text-muted-foreground hover:text-primary hover:bg-transparent">
                     {trigger}
@@ -89,7 +92,7 @@ const NotesOption = ({ trigger, note, nameRef, setIsRenaming }) => {
             </PopoverTrigger>
             <PopoverContent
                 className="w-48 rounded-lg p-1"
-                side="left"
+                side="bottom"
                 align="start"
             >
                 <Button

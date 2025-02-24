@@ -11,6 +11,8 @@ export const useNoteStore = create((set, get) => ({
   selectedNote: null,
   isContentLoading: false,
   isContentUploading: false,
+  noteNotFound: false, 
+  setNoteNotFound: false,
 
   collections: [],
   notesContent: {
@@ -34,10 +36,13 @@ export const useNoteStore = create((set, get) => ({
           [noteId]: content,
         }
       })
+
+      set({noteNotFound: false});
       return content || '';
     } catch (error) {
       console.error("Error fetching note content", error);
-      return "what's in your ming";
+      set({noteNotFound: true});
+      return null;
     } finally {
       set({ isContentLoading: false });
     }
@@ -47,10 +52,12 @@ export const useNoteStore = create((set, get) => ({
     for (const collection of collections) {
       const note = collection.notes.find((note) => note._id === noteId);
       if (note) {
+        set({noteNotFound: false})
         return note.name;
       }
     }
-    return '';
+    set({noteNotFound: true})
+    return null;
   },
 
   updateContent: async (data) => {
@@ -119,7 +126,6 @@ export const useNoteStore = create((set, get) => ({
     try {
       const res = await axiosInstance.post('/collection', data);
       const { collection, message } = res.data;
-      console.log(collection);
       set((state) => ({
         collections: [...state.collections, collection],
       }));
@@ -173,9 +179,16 @@ export const useNoteStore = create((set, get) => ({
       const res = await axiosInstance.put('collection/', data);
       const { collection, message } = res.data;
       set((state) => ({
-        collections: state.collections.map((c) =>
-          c._id === collection._id ? collection : c
-        )
+        collections: state.collections.map((c) => {
+          if (c.id === collection._id) {
+            return {
+              ...c,
+              name: collection.name,
+              updatedAt: collection.updatedAt,
+            }
+          }
+          return c;
+        })
       }));
 
       toast.success(message);

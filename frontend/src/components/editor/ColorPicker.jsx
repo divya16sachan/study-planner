@@ -27,7 +27,7 @@ export const ColorPicker = ({
                             <Icon />
                         </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto flex items-center gap-1 p-2">
+                    <PopoverContent className="bg-popover border rounded-md w-auto flex items-center gap-1 p-2">
                         {colors.map((color) => (
                             <Button
                                 key={color}
