@@ -81,6 +81,11 @@ const NotePage = () => {
                 try {
                     const latex = element.getAttribute('data-latex');
                     katex.render(latex, element, {
+                        delimiters: [
+                            { left: "$$", right: "$$", display: true },
+                            { left: "\\(", right: "\\)", display: false },
+                            { left: "\\[", right: "\\]", display: true }
+                        ],
                         throwOnError: false,
                     });
                 } catch (error) {

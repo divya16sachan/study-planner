@@ -29,10 +29,12 @@ import {
 } from "@/components/ui/popover";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
+import { SidebarSearch } from "./SidebarSearch";
 
 const AppSidebar = (props) => {
   const { getHierarchy, createCollection, collections } = useNoteStore();
   const [collectionName, setCollectionName] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     getHierarchy();
@@ -97,10 +99,11 @@ const AppSidebar = (props) => {
             </Popover>
           </div>
         </div>
+        <SidebarSearch onSearch={setSearchQuery}/>
       </SidebarHeader>
 
       <SidebarContent>
-        <MemoizedNavMain collections={collections} />
+        <MemoizedNavMain collections={collections} searchQuery={searchQuery} />
       </SidebarContent>
       
       <SidebarFooter>

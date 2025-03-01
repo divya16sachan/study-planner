@@ -35,11 +35,11 @@ export const MathsSymbol = ({ editor }) => {
     { latex: "\\phi", description: "Phi", },
     { latex: "\\omega", description: "Omega", },
     { latex: "\\Delta", description: "Delta", },
-    { latex: "\\pi", description: "PI", },
     { latex: "\\Omega", description: "Omega", },
   ];
 
   const [open, setOpen] = useState(false);
+
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -49,8 +49,8 @@ export const MathsSymbol = ({ editor }) => {
       <PopoverContent className="p-1">
         {
           symbols.map(({ description, latex }) => (
-            <TooltipWrapper message={description}>
-              <Button size="icon" variant="ghost">
+            <TooltipWrapper key={latex} message={description}>
+              <Button size="icon" variant="ghost" onClick={() => editor.commands.insertContent(latex)}>
                 <span dangerouslySetInnerHTML={{ __html: katex.renderToString(latex) }} />
               </Button>
             </TooltipWrapper>

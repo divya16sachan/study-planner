@@ -52,7 +52,7 @@ import CollectionsOption from "../CollectionsOption"
 
 
 
-const NavMain = ({ collections }) => {
+const NavMain = ({ collections, searchQuery }) => {
     const { isCollectionsLoading } = useNoteStore();
     const [noteNewName, setNoteNewName] = useState('');
     const [noteName, setNoteName] = useState('');
@@ -63,12 +63,6 @@ const NavMain = ({ collections }) => {
     const [isCollectionRenaming, setIsCollectionRenaming] = useState(false);
     const [openCollectionsOption, setOpenCollectionsOption] = useState(false);
     const {
-        deleteCollection,
-        renameCollection,
-        createNote,
-        deleteNote,
-        renameNote,
-        moveTo,
         selectedNote,
         setselectedNote,
     } = useNoteStore();
@@ -77,11 +71,19 @@ const NavMain = ({ collections }) => {
         return <SidebarSkeleton />
     }
 
+    const filteredCollections = collections.map((collection) => ({
+        ...collection,
+        notes: collection.notes.filter((note) => {
+            return note.name.toLowerCase().includes(searchQuery.toLowerCase())
+        }),
+    }))
+    .filter((collection) => collection.notes.length > 0);
+
     return (
         <SidebarGroup>
             <SidebarGroupLabel>Collections</SidebarGroupLabel>
             <SidebarMenu>
-                {collections.map((collection, index) => (
+                {filteredCollections.map((collection, index) => (
                     <Collapsible
                         key={collection._id}
                         asChild
@@ -90,7 +92,7 @@ const NavMain = ({ collections }) => {
                     >
                         <SidebarMenuItem>
                             {/* make the diz z index higher when the popover is open  */}
-                            <div className={`relative ${openCollectionsOption === collection._id? 'z-50' : 'z-1'}`}>
+                            <div className={`relative ${openCollectionsOption === collection._id ? 'z-50' : 'z-1'}`}>
                                 <CollapsibleTrigger asChild>
                                     <SidebarMenuButton tooltip={collection.name}>
                                         <ChevronRight className="transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
@@ -113,7 +115,7 @@ const NavMain = ({ collections }) => {
                                             <span className="sr-only">More</span>
                                         </SidebarMenuAction>
                                     }
-                                    onOpenChange={(e)=> setOpenCollectionsOption(e? collection._id : false)}
+                                    onOpenChange={(e) => setOpenCollectionsOption(e ? collection._id : false)}
                                     collection={collection}
                                     setIsRenaming={setIsCollectionRenaming}
                                     nameRef={{ current: collectionNameRefs.current[collection._id] }}

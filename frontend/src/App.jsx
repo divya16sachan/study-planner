@@ -49,6 +49,7 @@ function App() {
         const noteId = segments[++i];
         path += `${noteId}/`;
         let noteName = getNoteName(noteId);
+        console.log(noteName);
         if(noteName === null){
           noteName = "Not found"
         }

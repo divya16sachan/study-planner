@@ -41,6 +41,7 @@ export const useNoteStore = create((set, get) => ({
       return content || '';
     } catch (error) {
       console.error("Error fetching note content", error);
+      console.log("not found");
       set({noteNotFound: true});
       return null;
     } finally {
@@ -57,6 +58,7 @@ export const useNoteStore = create((set, get) => ({
       }
     }
     set({noteNotFound: true})
+    console.log("not found");
     return null;
   },
 
