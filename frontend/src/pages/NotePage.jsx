@@ -80,18 +80,16 @@ const NotePage = () => {
             document.querySelectorAll('span[data-latex]').forEach((element) => {
                 try {
                     const latex = element.getAttribute('data-latex');
+                    const isBlock = element.getAttribute('data-display') === 'yes'; 
                     katex.render(latex, element, {
-                        delimiters: [
-                            { left: "$$", right: "$$", display: true },
-                            { left: "\\(", right: "\\)", display: false },
-                            { left: "\\[", right: "\\]", display: true }
-                        ],
-                        throwOnError: false,
+                        displayMode: isBlock, 
+                        throwOnError: false, 
                     });
                 } catch (error) {
                     console.error('KaTeX render error:', error);
                 }
             });
+
 
 
             // Add header with copy button to each pre tag
