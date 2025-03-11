@@ -51,7 +51,7 @@ const AppSidebar = (props) => {
   }, [collectionName, createCollection]);
 
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar {...props}>
       <SidebarHeader>
         <div className="flex items-center justify-between">
           <div className="flex gap-2">

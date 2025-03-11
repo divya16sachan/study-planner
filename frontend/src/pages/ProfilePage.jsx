@@ -44,7 +44,7 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className="p-4">
+    <div className="p-4 overflow-auto">
       <Card className="max-w-screen-md mx-auto overflow-hidden">
         <div className="h-52 bg-muted/50 relative">
           <img
