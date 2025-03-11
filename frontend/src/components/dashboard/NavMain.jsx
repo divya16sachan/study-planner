@@ -1,6 +1,6 @@
 "use client"
 
-import { ChevronRight, EllipsisVertical, File, FilePlus2, Folder, FolderOutput, FolderPlus, Forward, MoreHorizontal, Pencil, Plus, Trash2 } from "lucide-react"
+import { ChevronRight, EllipsisVertical, File, FilePlus2, Folder, FolderOutput, FolderPlus, Forward, MoreHorizontal, Pencil, Pin, Plus, Trash2 } from "lucide-react"
 
 import {
     Collapsible,
@@ -35,7 +35,7 @@ import { useNoteStore } from "@/stores/useNoteStore"
 import { Button } from "../ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import {
     Command,
@@ -62,6 +62,13 @@ const NavMain = ({ collections, searchQuery }) => {
     const [isNoteRenaming, setIsNoteRenaming] = useState(false);
     const [isCollectionRenaming, setIsCollectionRenaming] = useState(false);
     const [openCollectionsOption, setOpenCollectionsOption] = useState(false);
+    const [pinnedCollections, setPinnedCollections] = useState([]);
+
+    useEffect(()=>{
+        const pinnedCollections = JSON.parse(localStorage.getItem('pinnedCollections')) || [];
+        setPinnedCollections(pinnedCollections);
+    }, []);
+
     const {
         selectedNote,
         setselectedNote,
@@ -77,7 +84,14 @@ const NavMain = ({ collections, searchQuery }) => {
             return note.name.toLowerCase().includes(searchQuery.toLowerCase())
         }),
     }))
-    .filter((collection) => collection.notes.length > 0);
+    .filter((collection) => collection.notes.length > 0)
+    .sort((a, b) => {
+        const aPinnedIndex = pinnedCollections.indexOf(a._id);
+        const bPinnedIndex = pinnedCollections.indexOf(b._id);
+        if (aPinnedIndex === -1) return 1;
+        if (bPinnedIndex === -1) return -1;
+        return aPinnedIndex - bPinnedIndex;
+    });
 
     return (
         <SidebarGroup>
@@ -105,6 +119,7 @@ const NavMain = ({ collections, searchQuery }) => {
                                         >
                                             {collection.name}
                                         </span>
+                                        {pinnedCollections.includes(collection._id) && <Pin className="ml-auto"/>}
                                     </SidebarMenuButton>
                                 </CollapsibleTrigger>
 
@@ -119,6 +134,8 @@ const NavMain = ({ collections, searchQuery }) => {
                                     collection={collection}
                                     setIsRenaming={setIsCollectionRenaming}
                                     nameRef={{ current: collectionNameRefs.current[collection._id] }}
+                                    setPinnedCollections={setPinnedCollections}
+                                    pinnedCollections={pinnedCollections}
                                 />
                             </div>
 

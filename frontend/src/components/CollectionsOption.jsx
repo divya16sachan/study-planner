@@ -2,13 +2,13 @@ import { Popover, PopoverContent, PopoverTrigger } from '@radix-ui/react-popover
 import React, { useEffect, useState } from 'react'
 import { SidebarMenuAction, useSidebar } from './ui/sidebar'
 import { Button } from './ui/button'
-import { Bookmark, FilePlus2, MoreHorizontal, Pencil, Pin, Plus, Trash2 } from 'lucide-react'
+import { Bookmark, FilePlus2, MoreHorizontal, Pencil, Pin, PinOff, Plus, Trash2 } from 'lucide-react'
 import { DropdownMenuSeparator, Label } from '@radix-ui/react-dropdown-menu'
 import { Input } from './ui/input'
 import { useNoteStore } from '@/stores/useNoteStore'
 import { Separator } from './ui/separator'
 
-const CollectionsOption = ({ trigger, collection, nameRef, setIsRenaming, onOpenChange }) => {
+const CollectionsOption = ({ trigger, collection, inputRef, setIsRenaming, onOpenChange, pinnedCollections, setPinnedCollections }) => {
     const { isMobile } = useSidebar();
     const [noteName, setNoteName] = useState('');
     const {
@@ -18,10 +18,10 @@ const CollectionsOption = ({ trigger, collection, nameRef, setIsRenaming, onOpen
     } = useNoteStore();
 
     const handleBlur = () => {
-        if (nameRef?.current) {
-            const newName = nameRef.current.textContent.trim();
-            if(!newName){
-                nameRef.current.textContent = collection.name;
+        if (inputRef?.current) {
+            const newName = inputRef.current.textContent.trim();
+            if (!newName) {
+                inputRef.current.textContent = collection.name;
             }
             else if (newName !== collection.name) {
                 renameCollection({
@@ -36,8 +36,8 @@ const CollectionsOption = ({ trigger, collection, nameRef, setIsRenaming, onOpen
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
-            if (nameRef?.current) {
-                nameRef.current.blur();
+            if (inputRef?.current) {
+                inputRef.current.blur();
             }
         }
     };
@@ -53,15 +53,15 @@ const CollectionsOption = ({ trigger, collection, nameRef, setIsRenaming, onOpen
     const handleRename = () => {
         setIsRenaming(collection._id);
         setTimeout(() => {
-            if (nameRef?.current) {
-                nameRef.current.focus();
-                selectAllText(nameRef.current);
+            if (inputRef?.current) {
+                inputRef.current.focus();
+                selectAllText(inputRef.current);
             }
         });
     };
 
     useEffect(() => {
-        const current = nameRef?.current;
+        const current = inputRef?.current;
         if (current) {
             current.addEventListener('blur', handleBlur);
             current.addEventListener('keydown', handleKeyDown);
@@ -71,11 +71,26 @@ const CollectionsOption = ({ trigger, collection, nameRef, setIsRenaming, onOpen
                 current.removeEventListener('keydown', handleKeyDown);
             };
         }
-    }, [nameRef, handleBlur, handleKeyDown]);
+    }, [inputRef, handleBlur, handleKeyDown]);
 
+    const togglePin = () => {
+        const maxPinned = 3;
+        if (pinnedCollections.includes(collection._id)) {
+            const newPinnedCollections = pinnedCollections.filter(id => id !== collection._id);
+            setPinnedCollections(newPinnedCollections);
+            localStorage.setItem('pinnedCollections', JSON.stringify(newPinnedCollections));
+        }
+        else {
+            const newPinnedCollections = [collection._id, ...pinnedCollections.slice(0, maxPinned - 1)];
+            setPinnedCollections(newPinnedCollections);
+            localStorage.setItem('pinnedCollections', JSON.stringify(newPinnedCollections));
+        }
+        setOpen(false);
+    }
+    const [open, setOpen] = useState(false);
 
     return (
-        <Popover modal={true} onOpenChange={onOpenChange}>
+        <Popover modal={true} open={open} onOpenChange={(e)=>{setOpen(!open), onOpenChange(e)}}>
             <PopoverTrigger asChild>
                 {trigger}
             </PopoverTrigger>
@@ -87,9 +102,19 @@ const CollectionsOption = ({ trigger, collection, nameRef, setIsRenaming, onOpen
                 <Button
                     variant="ghost"
                     className="font-normal p-2 h-auto w-full justify-start "
+                    onClick={togglePin}
                 >
-                    <Pin className="text-muted-foreground"/>
-                    Pin Top
+                    {!pinnedCollections.includes(collection._id) ?
+                        <>
+                            <Pin className="text-muted-foreground" />
+                            Pin Top
+                        </>
+                        :
+                        <>
+                            <PinOff className='text-muted-foreground' />
+                            Unpin
+                        </>
+                    }
                 </Button>
                 < Popover>
                     <PopoverTrigger asChild>
@@ -127,7 +152,7 @@ const CollectionsOption = ({ trigger, collection, nameRef, setIsRenaming, onOpen
                         </div>
                     </PopoverContent>
                 </Popover >
-                
+
                 <Button
                     variant="ghost"
                     className="font-normal p-2 h-auto w-full justify-start "
