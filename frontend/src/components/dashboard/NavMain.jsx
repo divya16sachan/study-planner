@@ -101,7 +101,7 @@ const NavMain = ({ collections, searchQuery }) => {
                                             contentEditable={isCollectionRenaming === collection._id}
                                             suppressContentEditableWarning={true}
                                             ref={e => { collectionNameRefs.current[collection._id] = e }}
-                                            className={`${(isCollectionRenaming === collection._id) ? 'bg-slate-600/20 p-1 outline-none border-none' : ''}`}
+                                            className={`${(isCollectionRenaming === collection._id) ? 'bg-slate-600/20 p-1 outline-none border-none' : 'font-semibold'}`}
                                         >
                                             {collection.name}
                                         </span>
@@ -133,7 +133,7 @@ const NavMain = ({ collections, searchQuery }) => {
                                                         ref={e => { noteNameRefs.current[note._id] = e }}
                                                         contentEditable={isNoteRenaming === note._id}
                                                         suppressContentEditableWarning={true}
-                                                        className={`truncate w-full  ${(isNoteRenaming === note._id) ? 'bg-muted-foreground/20 p-1 outline-none  text-clip' : ''}`}
+                                                        className={`truncate w-full text-primary/70  ${(isNoteRenaming === note._id) ? 'bg-muted-foreground/20 p-1 outline-none  text-clip' : ''}`}
                                                     >{note.name}</span>
 
                                                     <div className="group-hover/menu:visible invisible">

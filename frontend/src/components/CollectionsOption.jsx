@@ -2,7 +2,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@radix-ui/react-popover
 import React, { useEffect, useState } from 'react'
 import { SidebarMenuAction, useSidebar } from './ui/sidebar'
 import { Button } from './ui/button'
-import { FilePlus2, MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react'
+import { Bookmark, FilePlus2, MoreHorizontal, Pencil, Pin, Plus, Trash2 } from 'lucide-react'
 import { DropdownMenuSeparator, Label } from '@radix-ui/react-dropdown-menu'
 import { Input } from './ui/input'
 import { useNoteStore } from '@/stores/useNoteStore'
@@ -84,6 +84,13 @@ const CollectionsOption = ({ trigger, collection, nameRef, setIsRenaming, onOpen
                 side="bottom"
                 align={isMobile ? "end" : "start"}
             >
+                <Button
+                    variant="ghost"
+                    className="font-normal p-2 h-auto w-full justify-start "
+                >
+                    <Pin className="text-muted-foreground"/>
+                    Pin Top
+                </Button>
                 < Popover>
                     <PopoverTrigger asChild>
                         <Button variant="ghost" className="font-normal p-2 h-auto w-full justify-start">
