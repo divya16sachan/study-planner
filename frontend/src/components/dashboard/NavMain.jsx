@@ -54,9 +54,6 @@ import CollectionsOption from "../CollectionsOption"
 
 const NavMain = ({ collections, searchQuery }) => {
     const { isCollectionsLoading } = useNoteStore();
-    const [noteNewName, setNoteNewName] = useState('');
-    const [noteName, setNoteName] = useState('');
-    const [open, setOpen] = useState(false);
     const noteNameRefs = useRef({});
     const collectionNameRefs = useRef({});
     const [isNoteRenaming, setIsNoteRenaming] = useState(false);
@@ -64,10 +61,26 @@ const NavMain = ({ collections, searchQuery }) => {
     const [openCollectionsOption, setOpenCollectionsOption] = useState(false);
     const [pinnedCollections, setPinnedCollections] = useState([]);
 
-    useEffect(()=>{
+    useEffect(() => {
         const pinnedCollections = JSON.parse(localStorage.getItem('pinnedCollections')) || [];
         setPinnedCollections(pinnedCollections);
     }, []);
+
+    const filteredCollections = collections.map((collection) => ({
+        ...collection,
+        notes: collection.notes.filter((note) => {
+            return note.name.toLowerCase().includes(searchQuery.toLowerCase())
+        }),
+    }))
+        .filter((collection) => collection.notes.length > 0)
+        .sort((a, b) => {
+            const aPinnedIndex = pinnedCollections.indexOf(a._id);
+            const bPinnedIndex = pinnedCollections.indexOf(b._id);
+            if (aPinnedIndex === -1) return 1;
+            if (bPinnedIndex === -1) return -1;
+            return aPinnedIndex - bPinnedIndex;
+        });
+
 
     const {
         selectedNote,
@@ -78,20 +91,9 @@ const NavMain = ({ collections, searchQuery }) => {
         return <SidebarSkeleton />
     }
 
-    const filteredCollections = collections.map((collection) => ({
-        ...collection,
-        notes: collection.notes.filter((note) => {
-            return note.name.toLowerCase().includes(searchQuery.toLowerCase())
-        }),
-    }))
-    .filter((collection) => collection.notes.length > 0)
-    .sort((a, b) => {
-        const aPinnedIndex = pinnedCollections.indexOf(a._id);
-        const bPinnedIndex = pinnedCollections.indexOf(b._id);
-        if (aPinnedIndex === -1) return 1;
-        if (bPinnedIndex === -1) return -1;
-        return aPinnedIndex - bPinnedIndex;
-    });
+
+
+
 
     return (
         <SidebarGroup>
@@ -111,15 +113,17 @@ const NavMain = ({ collections, searchQuery }) => {
                                     <SidebarMenuButton tooltip={collection.name}>
                                         <ChevronRight className="transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                                         <Folder />
-                                        <span
-                                            contentEditable={isCollectionRenaming === collection._id}
-                                            suppressContentEditableWarning={true}
-                                            ref={e => { collectionNameRefs.current[collection._id] = e }}
-                                            className={`${(isCollectionRenaming === collection._id) ? 'bg-slate-600/20 p-1 outline-none border-none' : 'font-semibold'}`}
-                                        >
-                                            {collection.name}
-                                        </span>
-                                        {pinnedCollections.includes(collection._id) && <Pin className="ml-auto"/>}
+                                        <div>
+                                            <span className={`${isCollectionRenaming !== collection._id ? 'opacity-100' : 'opacity-0 pointer-events-none'} font-semibold truncate`}>{collection.name}</span>
+                                            <Input
+                                                className={`${isCollectionRenaming === collection._id ? 'opacity-100' : 'opacity-0 pointer-events-none'} absolute inset-0 z-10 bg-background h-full w-full`}
+                                                type="text"
+                                                defaultValue={collection.name}
+                                                ref={e => { collectionNameRefs.current[collection._id] = e }}
+                                            />
+                                        </div>
+
+                                        {pinnedCollections.includes(collection._id) && <Pin className="ml-auto" />}
                                     </SidebarMenuButton>
                                 </CollapsibleTrigger>
 
@@ -133,7 +137,7 @@ const NavMain = ({ collections, searchQuery }) => {
                                     onOpenChange={(e) => setOpenCollectionsOption(e ? collection._id : false)}
                                     collection={collection}
                                     setIsRenaming={setIsCollectionRenaming}
-                                    nameRef={{ current: collectionNameRefs.current[collection._id] }}
+                                    inputRef={{ current: collectionNameRefs.current[collection._id] }}
                                     setPinnedCollections={setPinnedCollections}
                                     pinnedCollections={pinnedCollections}
                                 />

@@ -23,8 +23,8 @@ export const deleteNote = async (req, res) => {
     if (!_id) {
         res.status(400).json({ message: "Note_id not provided" });
     }
-    if(!mongoose.Types.ObjectId.isValid(_id)){
-        return res.status(400).json({message: "Invalid note_id format"});
+    if (!mongoose.Types.ObjectId.isValid(_id)) {
+        return res.status(400).json({ message: "Invalid note_id format" });
     }
 
     try {
@@ -37,16 +37,18 @@ export const deleteNote = async (req, res) => {
 }
 export const getNote = async (req, res) => {
     const { _id } = req.params;
+    const { user } = req;
     if (!_id) {
         return res.status(400).json({ message: "note_id not provided" });
     }
-    if(!mongoose.Types.ObjectId.isValid(_id)){
-        return res.status(400).json({message: "Invalid note_id format"});
+    if (!mongoose.Types.ObjectId.isValid(_id)) {
+        return res.status(400).json({ message: "Invalid note_id format" });
     }
+
     try {
-        const note = await Note.findById(_id);
-        if(!note){
-            return res.status(404).json({message: `note not found with id ${_id}`});
+        const note = await Note.findById({_id, userId: user._id});
+        if (!note) {
+            return res.status(404).json({ message: `note not found with id ${_id}` });
         }
         res.status(200).json({ note })
     } catch (error) {
@@ -59,9 +61,10 @@ export const getNotes = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
+    const { user } = req;
 
     try {
-        const notes = await Note.find()
+        const notes = await Note.find({userId: user._id})
             .sort({ updatedAt: -1 })
             .skip(skip)
             .limit(limit)
@@ -90,7 +93,6 @@ export const updateContent = async (req, res) => {
 
 export const renameNote = async (req, res) => {
     const { noteId, newName } = req.body;
-    console.log(noteId, newName);
     if (!noteId || !newName) {
         return res.status(400).json({ message: "noteId and newName are required." });
     }

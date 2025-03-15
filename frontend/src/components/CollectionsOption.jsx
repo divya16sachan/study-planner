@@ -18,57 +18,57 @@ const CollectionsOption = ({ trigger, collection, inputRef, setIsRenaming, onOpe
     } = useNoteStore();
 
     const handleBlur = () => {
-        if (inputRef?.current) {
-            const newName = inputRef.current.textContent.trim();
-            if (!newName) {
-                inputRef.current.textContent = collection.name;
-            }
-            else if (newName !== collection.name) {
-                renameCollection({
-                    _id: collection._id,
-                    newName,
-                });
-            }
+        console.log('blur');
+        const data = {
+            _id: collection._id,
+            newName: inputRef.current.value.trim(),
+        };
+        if (data.newName && data.newName !== collection.name) {
+            renameCollection(data);
         }
         setIsRenaming(false);
-    };
+    }
+    const handleFocus = () => {
+        console.log('focus');
+    }
 
     const handleKeyDown = (e) => {
+        e.stopPropagation();
         if (e.key === 'Enter') {
-            e.preventDefault();
-            if (inputRef?.current) {
-                inputRef.current.blur();
-            }
+            handleBlur();
         }
-    };
-
-    const selectAllText = (node) => {
-        const range = document.createRange();
-        const selection = window.getSelection();
-        range.selectNodeContents(node);
-        selection.removeAllRanges();
-        selection.addRange(range);
-    };
+    }
 
     const handleRename = () => {
         setIsRenaming(collection._id);
+        setOpen(false);
+        
         setTimeout(() => {
-            if (inputRef?.current) {
-                inputRef.current.focus();
-                selectAllText(inputRef.current);
+            if (inputRef.current) {
+                inputRef.current.focus(); 
+                inputRef.current.select();
             }
-        });
+        }, 0); 
     };
+    
+
+    const handleClick = (e) => {
+        e.preventDefault();
+    }
 
     useEffect(() => {
         const current = inputRef?.current;
         if (current) {
             current.addEventListener('blur', handleBlur);
+            current.addEventListener('focus', handleFocus);
             current.addEventListener('keydown', handleKeyDown);
+            current.addEventListener('click', handleClick);
 
             return () => {
                 current.removeEventListener('blur', handleBlur);
                 current.removeEventListener('keydown', handleKeyDown);
+                current.removeEventListener('click', handleClick);
+                current.removeEventListener('focus', handleFocus);
             };
         }
     }, [inputRef, handleBlur, handleKeyDown]);
@@ -90,7 +90,7 @@ const CollectionsOption = ({ trigger, collection, inputRef, setIsRenaming, onOpe
     const [open, setOpen] = useState(false);
 
     return (
-        <Popover modal={true} open={open} onOpenChange={(e)=>{setOpen(!open), onOpenChange(e)}}>
+        <Popover modal={true} open={open} onOpenChange={(e) => { setOpen(!open), onOpenChange(e) }}>
             <PopoverTrigger asChild>
                 {trigger}
             </PopoverTrigger>

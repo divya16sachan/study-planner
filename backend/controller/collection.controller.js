@@ -12,7 +12,6 @@ export const createCollection = async (req, res) => {
     if (!name) {
         return res.status(400).json({ message: "Collection name is required." });
     }
-
     try {
         const collection = await Collection.create({ name, userId: user._id });
         res.status(201).json({ 

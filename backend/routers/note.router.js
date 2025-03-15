@@ -14,12 +14,12 @@ const router = express.Router();
 
 router.use(protectRoute);
 
-router.get('/', getNotes);
-router.get('/:_id', getNote);
-router.post('/', createNote);
-router.delete('/:_id', deleteNote);
-router.put('/', updateContent);
-router.put('/rename', renameNote);
-router.post('/move-to', moveTo);
+router.get('/', protectRoute, getNotes);
+router.get('/:_id', protectRoute, getNote);
+router.post('/', protectRoute, createNote);
+router.delete('/:_id', protectRoute, deleteNote);
+router.put('/', protectRoute, updateContent);
+router.put('/rename', protectRoute, renameNote);
+router.post('/move-to', protectRoute, moveTo);
 
 export default router;
