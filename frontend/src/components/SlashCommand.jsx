@@ -15,6 +15,7 @@ import {
     ListOrdered,
     ListTodo,
     Minus,
+    Pilcrow,
     Quote,
     Table
 } from "lucide-react";
@@ -51,6 +52,7 @@ export const SlashCommand = Extension.create({
                 items: ({ query }) => {
                     // Filter suggestions based on the query
                     const suggestions = [
+                        { icon: <Pilcrow />, label: 'Paragraph', command: 'setParagraph' },
                         { icon: <Heading1 />, label: 'Heading 1', command: 'setHeading', props: { level: 1 } },
                         { icon: <Heading2 />, label: 'Heading 2', command: 'setHeading', props: { level: 2 } },
                         { icon: <Heading3 />, label: 'Heading 3', command: 'setHeading', props: { level: 3 } },
