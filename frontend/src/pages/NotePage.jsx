@@ -80,10 +80,10 @@ const NotePage = () => {
             document.querySelectorAll('span[data-latex]').forEach((element) => {
                 try {
                     const latex = element.getAttribute('data-latex');
-                    const isBlock = element.getAttribute('data-display') === 'yes'; 
+                    const isBlock = element.getAttribute('data-display') === 'yes';
                     katex.render(latex, element, {
-                        displayMode: isBlock, 
-                        throwOnError: false, 
+                        displayMode: isBlock,
+                        throwOnError: false,
                     });
                 } catch (error) {
                     console.error('KaTeX render error:', error);
@@ -192,9 +192,10 @@ const NotePage = () => {
             <Button
                 onClick={() => navigate(`editor`)}
                 variant="secondary"
-                className="fixed right-2  bottom-2 shadow-md z-10 font-bold"
+                className="fixed right-2 top-20 shadow-md z-10 font-bold flex items-center justify-center md:space-x-2 w-10 h-10 md:w-auto md:h-auto"
             >
-                <Pencil /> Edit
+                <Pencil />
+                <span className="hidden md:block">Edit</span>
             </Button>
             {parse(content)}
         </div>
