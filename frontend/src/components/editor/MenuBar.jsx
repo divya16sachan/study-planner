@@ -67,7 +67,7 @@ export const MenuBar = ({ noteId }) => {
             content,
             noteId: noteId
         });
-        navigate(-1);
+        navigate(`notes/${noteId}`);
     };
 
 

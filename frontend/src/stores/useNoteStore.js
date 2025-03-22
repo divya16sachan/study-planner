@@ -213,9 +213,11 @@ export const useNoteStore = create((set, get) => ({
       get().insertNoteInCollection(collectionId, note);
 
       toast.success(message);
+      return note._id;
     } catch (error) {
       console.log(error);
       toast.error(error.response.data.message);
+      return null;
     } finally {
       set({ isCreatingNote: false });
     }

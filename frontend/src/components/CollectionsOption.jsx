@@ -7,6 +7,7 @@ import { DropdownMenuSeparator, Label } from '@radix-ui/react-dropdown-menu'
 import { Input } from './ui/input'
 import { useNoteStore } from '@/stores/useNoteStore'
 import { Separator } from './ui/separator'
+import { useNavigate } from 'react-router-dom'
 
 const CollectionsOption = ({ trigger, collection, inputRef, setIsRenaming, onOpenChange, pinnedCollections, setPinnedCollections }) => {
     const { isMobile } = useSidebar();
@@ -87,7 +88,17 @@ const CollectionsOption = ({ trigger, collection, inputRef, setIsRenaming, onOpe
         }
         setOpen(false);
     }
+    
+    const navigate = useNavigate();
     const [open, setOpen] = useState(false);
+
+    const insertNote = async()=>{
+        const noteId = await createNote({ 
+            name: noteName, 
+            collectionId: collection._id 
+        })
+        navigate(`/note/${noteId}/editor`);
+    }
 
     return (
         <Popover modal={true} open={open} onOpenChange={(e) => { setOpen(!open), onOpenChange(e) }}>
@@ -145,7 +156,7 @@ const CollectionsOption = ({ trigger, collection, inputRef, setIsRenaming, onOpe
                             </div>
                             <Button
                                 variant="secondary"
-                                onClick={() => createNote({ name: noteName, collectionId: collection._id })}
+                                onClick={insertNote}
                             >
                                 <Plus /> Add
                             </Button>

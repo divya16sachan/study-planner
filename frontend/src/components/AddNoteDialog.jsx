@@ -19,11 +19,13 @@ import { Input } from "@/components/ui/input"
 import { Folder, FolderPlus, Loader2, Plus } from "lucide-react"
 import { useState } from "react"
 import { useNoteStore } from "@/stores/useNoteStore"
+import { useNavigate } from "react-router-dom"
 
 const AddNoteDialog = ({ trigger }) => {
     const [noteName, setNoteName] = useState('');
     const [collectionName, setCollectionName] = useState('');
     const [open, setOpen] = useState(false);
+    const navigate = useNavigate();
 
     const {
         collections,
@@ -38,13 +40,14 @@ const AddNoteDialog = ({ trigger }) => {
 
 
     const handleAddNote = async () => {
-        await createNote({
+        const noteId = await createNote({
             name: noteName,
             collectionId: selectedCollection._id,
         })
 
         setNoteName('');
         setOpen(false);
+        navigate(`/note/${noteId}/editor`);
     }
     const handleAddCollection = async () => {
         const collection = await createCollection({ name: collectionName });
