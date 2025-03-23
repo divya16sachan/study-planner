@@ -124,7 +124,7 @@ div:has(> .tiptap.ProseMirror) {
 .tiptap {
   @apply relative w-full border-none outline-none mx-auto bg-background text-primary font-sans leading-relaxed overflow-x-hidden p-4;
 
-  >img{
+  img{
     @apply max-h-[50vh] rounded-xl;
   }
   .code-block {
