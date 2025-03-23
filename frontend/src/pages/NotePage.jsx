@@ -188,16 +188,18 @@ const NotePage = () => {
     return (
 
         <div className={`tiptap ${!content.trim() ? 'empty' : ''}`}>
-            {imageOpen && <ImageViewer {...imageOpen} />}
-            <Button
-                onClick={() => navigate(`editor`)}
-                variant="secondary"
-                className="fixed right-2 top-20 shadow-md z-10 font-bold flex items-center justify-center md:space-x-2 w-10 h-10 md:w-auto md:h-auto"
-            >
-                <Pencil />
-                <span className="hidden md:block">Edit</span>
-            </Button>
-            {parse(content)}
+            <div className='max-w-screen-md m-auto'>
+                {imageOpen && <ImageViewer {...imageOpen} />}
+                <Button
+                    onClick={() => navigate(`editor`)}
+                    variant="secondary"
+                    className="fixed right-2 top-20 shadow-md z-10 font-bold flex items-center justify-center md:space-x-2 w-10 h-10 md:w-auto md:h-auto"
+                >
+                    <Pencil />
+                    <span className="hidden md:block">Edit</span>
+                </Button>
+                {parse(content)}
+            </div>
         </div>
 
     )

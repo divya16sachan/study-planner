@@ -118,8 +118,11 @@ div:has(> .tiptap.ProseMirror) {
   flex: 1;
   overflow-y: auto;
 }
+.tiptap.ProseMirror{
+  @apply max-w-screen-md;
+}
 .tiptap {
-  @apply relative w-full border-none outline-none mx-auto bg-background text-primary font-sans leading-relaxed max-w-screen-md overflow-x-hidden p-4;
+  @apply relative w-full border-none outline-none mx-auto bg-background text-primary font-sans leading-relaxed overflow-x-hidden p-4;
 
   >img{
     @apply max-h-[50vh] rounded-xl;
