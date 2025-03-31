@@ -13,10 +13,13 @@ import NavUser from "@/components/dashboard/NavUser";
 
 import {
   Sidebar,
+  SidebarCloseTrigger,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
+  SidebarOpenTrigger,
   SidebarRail,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { useNoteStore } from "@/stores/useNoteStore";
 import { Button } from "../ui/button";
@@ -30,6 +33,7 @@ import {
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { SidebarSearch } from "./SidebarSearch";
+import TooltipWrapper from "../TooltipWrapper";
 
 const AppSidebar = (props) => {
   const { getHierarchy, createCollection, collections } = useNoteStore();
@@ -53,22 +57,22 @@ const AppSidebar = (props) => {
   return (
     <Sidebar {...props}>
       <SidebarHeader>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between h-14">
           <div className="flex gap-2">
-            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-              <GalleryVerticalEnd className="size-4" />
-            </div>
-            <div className="grid flex-1 text-left text-sm leading-tight">
-              <Link to='/' className="truncate font-semibold">NoteHub</Link>
-              <span className="truncate text-xs">folder</span>
-            </div>
+            <TooltipWrapper message={"Close Sidebar"}>
+              <SidebarCloseTrigger />
+            </TooltipWrapper>
+            <Link to='/' className="truncate font-semibold">NoteHub</Link>
           </div>
+
           <div className="flex buttons-container">
             <Popover>
               <PopoverTrigger asChild>
+                <TooltipWrapper message="Add Collection">
                 <Button className="text-sidebar-accent-foreground/70" size="icon" variant="ghost">
                   <FolderPlus />
                 </Button>
+                </TooltipWrapper>
               </PopoverTrigger>
               <PopoverContent className="w-80">
                 <div className="grid gap-4">
@@ -99,13 +103,13 @@ const AppSidebar = (props) => {
             </Popover>
           </div>
         </div>
-        <SidebarSearch onSearch={setSearchQuery}/>
+        <SidebarSearch onSearch={setSearchQuery} />
       </SidebarHeader>
 
       <SidebarContent>
         <MemoizedNavMain collections={collections} searchQuery={searchQuery} />
       </SidebarContent>
-      
+
       <SidebarFooter>
         <NavUser />
       </SidebarFooter>

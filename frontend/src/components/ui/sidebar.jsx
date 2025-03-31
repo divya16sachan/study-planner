@@ -1,7 +1,7 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva } from "class-variance-authority";
-import { PanelLeft } from "lucide-react"
+import { PanelLeft, PanelRight } from "lucide-react"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
@@ -73,6 +73,19 @@ const SidebarProvider = React.forwardRef((
       : setOpen((open) => !open);
   }, [isMobile, setOpen, setOpenMobile])
 
+  const openSidebar = React.useCallback(() => {
+    return isMobile
+      ? setOpenMobile(true)
+      : setOpen(true);
+  }, [isMobile, setOpen, setOpenMobile])
+
+  const closeSidebar = React.useCallback(() => {
+    return isMobile
+      ? setOpenMobile(false)
+      : setOpen(false);
+  }, [isMobile, setOpen, setOpenMobile])
+
+
   // Adds a keyboard shortcut to toggle the sidebar.
   React.useEffect(() => {
     const handleKeyDown = (event) => {
@@ -92,6 +105,7 @@ const SidebarProvider = React.forwardRef((
   // We add a state so that we can do data-state="expanded" or "collapsed".
   // This makes it easier to style the sidebar with Tailwind classes.
   const state = open ? "expanded" : "collapsed"
+  const isSidebarOpen = isMobile ? openMobile : open;
 
   const contextValue = React.useMemo(() => ({
     state,
@@ -101,7 +115,10 @@ const SidebarProvider = React.forwardRef((
     openMobile,
     setOpenMobile,
     toggleSidebar,
-  }), [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar])
+    openSidebar,
+    closeSidebar,
+    isSidebarOpen,
+  }), [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar, openSidebar, closeSidebar, isSidebarOpen])
 
   return (
     (<SidebarContext.Provider value={contextValue}>
@@ -237,6 +254,48 @@ const SidebarTrigger = React.forwardRef(({ className, onClick, ...props }, ref) 
   );
 })
 SidebarTrigger.displayName = "SidebarTrigger"
+
+const SidebarOpenTrigger = React.forwardRef(({ className, onClick, ...props }, ref) => {
+  const { openSidebar } = useSidebar();
+  return (
+    (<Button
+      ref={ref}
+      data-sidebar="trigger"
+      variant="ghost"
+      size="icon"
+      className={cn("h-7 w-7", className)}
+      onClick={(event) => {
+        onClick?.(event)
+        openSidebar()
+      }}
+      {...props}>
+      <PanelRight />
+      <span className="sr-only">Open Sidebar</span>
+    </Button>)
+  );
+})
+SidebarTrigger.displayName = "SidebarOpenTrigger"
+
+const SidebarCloseTrigger = React.forwardRef(({ className, onClick, ...props }, ref) => {
+  const { closeSidebar } = useSidebar();
+  return (
+    (<Button
+      ref={ref}
+      data-sidebar="trigger"
+      variant="ghost"
+      size="icon"
+      className={cn("h-7 w-7", className)}
+      onClick={(event) => {
+        onClick?.(event)
+        closeSidebar()
+      }}
+      {...props}>
+      <PanelLeft />
+      <span className="sr-only">Close Sidebar</span>
+    </Button>)
+  );
+})
+SidebarTrigger.displayName = "SidebarCloseTrigger"
 
 const SidebarRail = React.forwardRef(({ className, ...props }, ref) => {
   const { toggleSidebar } = useSidebar()
@@ -498,7 +557,7 @@ const SidebarMenuAction = React.forwardRef(({ className, asChild = false, showOn
         "peer-data-[size=lg]/menu-button:top-2.5",
         "group-data-[collapsible=icon]:hidden",
         showOnHover &&
-          "group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 peer-data-[active=true]/menu-button:text-sidebar-accent-foreground md:opacity-0",
+        "group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 peer-data-[active=true]/menu-button:text-sidebar-accent-foreground md:opacity-0",
         className
       )}
       {...props} />)
@@ -615,5 +674,7 @@ export {
   SidebarRail,
   SidebarSeparator,
   SidebarTrigger,
+  SidebarOpenTrigger,
+  SidebarCloseTrigger,
   useSidebar,
 }
