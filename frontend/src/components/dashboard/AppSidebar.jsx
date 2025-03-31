@@ -1,9 +1,12 @@
 "use client"
 
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import {
   FolderPlus,
   CopyMinus,
+  Search,
+  X,
+  ArrowLeft,
 } from "lucide-react";
 
 import NavMain from "@/components/dashboard/NavMain";
@@ -54,67 +57,105 @@ const AppSidebar = (props) => {
     }
   }, [collectionName, createCollection]);
 
+  const [showSearch, setShowSearch] = useState(false);
+  const searchRef = useRef(null);
+
   return (
     <Sidebar {...props}>
-      <SidebarHeader>
-        <div className="flex items-center justify-between h-14">
-          <div className="flex gap-2">
-            <TooltipWrapper message={"Close Sidebar [CTRL + m]"}>
-              <SidebarCloseTrigger />
-            </TooltipWrapper>
-            <Link to='/' className="truncate font-semibold">NoteHub</Link>
-          </div>
+      <SidebarHeader className="pb-0">
 
-          <div className="flex buttons-container">
-            <TooltipWrapper message="Collapse All">
+        <div className="py-[13px] h-14">
+          {showSearch ?
+            <div className="flex gap-2 items-center">
+              <SidebarSearch
+                inputRef={searchRef}
+                onSearch={setSearchQuery}
+              />
               <Button
-                className="text-sidebar-accent-foreground/70"
-                size="icon"
                 variant="ghost"
-                onClick={collapseAll}
+                className="size-8"
+                onClick={() => setShowSearch(false)}
               >
-                <CopyMinus />
+                <X />
               </Button>
-            </TooltipWrapper>
+            </div>
+            :
+            <div className="flex items-center justify-between">
+              <div className="flex gap-2">
+                <TooltipWrapper message={"Close Sidebar [CTRL + m]"}>
+                  <SidebarCloseTrigger />
+                </TooltipWrapper>
+                <Link to='/' className="truncate font-semibold">NoteHub</Link>
+              </div>
 
-            <Popover>
-              <PopoverTrigger asChild>
-                <TooltipWrapper message="Add Collection">
-                  <Button className="text-sidebar-accent-foreground/70" size="icon" variant="ghost">
-                    <FolderPlus />
+              <div className="flex buttons-container">
+                <TooltipWrapper message="Collapse All">
+                  <Button
+                    className="size-7 text-sidebar-accent-foreground/70"
+                    variant="ghost"
+                    onClick={collapseAll}
+                  >
+                    <CopyMinus />
                   </Button>
                 </TooltipWrapper>
-              </PopoverTrigger>
-              <PopoverContent className="w-80">
-                <div className="grid gap-4">
-                  <div className="space-y-2">
-                    <h4 className="font-medium leading-none">Collection</h4>
-                    <p className="text-sm text-muted-foreground">Set Collection name</p>
-                  </div>
-                  <div className="grid gap-2">
-                    <div className="flex items-center gap-4">
-                      <Label htmlFor="collectionName">Name</Label>
-                      <Input
-                        id="collectionName"
-                        className="col-span-2 h-8"
-                        value={collectionName}
-                        onChange={(e) => setCollectionName(e.target.value)}
-                      />
+
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <TooltipWrapper message="Add Collection">
+                      <Button
+                        className="size-7 text-sidebar-accent-foreground/70"
+                        variant="ghost"
+                      >
+                        <FolderPlus />
+                      </Button>
+                    </TooltipWrapper>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-80">
+                    <div className="grid gap-4">
+                      <div className="space-y-2">
+                        <h4 className="font-medium leading-none">Collection</h4>
+                        <p className="text-sm text-muted-foreground">Set Collection name</p>
+                      </div>
+                      <div className="grid gap-2">
+                        <div className="flex items-center gap-4">
+                          <Label htmlFor="collectionName">Name</Label>
+                          <Input
+                            id="collectionName"
+                            className="col-span-2 h-8"
+                            value={collectionName}
+                            onChange={(e) => setCollectionName(e.target.value)}
+                          />
+                        </div>
+                      </div>
+                      <Button
+                        onClick={handleCreateCollection}
+                        variant="secondary"
+                        disabled={!collectionName.trim() || collections.find(({ name }) => name === collectionName.trim())}
+                      >
+                        Create
+                      </Button>
                     </div>
-                  </div>
+                  </PopoverContent>
+                </Popover>
+
+                <TooltipWrapper message="Search File">
                   <Button
-                    onClick={handleCreateCollection}
-                    variant="secondary"
-                    disabled={!collectionName.trim() || collections.find(({ name }) => name === collectionName.trim())}
+                    className="size-7 w-7 h-7 text-sidebar-accent-foreground/70"
+                    variant="ghost"
+                    onClick={() => {
+                      setShowSearch(true)
+                      console.log(searchRef)
+                    }
+                    }
                   >
-                    Create
+                    <Search />
                   </Button>
-                </div>
-              </PopoverContent>
-            </Popover>
-          </div>
+                </TooltipWrapper>
+              </div>
+            </div>
+          }
         </div>
-        <SidebarSearch onSearch={setSearchQuery} />
+
       </SidebarHeader>
 
       <SidebarContent>

@@ -4,7 +4,7 @@ import { Skeleton } from '../ui/skeleton'
 const SidebarSkeleton = () => {
     const notesLength = JSON.parse(localStorage.getItem('notesLength')) || [];
     return (
-        <div className='h-full pt-8 w-full border  p-2'>
+        <div className='h-full pt-8 w-full p-2'>
             {
                 notesLength.map((length, index) => (
                     <div key={index} className='mb-8'>
