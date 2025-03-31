@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { Bold, Code2, EllipsisVertical, File, Folder, Hash, ListChecksIcon, Plus, Table } from 'lucide-react';
 import { axiosInstance } from '@/lib/axios';
-import { Link } from 'react-router-dom';
 import { formatTime, formatDate } from '@/lib/utils.js';
 import { Button } from '@/components/ui/button';
 import NotesSkeleton from '@/components/sekeletons/NotesSkeleton';
@@ -10,6 +9,8 @@ import { useNoteStore } from '@/stores/useNoteStore';
 import NotesOption from '@/components/NotesOption';
 import { Badge } from '@/components/ui/badge';
 import AddNoteDialog from '@/components/AddNoteDialog';
+import { Input } from '@/components/ui/input';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 // Feature card data
 const featureCards = [
@@ -55,28 +56,28 @@ const FeatureCard = ({ title, description, icon }) => (
 const NoteCard = ({ note, collectionName }) => {
   const nameRef = useRef(null);
   const [isRenaming, setIsRenaming] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <div className='flex gap-2 items-start p-4 border rounded-lg'>
       {/* <Button variant="secondary" disabled className="size-8"><Hash /></Button> */}
-      <div className='overflow-hidden w-full'>
+      <div className='overflow-hidden pt-1 w-full'>
         <div className='flex justify-between items-start'>
-          <Link
-            to={`/note/${note._id}`}
-            className='text-blue-800 flex items-center gap-1 dark:text-[#a8abff] transition-colors group'
+          <div
+            className='w-full text-blue-800 flex items-center gap-1 dark:text-[#a8abff] transition-colors group'
           >
-            <File className='flex-shrink-0 size-4'/>
-            <strong
-              contentEditable={Boolean(isRenaming)}
-              ref={nameRef}
-              suppressContentEditableWarning={true}
-              className={`truncate w-full group-hover:underline ${Boolean(isRenaming) ? 'bg-slate-600/20 p-1 outline-none border-none' : ''}`}
-            >
-              {note.name}
-            </strong>
-
-          </Link>
-
+            <File className='flex-shrink-0 size-4' />
+            {isRenaming ?
+              <Input
+                className={`font-bold truncate ${Boolean(isRenaming) ? '' : 'border-none outline-none p-0 group-hover:underline'}`}
+                defaultValue={note.name}
+                readOnly={!Boolean(isRenaming)}
+                ref={nameRef}
+              />
+              :
+              <Link to={`/note/${note._id}`} className='font-bold truncate'>{note.name}</Link>
+            }
+          </div>
 
           <NotesOption
             trigger={<EllipsisVertical />}

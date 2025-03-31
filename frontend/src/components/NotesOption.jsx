@@ -12,12 +12,13 @@ const NotesOption = ({ trigger, note, nameRef, setIsRenaming }) => {
     const { renameNote, moveTo, deleteNote, collections } = useNoteStore();
     const [open, setOpen] = useState(false);
     const [moveOpen, setMoveOpen] = useState(false);
+
     const handleBlur = () => {
         console.log('blur event triggered');
         if (nameRef?.current) {
-            const newName = nameRef.current.textContent.trim();
+            const newName = nameRef.current.value.trim();
             if (!newName) {
-                nameRef.current.textContent = note.name;
+                nameRef.current.value = note.name;
             }
             else if (newName && newName !== note.name) {
                 renameNote({
@@ -48,12 +49,13 @@ const NotesOption = ({ trigger, note, nameRef, setIsRenaming }) => {
 
     const handleRename = () => {
         setIsRenaming(note._id);
+        setOpen(false);
         setTimeout(() => {
             if (nameRef?.current) {
-                nameRef.current.focus();
                 selectAllText(nameRef.current);
+                nameRef.current.focus();
             }
-        });
+        }, 200);
     };
 
     const handleMove = async (collectionId) => {
@@ -75,7 +77,6 @@ const NotesOption = ({ trigger, note, nameRef, setIsRenaming }) => {
         if (current) {
             current.addEventListener('blur', handleBlur);
             current.addEventListener('keydown', handleKeyDown);
-
             return () => {
                 current.removeEventListener('blur', handleBlur);
                 current.removeEventListener('keydown', handleKeyDown);

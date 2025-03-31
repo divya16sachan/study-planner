@@ -4,7 +4,6 @@ import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from './stores/useAuthStore';
 import { Toaster } from 'sonner';
 
-import Navbar from './components/Navbar';
 import Tiptap from './components/editor/Tiptap';
 
 //Pages
