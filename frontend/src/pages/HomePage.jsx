@@ -54,40 +54,93 @@ const FeatureCard = ({ title, description, icon }) => (
 );
 
 const NoteCard = ({ note, collectionName }) => {
-  const nameRef = useRef(null);
+  const inputRef = useRef(null);
   const [isRenaming, setIsRenaming] = useState(false);
+  const { renameNote } = useNoteStore();
   const navigate = useNavigate();
 
+  const handleRenameStart = () => {
+    setIsRenaming(true);
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+        inputRef.current.select();
+      }
+    }, 0);
+  };
+
+  const handleSaveRename = () => {
+    const newName = inputRef.current?.value.trim();
+    if (newName && newName !== note.name) {
+      renameNote({
+        noteId: note._id,
+        newName: newName,
+      });
+    }
+    setIsRenaming(false);
+  };
+
+  const handleKeyDown = (e) => {
+    e.stopPropagation();
+    if (e.key === 'Enter') {
+      handleSaveRename();
+    } else if (e.key === 'Escape') {
+      if (inputRef.current) {
+        inputRef.current.value = note.name;
+      }
+      setIsRenaming(false);
+    }
+  };
+
   return (
-    <div className='flex gap-2 items-start p-4 border rounded-lg'>
-      {/* <Button variant="secondary" disabled className="size-8"><Hash /></Button> */}
+    <div className='flex gap-2 items-start p-4 border rounded-lg hover:bg-accent/50 transition-colors group/notecard'>
       <div className='overflow-hidden pt-1 w-full'>
-        <div className='flex justify-between items-start'>
-          <div
-            className='w-full text-blue-800 flex items-center gap-1 dark:text-[#a8abff] transition-colors group'
-          >
+        <div className='flex justify-between items-start gap-2'>
+          <div className='w-full text-blue-800 flex items-center gap-1 dark:text-[#a8abff]'>
             <File className='flex-shrink-0 size-4' />
-            {isRenaming ?
+            {isRenaming ? (
               <Input
-                className={`font-bold truncate ${Boolean(isRenaming) ? '' : 'border-none outline-none p-0 group-hover:underline'}`}
+                ref={inputRef}
                 defaultValue={note.name}
-                readOnly={!Boolean(isRenaming)}
-                ref={nameRef}
+                className="font-bold h-8 flex-1"
+                onBlur={handleSaveRename}
+                onKeyDown={handleKeyDown}
+                onClick={(e) => e.stopPropagation()}
               />
-              :
-              <Link to={`/note/${note._id}`} className='font-bold truncate'>{note.name}</Link>
-            }
+            ) : (
+              <Link 
+                to={`/note/${note._id}`} 
+                className='font-bold truncate hover:underline flex-1'
+              >
+                {note.name}
+              </Link>
+            )}
           </div>
 
-          <NotesOption
-            trigger={<EllipsisVertical />}
-            note={note}
-            nameRef={nameRef}
-            setIsRenaming={setIsRenaming}
-          />
+          <div className="opacity-0 group-hover/notecard:opacity-100 transition-opacity">
+            <NotesOption
+              trigger={
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6"
+                >
+                  <EllipsisVertical className="size-4" />
+                </Button>
+              }
+              note={note}
+              onRenameStart={handleRenameStart}
+            />
+          </div>
         </div>
 
-        <Badge variant="secondary" className="mb-4 hover:bg-secondary text-xs font-normal">{collectionName}</Badge>
+        <Badge 
+          variant="secondary" 
+          className="mb-2 hover:bg-secondary text-xs font-normal mt-1"
+        >
+          {collectionName}
+        </Badge>
+        
         <div className='flex gap-2 items-center text-muted-foreground text-xs justify-between'>
           <p>{formatDate(note.createdAt)}</p>
           <p>{formatTime(note.createdAt)}</p>
@@ -95,7 +148,7 @@ const NoteCard = ({ note, collectionName }) => {
       </div>
     </div>
   );
-}
+};
 
 const EmptyState = () => (
   <div className='mx-auto mb-12 w-[200px] space-y-4 text-center'>

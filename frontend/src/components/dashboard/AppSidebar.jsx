@@ -2,10 +2,8 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import {
-  GalleryVerticalEnd,
   FolderPlus,
-  FilePlus2,
-  Map,
+  CopyMinus,
 } from "lucide-react";
 
 import NavMain from "@/components/dashboard/NavMain";
@@ -34,11 +32,13 @@ import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { SidebarSearch } from "./SidebarSearch";
 import TooltipWrapper from "../TooltipWrapper";
+import { useLocalStorage } from "@/stores/useLocalStorage";
 
 const AppSidebar = (props) => {
   const { getHierarchy, createCollection, collections } = useNoteStore();
   const [collectionName, setCollectionName] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const { collapseAll } = useLocalStorage();
 
   useEffect(() => {
     getHierarchy();
@@ -59,19 +59,30 @@ const AppSidebar = (props) => {
       <SidebarHeader>
         <div className="flex items-center justify-between h-14">
           <div className="flex gap-2">
-            <TooltipWrapper message={"Close Sidebar"}>
+            <TooltipWrapper message={"Close Sidebar [CTRL + m]"}>
               <SidebarCloseTrigger />
             </TooltipWrapper>
             <Link to='/' className="truncate font-semibold">NoteHub</Link>
           </div>
 
           <div className="flex buttons-container">
+            <TooltipWrapper message="Collapse All">
+              <Button
+                className="text-sidebar-accent-foreground/70"
+                size="icon"
+                variant="ghost"
+                onClick={collapseAll}
+              >
+                <CopyMinus />
+              </Button>
+            </TooltipWrapper>
+
             <Popover>
               <PopoverTrigger asChild>
                 <TooltipWrapper message="Add Collection">
-                <Button className="text-sidebar-accent-foreground/70" size="icon" variant="ghost">
-                  <FolderPlus />
-                </Button>
+                  <Button className="text-sidebar-accent-foreground/70" size="icon" variant="ghost">
+                    <FolderPlus />
+                  </Button>
                 </TooltipWrapper>
               </PopoverTrigger>
               <PopoverContent className="w-80">

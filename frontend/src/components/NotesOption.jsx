@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Separator } from './ui/separator';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from './ui/button';
@@ -7,128 +7,87 @@ import { EllipsisVertical, Folder, FolderOutput, Pencil, Trash2 } from 'lucide-r
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from './ui/command';
 import { useNoteStore } from '@/stores/useNoteStore';
 
-const NotesOption = ({ trigger, note, nameRef, setIsRenaming }) => {
+const NotesOption = ({ trigger, note, onRenameStart }) => {
     const { isMobile } = useIsMobile();
-    const { renameNote, moveTo, deleteNote, collections } = useNoteStore();
-    const [open, setOpen] = useState(false);
-    const [moveOpen, setMoveOpen] = useState(false);
+    const { moveTo, deleteNote, collections } = useNoteStore();
+    const [open, setOpen] = React.useState(false);
+    const [moveOpen, setMoveOpen] = React.useState(false);
 
-    const handleBlur = () => {
-        console.log('blur event triggered');
-        if (nameRef?.current) {
-            const newName = nameRef.current.value.trim();
-            if (!newName) {
-                nameRef.current.value = note.name;
-            }
-            else if (newName && newName !== note.name) {
-                renameNote({
-                    noteId: note._id,
-                    newName: newName,
-                });
-            }
-        }
-        setIsRenaming(false);
-    };
-
-    const handleKeyDown = (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            if (nameRef?.current) {
-                nameRef.current.blur();
-            }
-        }
-    };
-
-    const selectAllText = (node) => {
-        const range = document.createRange();
-        const selection = window.getSelection();
-        range.selectNodeContents(node);
-        selection.removeAllRanges();
-        selection.addRange(range);
-    };
-
-    const handleRename = () => {
-        setIsRenaming(note._id);
-        setOpen(false);
-        setTimeout(() => {
-            if (nameRef?.current) {
-                selectAllText(nameRef.current);
-                nameRef.current.focus();
-            }
-        }, 200);
-    };
-
-    const handleMove = async (collectionId) => {
+    const handleMove = React.useCallback(async (collectionId) => {
         await moveTo({
             collectionId,
             noteId: note._id,
         });
         setMoveOpen(false);
         setOpen(false);
-    };
+    }, [moveTo, note._id]);
 
-    const handleDelete = () => {
+    const handleDelete = React.useCallback(() => {
         deleteNote(note._id);
         setOpen(false);
-    };
+    }, [deleteNote, note._id]);
 
-    useEffect(() => {
-        const current = nameRef?.current;
-        if (current) {
-            current.addEventListener('blur', handleBlur);
-            current.addEventListener('keydown', handleKeyDown);
-            return () => {
-                current.removeEventListener('blur', handleBlur);
-                current.removeEventListener('keydown', handleKeyDown);
-            };
-        }
-    }, [nameRef, handleBlur, handleKeyDown]);
+    const handleRename = React.useCallback(() => {
+        onRenameStart();
+        setOpen(false);
+    }, [onRenameStart]);
 
     return (
-        <Popover modal="true" open={open} onOpenChange={setOpen}>
+        <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-                <Button variant="ghost" className="flex-shrink-0 p-1 size-6  text-muted-foreground hover:text-primary hover:bg-transparent">
+                <Button 
+                    variant="ghost" 
+                    className="flex-shrink-0 p-1 size-6 text-muted-foreground hover:text-primary hover:bg-transparent"
+                >
                     {trigger}
                 </Button>
             </PopoverTrigger>
             <PopoverContent
                 className="w-48 rounded-lg p-1"
-                side="bottom"
+                side={isMobile ? "bottom" : "right"}
                 align="start"
+                onOpenAutoFocus={(e) => e.preventDefault()}
             >
                 <Button
                     variant="ghost"
-                    className="font-normal p-2 h-auto w-full justify-start "
+                    className="font-normal p-2 h-auto w-full justify-start gap-2"
                     onClick={handleRename}
                 >
-                    <Pencil className="text-muted-foreground" />
+                    <Pencil className="size-4 text-muted-foreground" />
                     <span>Rename</span>
                 </Button>
 
                 <Popover open={moveOpen} onOpenChange={setMoveOpen}>
                     <PopoverTrigger asChild>
                         <Button
-                            variant={moveOpen ? "secondary" : "ghost"}
-                            className="font-normal p-2 h-auto w-full justify-start"
+                            variant="ghost"
+                            className="font-normal p-2 h-auto w-full justify-start gap-2"
                         >
-                            <FolderOutput className="text-muted-foreground" />
+                            <FolderOutput className="size-4 text-muted-foreground" />
                             <span>Move to</span>
                         </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="p-0">
+                    <PopoverContent 
+                        className="p-0 w-48" 
+                        side={isMobile ? "bottom" : "right"}
+                        align="start"
+                    >
                         <Command>
-                            <CommandInput placeholder="Change status..." />
+                            <CommandInput placeholder="Search collections..." />
                             <CommandList>
-                                <CommandEmpty>No results found.</CommandEmpty>
+                                <CommandEmpty>No collections found</CommandEmpty>
                                 <CommandGroup>
-                                    {collections.filter(c => c._id !== note.collectionId)
+                                    {collections
+                                        .filter(c => c._id !== note.collectionId)
                                         .map((collection) => (
                                             <CommandItem
                                                 key={collection._id}
-                                                value={collection._id}
+                                                value={collection.name}
                                                 onSelect={() => handleMove(collection._id)}
+                                                className="gap-2"
                                             >
-                                                <Folder className="text-muted-foreground" /> {collection.name}
+                                                <Folder className="size-4 text-muted-foreground" />
+                                                {collection.name}
                                             </CommandItem>
                                         ))}
                                 </CommandGroup>
@@ -137,13 +96,14 @@ const NotesOption = ({ trigger, note, nameRef, setIsRenaming }) => {
                     </PopoverContent>
                 </Popover>
 
-                <Separator orientation="horizontal" className="my-2" />
+                <Separator orientation="horizontal" className="my-1" />
+
                 <Button
                     variant="ghost"
-                    className="font-normal p-2 h-auto w-full justify-start"
+                    className="font-normal p-2 h-auto w-full justify-start gap-2 text-destructive hover:text-destructive"
                     onClick={handleDelete}
                 >
-                    <Trash2 className="text-muted-foreground" />
+                    <Trash2 className="size-4" />
                     <span>Delete Note</span>
                 </Button>
             </PopoverContent>

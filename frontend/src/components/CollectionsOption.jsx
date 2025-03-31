@@ -1,5 +1,5 @@
 import { Popover, PopoverContent, PopoverTrigger } from '@radix-ui/react-popover'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { SidebarMenuAction, useSidebar } from './ui/sidebar'
 import { Button } from './ui/button'
 import { Bookmark, FilePlus2, MoreHorizontal, Pencil, Pin, PinOff, Plus, Trash2 } from 'lucide-react'
@@ -9,99 +9,71 @@ import { useNoteStore } from '@/stores/useNoteStore'
 import { Separator } from './ui/separator'
 import { useNavigate } from 'react-router-dom'
 
-const CollectionsOption = ({ trigger, collection, inputRef, setIsRenaming, onOpenChange, pinnedCollections, setPinnedCollections }) => {
+const CollectionsOption = ({
+    trigger,
+    collection,
+    onOpenChange,
+    pinnedCollections,
+    setPinnedCollections,
+    onRenameStart
+}) => {
     const { isMobile } = useSidebar();
     const [noteName, setNoteName] = useState('');
+    const [open, setOpen] = useState(false);
     const {
         deleteCollection,
         renameCollection,
         createNote,
     } = useNoteStore();
+    const navigate = useNavigate();
 
-    const handleBlur = () => {
-        console.log('blur');
-        const data = {
-            _id: collection._id,
-            newName: inputRef.current.value.trim(),
-        };
-        if (data.newName && data.newName !== collection.name) {
-            renameCollection(data);
-        }
-        setIsRenaming(false);
-    }
-    const handleFocus = () => {
-        console.log('focus');
-    }
-
-    const handleKeyDown = (e) => {
-        e.stopPropagation();
-        if (e.key === 'Enter') {
-            handleBlur();
-        }
-    }
-
-    const handleRename = () => {
-        setIsRenaming(collection._id);
-        setOpen(false);
-        
-        setTimeout(() => {
-            if (inputRef.current) {
-                inputRef.current.focus(); 
-                inputRef.current.select();
-            }
-        }, 0); 
-    };
-    
-
-    const handleClick = (e) => {
-        e.preventDefault();
-    }
-
-    useEffect(() => {
-        const current = inputRef?.current;
-        if (current) {
-            current.addEventListener('blur', handleBlur);
-            current.addEventListener('focus', handleFocus);
-            current.addEventListener('keydown', handleKeyDown);
-            current.addEventListener('click', handleClick);
-
-            return () => {
-                current.removeEventListener('blur', handleBlur);
-                current.removeEventListener('keydown', handleKeyDown);
-                current.removeEventListener('click', handleClick);
-                current.removeEventListener('focus', handleFocus);
-            };
-        }
-    }, [inputRef, handleBlur, handleKeyDown]);
-
-    const togglePin = () => {
+    const togglePin = useCallback(() => {
         const maxPinned = 3;
         if (pinnedCollections.includes(collection._id)) {
             const newPinnedCollections = pinnedCollections.filter(id => id !== collection._id);
             setPinnedCollections(newPinnedCollections);
             localStorage.setItem('pinnedCollections', JSON.stringify(newPinnedCollections));
-        }
-        else {
+        } else {
             const newPinnedCollections = [collection._id, ...pinnedCollections.slice(0, maxPinned - 1)];
             setPinnedCollections(newPinnedCollections);
             localStorage.setItem('pinnedCollections', JSON.stringify(newPinnedCollections));
         }
         setOpen(false);
-    }
-    
-    const navigate = useNavigate();
-    const [open, setOpen] = useState(false);
+    }, [collection._id, pinnedCollections, setPinnedCollections]);
 
-    const insertNote = async()=>{
-        const noteId = await createNote({ 
-            name: noteName, 
-            collectionId: collection._id 
-        })
+    const insertNote = useCallback(async () => {
+        if (!noteName.trim()) return;
+
+        const noteId = await createNote({
+            name: noteName,
+            collectionId: collection._id
+        });
+        setNoteName('');
         navigate(`/note/${noteId}/editor`);
-    }
+        setOpen(false);
+    }, [noteName, collection._id, createNote, navigate]);
+
+    const handleRename = useCallback(() => {
+        onRenameStart();
+        setOpen(false);
+    }, [onRenameStart]);
+
+    const handleDelete = useCallback(() => {
+        deleteCollection(collection._id);
+        setOpen(false);
+    }, [collection._id, deleteCollection]);
+
+    const handleOpenChange = useCallback((isOpen) => {
+        setOpen(isOpen);
+        onOpenChange?.(isOpen);
+    }, [onOpenChange]);
 
     return (
-        <Popover modal={true} open={open} onOpenChange={(e) => { setOpen(!open), onOpenChange(e) }}>
+        <Popover
+            modal={true}
+            open={open}
+            onOpenChange={handleOpenChange}
+        >
             <PopoverTrigger asChild>
                 {trigger}
             </PopoverTrigger>
@@ -109,74 +81,96 @@ const CollectionsOption = ({ trigger, collection, inputRef, setIsRenaming, onOpe
                 className="w-48 rounded-lg p-1 bg-popover border"
                 side="bottom"
                 align={isMobile ? "end" : "start"}
+                onOpenAutoFocus={(e) => e.preventDefault()}
+                onCloseAutoFocus={(e) => e.preventDefault()}
             >
                 <Button
                     variant="ghost"
-                    className="font-normal p-2 h-auto w-full justify-start "
+                    className="font-normal p-2 h-auto w-full justify-start gap-2"
                     onClick={togglePin}
                 >
-                    {!pinnedCollections.includes(collection._id) ?
+                    {!pinnedCollections.includes(collection._id) ? (
                         <>
-                            <Pin className="text-muted-foreground" />
-                            Pin Top
+                            <Pin className="size-4 text-muted-foreground" />
+                            <span>Pin Top</span>
                         </>
-                        :
+                    ) : (
                         <>
-                            <PinOff className='text-muted-foreground' />
-                            Unpin
+                            <PinOff className="size-4 text-muted-foreground" />
+                            <span>Unpin</span>
                         </>
-                    }
+                    )}
                 </Button>
-                < Popover>
+
+                <Popover>
                     <PopoverTrigger asChild>
-                        <Button variant="ghost" className="font-normal p-2 h-auto w-full justify-start">
-                            <FilePlus2 className="text-muted-foreground" />
+                        <Button
+                            variant="ghost"
+                            className="font-normal p-2 h-auto w-full justify-start gap-2"
+                        >
+                            <FilePlus2 className="size-4 text-muted-foreground" />
                             <span>Insert Note</span>
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent
-                        className="w-70 rounded-lg bg-popover p-4 border"
+                        className="w-64 rounded-lg bg-popover p-4 border"
                         side="bottom"
-                        align="end">
+                        align="end"
+                    >
                         <div className="grid gap-4">
                             <div className="space-y-2">
                                 <h4 className="font-medium leading-none">Insert Note</h4>
-                                <p className="text-sm text-muted-foreground">Set Collection name</p>
+                                <p className="text-sm text-muted-foreground">
+                                    Add a new note to this collection
+                                </p>
                             </div>
                             <div className="grid gap-2">
-                                <div className="flex items-center gap-4">
+                                <div className="flex flex-col gap-2">
                                     <Label htmlFor="collectionName">Name</Label>
                                     <Input
                                         id="collectionName"
-                                        className="col-span-2 h-8"
+                                        className="h-8"
                                         value={noteName}
-                                        onChange={e => setNoteName(e.target.value)}
+                                        onChange={(e) => setNoteName(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                insertNote();
+                                            }
+                                        }}
+                                        autoFocus
                                     />
                                 </div>
                             </div>
                             <Button
                                 variant="secondary"
                                 onClick={insertNote}
+                                disabled={!noteName.trim()}
+                                className="gap-2"
                             >
-                                <Plus /> Add
+                                <Plus className="size-4" />
+                                <span>Add Note</span>
                             </Button>
                         </div>
                     </PopoverContent>
-                </Popover >
+                </Popover>
 
                 <Button
                     variant="ghost"
-                    className="font-normal p-2 h-auto w-full justify-start "
+                    className="font-normal p-2 h-auto w-full justify-start gap-2"
                     onClick={handleRename}
                 >
-                    <Pencil className="text-muted-foreground" />
+                    <Pencil className="size-4 text-muted-foreground" />
                     <span>Rename</span>
                 </Button>
 
-                <Separator orientation="horizontal" className="my-2" />
+                <Separator orientation="horizontal" className="my-1" />
 
-                <Button variant="ghost" className="font-normal p-2 h-auto w-full justify-start" onClick={() => deleteCollection(collection._id)}>
-                    <Trash2 className="text-muted-foreground" />
+                <Button
+                    variant="ghost"
+                    className="font-normal p-2 h-auto w-full justify-start gap-2 text-destructive hover:text-destructive"
+                    onClick={handleDelete}
+                >
+                    <Trash2 className="size-4" />
                     <span>Delete Collection</span>
                 </Button>
             </PopoverContent>

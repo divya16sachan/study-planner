@@ -7,7 +7,7 @@ const NotesSkeleton = () => {
   notesLength = notesLength.reduce((sum, curr) => sum + curr, 0);
 
   const skeletons = [];
-  for (let i = 0; i < notesLength; ++i) {
+  for (let i = 0; i < notesLength && i < 10; ++i) {
     skeletons.push(<Skeleton key={i} className="h-28" />);
   }
   return (
