@@ -4,7 +4,7 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 
 
-export function SidebarSearch({ inputRef, onSearch, defaultValue = '' }) {
+export function SidebarSearch({ inputRef, onSearch, setShowSearch, defaultValue = '' }) {
   const [searchQuery, setSearchQuery] = React.useState(defaultValue);
 
   // Sync with parent's onSearch
@@ -30,6 +30,7 @@ export function SidebarSearch({ inputRef, onSearch, defaultValue = '' }) {
         className="pl-8 h-8 w-full bg-background shadow-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
+        onBlur={()=>setShowSearch(false)}
       />
       <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
     </div>

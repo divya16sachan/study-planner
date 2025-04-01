@@ -100,7 +100,7 @@ const NotesOption = ({ trigger, note, onRenameStart }) => {
 
                 <Button
                     variant="ghost"
-                    className="font-normal p-2 h-auto w-full justify-start gap-2 text-destructive hover:text-destructive"
+                    className="font-normal p-2 h-auto w-full justify-start gap-2 text-red-500 hover:bg-red-400/20 hover:text-red-500"
                     onClick={handleDelete}
                 >
                     <Trash2 className="size-4" />

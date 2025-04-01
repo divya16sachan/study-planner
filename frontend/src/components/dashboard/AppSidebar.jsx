@@ -1,13 +1,7 @@
-"use client"
+"use client";
 
 import React, { useEffect, useState, useCallback, useRef } from "react";
-import {
-  FolderPlus,
-  CopyMinus,
-  Search,
-  X,
-  ArrowLeft,
-} from "lucide-react";
+import { FolderPlus, CopyMinus, Search, X, ArrowLeft } from "lucide-react";
 
 import NavMain from "@/components/dashboard/NavMain";
 import NavUser from "@/components/dashboard/NavUser";
@@ -39,8 +33,8 @@ import { useLocalStorage } from "@/stores/useLocalStorage";
 
 const AppSidebar = (props) => {
   const { getHierarchy, createCollection, collections } = useNoteStore();
-  const [collectionName, setCollectionName] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [collectionName, setCollectionName] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const { collapseAll } = useLocalStorage();
 
   useEffect(() => {
@@ -51,9 +45,9 @@ const AppSidebar = (props) => {
     const trimmedName = collectionName.trim();
     if (trimmedName) {
       await createCollection({ name: trimmedName });
-      setCollectionName('');
+      setCollectionName("");
     } else {
-      toast.error('Collection name cannot be empty');
+      toast.error("Collection name cannot be empty");
     }
   }, [collectionName, createCollection]);
 
@@ -63,29 +57,33 @@ const AppSidebar = (props) => {
   return (
     <Sidebar {...props}>
       <SidebarHeader className="pb-0">
-
         <div className="py-[13px] h-14">
-          {showSearch ?
+          {showSearch ? (
             <div className="flex gap-2 items-center">
-              <SidebarSearch
-                inputRef={searchRef}
-                onSearch={setSearchQuery}
+              <SidebarSearch 
+                setShowSearch={setShowSearch}
+                inputRef={searchRef} 
+                onSearch={setSearchQuery} 
               />
-              <Button
-                variant="ghost"
-                className="size-8"
-                onClick={() => setShowSearch(false)}
-              >
-                <X />
-              </Button>
+              <TooltipWrapper message="Close Searchbar">
+                <Button
+                  variant="ghost"
+                  className="size-8"
+                  onClick={() => setShowSearch(false)}
+                >
+                  <X />
+                </Button>
+              </TooltipWrapper>
             </div>
-            :
+          ) : (
             <div className="flex items-center justify-between">
               <div className="flex gap-2">
                 <TooltipWrapper message={"Close Sidebar [CTRL + m]"}>
                   <SidebarCloseTrigger />
                 </TooltipWrapper>
-                <Link to='/' className="truncate font-semibold">NoteHub</Link>
+                <Link to="/" className="truncate font-semibold">
+                  NoteHub
+                </Link>
               </div>
 
               <div className="flex buttons-container">
@@ -114,7 +112,9 @@ const AppSidebar = (props) => {
                     <div className="grid gap-4">
                       <div className="space-y-2">
                         <h4 className="font-medium leading-none">Collection</h4>
-                        <p className="text-sm text-muted-foreground">Set Collection name</p>
+                        <p className="text-sm text-muted-foreground">
+                          Set Collection name
+                        </p>
                       </div>
                       <div className="grid gap-2">
                         <div className="flex items-center gap-4">
@@ -130,7 +130,12 @@ const AppSidebar = (props) => {
                       <Button
                         onClick={handleCreateCollection}
                         variant="secondary"
-                        disabled={!collectionName.trim() || collections.find(({ name }) => name === collectionName.trim())}
+                        disabled={
+                          !collectionName.trim() ||
+                          collections.find(
+                            ({ name }) => name === collectionName.trim()
+                          )
+                        }
                       >
                         Create
                       </Button>
@@ -143,19 +148,16 @@ const AppSidebar = (props) => {
                     className="size-7 w-7 h-7 text-sidebar-accent-foreground/70"
                     variant="ghost"
                     onClick={() => {
-                      setShowSearch(true)
-                      console.log(searchRef)
-                    }
-                    }
+                      setShowSearch(true);
+                    }}
                   >
                     <Search />
                   </Button>
                 </TooltipWrapper>
               </div>
             </div>
-          }
+          )}
         </div>
-
       </SidebarHeader>
 
       <SidebarContent>

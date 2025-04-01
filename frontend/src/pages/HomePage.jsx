@@ -96,7 +96,7 @@ const NoteCard = ({ note, collectionName }) => {
     <div className='flex gap-2 items-start p-4 border rounded-lg hover:bg-accent/50 transition-colors group/notecard'>
       <div className='overflow-hidden pt-1 w-full'>
         <div className='flex justify-between items-start gap-2'>
-          <div className='w-full text-blue-800 flex items-center gap-1 dark:text-[#a8abff]'>
+          <div className='min-w-0 text-foreground flex items-center gap-1'>
             <File className='flex-shrink-0 size-4' />
             {isRenaming ? (
               <Input
@@ -110,14 +110,14 @@ const NoteCard = ({ note, collectionName }) => {
             ) : (
               <Link 
                 to={`/note/${note._id}`} 
-                className='font-bold truncate hover:underline flex-1'
+                className='font-bold text-sm truncate hover:underline flex-1'
               >
                 {note.name}
               </Link>
             )}
           </div>
 
-          <div className="opacity-0 group-hover/notecard:opacity-100 transition-opacity">
+          <div className="opacity-1 group-hover/notecard:opacity-100 transition-opacity">
             <NotesOption
               trigger={
                 <Button

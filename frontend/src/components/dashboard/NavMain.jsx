@@ -71,8 +71,8 @@ const NoteItem = ({ note }) => {
                 asChild
                 onClick={() => !isNoteRenaming && setselectedNote(note._id)}
             >
-                <div className={`flex items-center gap-2 w-full hover:bg-accent/50 rounded-md p-1 ${selectedNote === note._id && 'bg-accent'}`}>
-                    <File className="opacity-50 size-4 flex-shrink-0" />
+                <div className={`flex items-center gap-0 w-full hover:bg-accent/50 rounded-md p-1 ${selectedNote === note._id && 'bg-accent'}`}>
+                    {/* <File className="opacity-50 size-4 flex-shrink-0" /> */}
 
                     {isNoteRenaming ? (
                         <Input
@@ -99,7 +99,7 @@ const NoteItem = ({ note }) => {
                                     <Button
                                         variant="ghost"
                                         size="icon"
-                                        className="h-6 w-6 hover:bg-background"
+                                        className="h-6 w-6 flex-shrink-0 hover:bg-background/20"
                                     >
                                         <EllipsisVertical className="size-4" />
                                     </Button>
@@ -211,7 +211,7 @@ const FolderCollapsible = ({ collection, pinnedCollections, setPinnedCollections
                 </div>
 
                 <CollapsibleContent>
-                    <SidebarMenuSub>
+                    <SidebarMenuSub className="mr-0 pr-0">
                         {collection.notes?.map((note) => (
                             <NoteItem key={note._id} note={note} />
                         ))}
