@@ -80,7 +80,6 @@ function App() {
             <Route path='/verify-email' element={!authUser?.isEmailVerified ? <EmailVerificationPage /> : <Navigate to='/' />} />
             <Route path='/signup' element={!authUser ? <SignUpPage /> : <Navigate to='/' />} />
             <Route path='/login' element={!authUser ? <LoginPage /> : <Navigate to='/' />} />
-            <Route path='/settings' element={<SettingsPage />} />
             <Route path='/forget-password' element={<ForgetPasswordPage />} />
 
             {/* Nested routes inside Dashboard */}
