@@ -59,7 +59,7 @@ const DashboardContent = () => {
                 {routes.map((route, index) => (
                   <React.Fragment key={index}>
                     <BreadcrumbItem>
-                      <Link to={route.path} className="text-primary">
+                      <Link to={route.path} className="text-foreground">
                         {route.name}
                       </Link>
                     </BreadcrumbItem>
