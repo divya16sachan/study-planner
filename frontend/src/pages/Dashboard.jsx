@@ -47,7 +47,7 @@ const DashboardContent = () => {
           <div className="flex items-center gap-2 px-4">
             {!isSidebarOpen && (
               <>
-                <TooltipWrapper message={"Open Sidebar"}>
+                <TooltipWrapper message={"Open Sidebar Ctrl M"}>
                   <SidebarOpenTrigger className="-ml-1" />
                 </TooltipWrapper>
                 <Separator orientation="vertical" className="mr-2 h-4" />

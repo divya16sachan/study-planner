@@ -78,7 +78,7 @@ const AppSidebar = (props) => {
           ) : (
             <div className="flex items-center justify-between">
               <div className="flex gap-2">
-                <TooltipWrapper message={"Close Sidebar [CTRL + m]"}>
+                <TooltipWrapper message={"Close Sidebar Ctrl M"}>
                   <SidebarCloseTrigger />
                 </TooltipWrapper>
                 <Link to="/" className="truncate font-semibold">

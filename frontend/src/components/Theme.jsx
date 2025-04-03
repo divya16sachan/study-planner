@@ -2,7 +2,7 @@ import React from "react";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { ColorPicker } from "./ui/colorPicker";
+import ColorPicker from "./ui/colorPicker";
 
 const properties = [
     'background',
@@ -81,7 +81,7 @@ const Theme = () => {
         <div className="p-4 grid grid-cols-2 gap-3">
             {
                 properties.map((name)=>(
-                    <div className="flex flex-col gap-2">
+                    <div key={name} className="flex flex-col gap-2">
                         <Label>{name}</Label>
                         <ColorPicker/>
                     </div>
@@ -99,7 +99,7 @@ const Theme = () => {
         <div className="p-4 grid grid-cols-2 gap-3">
             {
                 charts.map((name)=>(
-                    <div className="flex flex-col gap-2">
+                    <div key={name} className="flex flex-col gap-2">
                         <Label>{name}</Label>
                         <ColorPicker/>
                     </div>
