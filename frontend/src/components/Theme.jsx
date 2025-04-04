@@ -1,117 +1,125 @@
-import React from "react";
+import React, { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Label } from "./ui/label";
-import { Input } from "./ui/input";
 import { Button } from "./ui/button";
+import { Check, CircleCheck } from "lucide-react";
 import ColorPicker from "./ui/colorPicker";
 
-const properties = [
-    'background',
-    'foreground',
-    'card',
-    'card-foreground',
-    'popover',
-    'popover-foreground',
-    'primary',
-    'primary-foreground',
-    'secondary',
-    'secondary-foreground',
-    'muted',
-    'muted-foreground',
-    'accent',
-    'accent-foreground',
-    'destructive',
-    'destructive-foreground',
-    'border',
-    'input',
-    'ring',
-    'Chart Colors',
-]
+const colors = [
+  { name: "Zinc", color: "#52525b" },
+  { name: "Slate", color: "#475569" },
+  { name: "Stone", color: "#57534e" },
+  { name: "Gray", color: "#4b5563" },
+  { name: "Neutral", color: "#525252" },
+  { name: "Red", color: "#dc2626" },
+  { name: "Rose", color: "#e11d48" },
+  { name: "Orange", color: "#ea580c" },
+  { name: "Green", color: "#22c55e" },
+  { name: "Blue", color: "#3b82f6" },
+  { name: "Yellow", color: "#facc15" },
+  { name: "Violet", color: "#6d28d9" },
+];
 
-const charts = [
-    'chart-1',
-    'chart-2',
-    'chart-3',
-    'chart-4',
-    'chart-5',
-]
+const variables = [
+  "card",
+  "popover",
+  "primary",
+  "secondary",
+  "muted",
+  "accent",
+  "destructive",
+  "background",
+  "foreground",
+  "border",
+  "input",
+  "ring",
+];
+
+const radius = [0, 0.3, 0.5, 0.75, 1.0];
 
 const Theme = () => {
+  const [selectedColor, setSelectedColor] = useState(colors[0].name);
+
   return (
-    <div className="rounded-md overflow-hidden border">
-      <div>
-        <div className="h-10 bg-muted flex items-center justify-between">
-          <h3 className="mx-2 font-semibold">Theme Properties</h3>
-          <Button variant="ghost">Save Theme</Button>
-        </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Cutomize Theme</CardTitle>
+        <p className="text-xs text-muted-foreground">
+          Pick a style and color for your components.
+        </p>
+      </CardHeader>
 
-        <div className="p-4 space-y-4">
-          <div className="flex flex-col space-y-1.5">
-            <Label htmlFor="name">Theme Name</Label>
-            <Input id="name" placeholder="Name of your project" />
+      <CardContent className="space-y-8">
+        {/* some default theme settings here  */}
+        <div className="space-y-1.5">
+          <Label>Color</Label>
+          <div className="grid grid-cols-3 gap-2 ">
+            {colors.map(({ name, color }) => (
+              <Button
+                key={name}
+                variant="outline"
+                className={`justify-start ${
+                  selectedColor === name ? "border-2 border-primary" : ""
+                }`}
+                onClick={() => setSelectedColor(name)}
+              >
+                <span
+                  className="h-5 w-5 flex-shrink-0 flex items-center justify-center rounded-full relative"
+                  style={{ background: color }}
+                >
+                  {selectedColor === name && <Check />}
+                </span>
+                {name}
+              </Button>
+            ))}
           </div>
+        </div>
 
-          <div>
-            <Label>Radius (rem)</Label>
-            <div className="flex gap-2">
-              <Button className="flex-1" variant="outline">
-                0
+        {/* radius for box corder roundness  */}
+        <div className="space-y-1.5">
+          <Label>Raius</Label>
+          <div className="flex gap-2">
+            {radius.map((r) => (
+              <Button variant="outline" key={r}>
+                <span
+                  className="size-6 border-t-2 border-l-2 bg-primary/20 border-primary/70 grayscale"
+                  style={{ borderTopLeftRadius: `${r}rem` }}
+                />
+                {r}
               </Button>
-              <Button className="flex-1" variant="outline">
-                0.3
-              </Button>
-              <Button className="flex-1" variant="outline">
-                0.5
-              </Button>
-              <Button className="flex-1" variant="outline">
-                0.75
-              </Button>
-              <Button className="flex-1" variant="outline">
-                1
-              </Button>
-            </div>
+            ))}
           </div>
         </div>
-      </div>
 
-      <div>
-        <div className="h-10 bg-muted flex items-center justify-between">
-          <h3 className="mx-2 font-semibold">Theme Color</h3>
+        {/* css variables  */}
+
+        <div className="space-y-1.5">
+          <Label>CSS Variables</Label>
+          <div className="grid grid-cols-2 gap-y-4 gap-x-8">
+            {variables.map((v) => (
+              <div
+                key={v}
+                className="flex flex-col p-2 space-y-2 border rounded-md"
+              >
+                <Label>{v}</Label>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="flex flex-col items-center gap-2">
+                    <ColorPicker />
+                    <Label>BG</Label>
+                  </div>
+
+                  <div className="flex flex-col items-center gap-2">
+                    <ColorPicker />
+                    <Label>FG</Label>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-
-        <div className="p-4 grid grid-cols-2 gap-3">
-            {
-                properties.map((name)=>(
-                    <div key={name} className="flex flex-col gap-2">
-                        <Label>{name}</Label>
-                        <ColorPicker/>
-                    </div>
-                ))
-            }
-
-        </div>
-      </div>
-
-      <div>
-        <div className="h-10 bg-muted flex items-center justify-between">
-          <h3 className="mx-2 font-semibold">Theme Color</h3>
-        </div>
-
-        <div className="p-4 grid grid-cols-2 gap-3">
-            {
-                charts.map((name)=>(
-                    <div key={name} className="flex flex-col gap-2">
-                        <Label>{name}</Label>
-                        <ColorPicker/>
-                    </div>
-                ))
-            }
-
-        </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 
 export default Theme;
-
-
