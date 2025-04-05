@@ -20,20 +20,34 @@ const colors = [
   { name: "Violet", color: "#6d28d9" },
 ];
 
-const variables = [
-  "card",
-  "popover",
-  "primary",
-  "secondary",
-  "muted",
-  "accent",
-  "destructive",
-  "background",
-  "foreground",
-  "border",
-  "input",
-  "ring",
-];
+const variables = {
+  "card" : {bg: '240 10% 3.9%', fg: '0 0% 98%'},
+  "popover" : {bg: '240 10% 3.9%', fg: '0 0% 98%'},
+  "primary" : {bg: '0 0% 98%', fg: '240 5.9% 10%'},
+  "secondary" : {bg: '240 3.7% 15.9%', fg: '0 0% 98%'},
+  "muted" : {bg: '240 3.7% 15.9%', fg: '240 5% 64.9%'},
+  "accent" : {bg: '240 3.7% 15.9%', fg: '0 0% 98%'},
+  "destructive" : {bg: '0 62.8% 30.6%', fg: '0 0% 98%'},
+  "background" : {bg: '240 10% 3.9%', fg: '0 0% 98%'},
+  "foreground" : {bg: '0 0% 98%', fg: '240 10% 3.9%'},
+  "border" : {bg: '240 3.7% 15.9%', fg: ''},
+  "input" : {bg: '240 3.7% 15.9%', fg: ''},
+  "ring" : {bg: '240 4.9% 83.9%', fg: ''},
+};
+
+// Apply dynamically to CSS
+function applyDarkTheme(variables) {
+  Object.entries(variables).forEach(([key, value]) => {
+    document.documentElement.style.setProperty(`--${key}`, value.bg);
+    if (value.fg) {
+      document.documentElement.style.setProperty(`--${key}-foreground`, value.fg);
+    }
+  });
+}
+
+// Initialize the dark theme
+applyDarkTheme(variables);
+
 
 const radius = [0, 0.3, 0.5, 0.75, 1.0];
 
@@ -96,7 +110,7 @@ const Theme = () => {
         <div className="space-y-1.5">
           <Label>CSS Variables</Label>
           <div className="grid grid-cols-2 gap-y-4 gap-x-8">
-            {variables.map((v) => (
+            {Object.keys(variables).map((v) => (
               <div
                 key={v}
                 className="flex flex-col p-2 space-y-2 border rounded-md"
@@ -104,12 +118,16 @@ const Theme = () => {
                 <Label>{v}</Label>
                 <div className="grid grid-cols-2 gap-2">
                   <div className="flex flex-col items-center gap-2">
-                    <ColorPicker />
+                    <ColorPicker
+                    defaultColor={`hsl(${variables[v].bg})`}
+                     />
                     <Label>BG</Label>
                   </div>
 
                   <div className="flex flex-col items-center gap-2">
-                    <ColorPicker />
+                  <ColorPicker
+                    defaultColor={`hsl(${variables[v].fg})`}
+                     />
                     <Label>FG</Label>
                   </div>
                 </div>

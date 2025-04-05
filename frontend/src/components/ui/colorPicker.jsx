@@ -9,53 +9,10 @@ import { Input } from "./input";
 import { Button } from "./button";
 import { Pipette } from "lucide-react";
 
-const hexToHSL = (hex) => {
-  let r = parseInt(hex.slice(1, 3), 16) / 255;
-  let g = parseInt(hex.slice(3, 5), 16) / 255;
-  let b = parseInt(hex.slice(5, 7), 16) / 255;
-
-  let max = Math.max(r, g, b);
-  let min = Math.min(r, g, b);
-  let h,
-    s,
-    l = (max + min) / 2;
-
-  if (max === min) {
-    h = s = 0; // achromatic case
-  } else {
-    let d = max - min;
-    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-
-    switch (max) {
-      case r:
-        h = (g - b) / d + (g < b ? 6 : 0);
-        break;
-      case g:
-        h = (b - r) / d + 2;
-        break;
-      case b:
-        h = (r - g) / d + 4;
-        break;
-    }
-
-    h /= 6;
-  }
-
-  // Return HSL as an array with precise values
-  return [
-    Math.round(h * 360), // Hue in degrees
-    `${Math.round(s * 100)}%`, // Saturation as a percentage
-    `${Math.round(l * 100)}%`, // Lightness as a percentage
-  ];
-};
-
-const ColorPicker = ({ trigger }) => {
-  const [color, setColor] = useState("#000000");
-  const [hsl, setHsl] = useState(hexToHSL("#000000"));
-
+const ColorPicker = ({ defaultColor }) => {
+  const [color, setColor] = useState(defaultColor || "#000");
   const handleColorChange = useCallback((newColor) => {
     setColor(newColor);
-    setHsl(hexToHSL(newColor));
   }, []);
 
   const handleEyeDropper = useCallback(async () => {
@@ -69,18 +26,31 @@ const ColorPicker = ({ trigger }) => {
     }
   }, [handleColorChange]);
 
+  const getIconColor = (backgroundColor) => {
+    if(!backgroundColor) return "#000000";
+    console.log(backgroundColor);
+    const lightness = parseFloat(
+      backgroundColor.split(" ")[2]?.replace("%", "")
+    );
+    return lightness > 50 ? "#000000" : "#ffffff";
+  };
+
   return (
-    <Popover >
+    <Popover>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          className="rounded-full group bg-background"
+          style={{ background: color }}
+          className="rounded-full w-full group bg-background hover:bg-none"
         >
-          <Pipette className="size-5 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <Pipette
+            className={`size-5 opacity-0 group-hover:opacity-100 transition-opacity`}
+            style={{color: getIconColor(color)}}
+          />
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="p-4 bg-popover border rounded-lg"
+        className="p-2 bg-accent border rounded-lg w-min"
         // side="center"
         // align="start"
       >
@@ -88,6 +58,7 @@ const ColorPicker = ({ trigger }) => {
         <div className="flex gap-2 align-center mt-4">
           <Input
             value={color}
+            className="bg-background"
             onChange={(e) => handleColorChange(e.target.value)}
           />
           <Button
