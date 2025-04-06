@@ -3,16 +3,20 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@radix-ui/react-popover";
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { HexColorPicker } from "react-colorful";
 import { Input } from "./input";
 import { Button } from "./button";
 import { Pipette } from "lucide-react";
 
-const ColorPicker = ({ defaultColor }) => {
+const ColorPicker = ({ defaultColor, onColorChange }) => {
   const [color, setColor] = useState(defaultColor || "#000");
+
   const handleColorChange = useCallback((newColor) => {
     setColor(newColor);
+    if (onColorChange && typeof onColorChange === "function") {
+      onColorChange(newColor);
+    }
   }, []);
 
   const handleEyeDropper = useCallback(async () => {
@@ -26,15 +30,33 @@ const ColorPicker = ({ defaultColor }) => {
     }
   }, [handleColorChange]);
 
-  const getIconColor = (backgroundColor) => {
-    if(!backgroundColor) return "#000000";
-    console.log(backgroundColor);
-    const lightness = parseFloat(
-      backgroundColor.split(" ")[2]?.replace("%", "")
-    );
-    return lightness > 50 ? "#000000" : "#ffffff";
-  };
-
+  const getIconColor = useCallback((backgroundColor) => {
+    if (!backgroundColor) return "#000000";
+    
+    let lightness = 0;
+    
+    if (backgroundColor.startsWith("#")) {
+      // HEX color processing
+      const hex = backgroundColor.replace("#", "");
+      const r = parseInt(hex.length === 3 ? hex[0] + hex[0] : hex.substring(0, 2), 16) / 255;
+      const g = parseInt(hex.length === 3 ? hex[1] + hex[1] : hex.substring(2, 4), 16) / 255;
+      const b = parseInt(hex.length === 3 ? hex[2] + hex[2] : hex.substring(4, 6), 16) / 255;
+      
+      // Calculate lightness (perceived brightness)
+      lightness = (Math.max(r, g, b) + Math.min(r, g, b)) / 2 * 100;
+    } else {
+      // HSL color processing
+      const parts = backgroundColor.split(/\s+/);
+      if (parts.length >= 3) {
+        lightness = parseFloat(parts[2].replace("%", ""));
+      }
+    }
+    
+    // Return black for light backgrounds, white for dark backgrounds
+    return lightness > 50 ? "#000000" : "#FFFFFF";
+  }, []);
+  
+  const iconColor = useMemo(() => getIconColor(color), [color, getIconColor]);
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -45,7 +67,7 @@ const ColorPicker = ({ defaultColor }) => {
         >
           <Pipette
             className={`size-5 opacity-0 group-hover:opacity-100 transition-opacity`}
-            style={{color: getIconColor(color)}}
+            style={{ color: iconColor }}
           />
         </Button>
       </PopoverTrigger>
