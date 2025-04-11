@@ -28,11 +28,14 @@ function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
   useEffect(() => {
     checkAuth();
+    const theme = localStorage.getItem('data-theme') || 'zinc';
+    document.documentElement.setAttribute('data-theme', theme);
   }, [checkAuth]);
   
   const { setRoutes } = useRouteStore();
   const { getNoteName, collections, isCollectionsLoading, setselectedNote } = useNoteStore();
   const location = useLocation();
+
   useEffect(() => {
     let path = '/';
     setselectedNote(null);

@@ -5,8 +5,8 @@ import {
 } from "@radix-ui/react-popover";
 import React, { useState, useCallback, useMemo } from "react";
 import { HexColorPicker } from "react-colorful";
-import { Input } from "./input";
-import { Button } from "./button";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
 import { Pipette } from "lucide-react";
 
 const ColorPicker = ({ defaultColor, onColorChange }) => {
