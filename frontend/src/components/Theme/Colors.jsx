@@ -38,7 +38,7 @@ const Colors = () => {
             key={name}
             variant="outline"
             className={`justify-start ${
-              selectedColor === name ? "border-2 border-primary" : ""
+              selectedColor.toLowerCase() === name.toLowerCase() ? "border-2 border-primary" : ""
             }`}
             onClick={() => setSelectedColor(name)}
           >

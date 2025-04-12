@@ -29,7 +29,10 @@ function App() {
   useEffect(() => {
     checkAuth();
     const theme = localStorage.getItem('data-theme') || 'zinc';
+    const radius = localStorage.getItem('radius') || 0.5;
+
     document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.style.setProperty('--radius', `${radius}rem`);
   }, [checkAuth]);
   
   const { setRoutes } = useRouteStore();
