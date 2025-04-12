@@ -68,7 +68,8 @@ function App() {
   if (isCheckingAuth && !authUser) {
     return (
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        <div className='flex items-center justify-center h-screen'>
+        <div className='flex flex-col gap-2 items-center justify-center h-screen'>
+          <div className='logo text-xl text-foreground/70'>Notehub</div>
           <Loader className='animate-spin' />
         </div>
       </ThemeProvider>

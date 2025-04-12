@@ -4,6 +4,12 @@ import { Button } from "../ui/button";
 
 const Radius = () => {
   const radius = [0, 0.3, 0.5, 0.75, 1.0];
+  
+  function setProperty(property, value) {
+    console.log(property, value);
+    value = value.startsWith("#") ? hexToHSL(value) : value;
+    document.documentElement.style.setProperty(property, value);
+  }
 
   return (
     <div className="space-y-1.5">

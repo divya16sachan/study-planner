@@ -55,7 +55,7 @@ const LoginPage = ({ className, ...props }) => {
               <form onSubmit={handFormSubmit} className="p-6 md:p-8">
                 <div className="flex flex-col gap-4">
                   <div className="flex flex-col items-center text-center">
-                    <h1 className="text-2xl font-bold">NoteHub</h1>
+                    <h1 className="logo text-lg">NoteHub</h1>
                     <p className="text-balance text-muted-foreground">
                       Login to your NoteHub account
                     </p>
@@ -106,7 +106,7 @@ const LoginPage = ({ className, ...props }) => {
 
                   <div className="text-center text-sm">
                     Don&apos;t have an account?{" "}
-                    <Link to="/signup" className="underline underline-offset-4">
+                    <Link to="/signup" className="hover:underline underline-offset-4">
                       Sign up
                     </Link>
                   </div>

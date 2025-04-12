@@ -19,7 +19,7 @@ const Navbar = () => {
       <div className="container h-14 m-auto flex justify-between items-center">
         <div className='flex gap-6'>
           <div className='flex gap-2 font-bold'>
-            <Link to='/'>NoteHub</Link>
+            <Link className='logo' to='/'>NoteHub</Link>
           </div>
           <nav className='flex gap-6'>
             <Link to='/' className='hover:text-foreground/60 transition-colors'>Settings</Link>

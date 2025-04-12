@@ -7,12 +7,6 @@ import CssVariables from "./CssVariables";
 
 const Theme = () => {
 
-  function setProperty(property, value) {
-    console.log(property, value);
-    value = value.startsWith("#") ? hexToHSL(value) : value;
-    document.documentElement.style.setProperty(property, value);
-  }
-
   return (
     <Card>
       <CardHeader>
@@ -27,7 +21,7 @@ const Theme = () => {
         <Radius/>
         <CssVariables/>
       </CardContent>
-      
+
     </Card>
   );
 };

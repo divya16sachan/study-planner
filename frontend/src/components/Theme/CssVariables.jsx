@@ -58,6 +58,12 @@ const variables = {
 };
 
 const CssVariables = () => {
+  function setProperty(property, value) {
+    console.log(property, value);
+    value = value.startsWith("#") ? hexToHSL(value) : value;
+    document.documentElement.style.setProperty(property, value);
+  }
+
   return (
     <div className="space-y-1.5">
       <Label>CSS Variables</Label>

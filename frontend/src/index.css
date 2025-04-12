@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Audiowide&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -116,6 +118,8 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
+    --sidebar-accent: 217, 33%, 17%;
+    --sidebar-background: 223, 50%, 9%;
   }
   
   
@@ -580,6 +584,10 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+
+  .logo{
+    font-family: 'Audiowide';
   }
 }
 

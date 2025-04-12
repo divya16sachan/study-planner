@@ -35,13 +35,13 @@ const ForgetPasswordPage = () => {
     };
 
     return (
-        <div className="flex min-h-svh flex-col items-center justify-center bg-muted p-6 md:p-10">
+        <div className="flex min-h-svh flex-col items-center justify-center bg-background p-6 md:p-10">
             <Card className="overflow-hidden">
                 <CardContent className="grid p-0 md:grid-cols-2">
                     <form onSubmit={handFormSubmit} className="p-6 md:p-8">
                         <div className="flex flex-col gap-4">
                             <div className="flex flex-col items-center text-center">
-                                <h1 className="text-2xl font-bold">NoteHub</h1>
+                                <h1 className="logo text-lg">NoteHub</h1>
                                 <p className="text-balance text-muted-foreground">
                                     Forget Password
                                 </p>

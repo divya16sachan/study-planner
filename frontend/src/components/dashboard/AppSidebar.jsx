@@ -81,7 +81,7 @@ const AppSidebar = (props) => {
                 <TooltipWrapper message={"Close Sidebar Ctrl M"}>
                   <SidebarCloseTrigger />
                 </TooltipWrapper>
-                <Link to="/" className="truncate font-semibold">
+                <Link to="/" className="logo truncate font">
                   NoteHub
                 </Link>
               </div>
