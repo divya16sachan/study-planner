@@ -71,7 +71,7 @@ const NoteItem = ({ note }) => {
                 asChild
                 onClick={() => !isNoteRenaming && setselectedNote(note._id)}
             >
-                <div className={`flex items-center gap-0 w-full hover:bg-accent/50 rounded-md p-1 ${selectedNote === note._id && 'bg-accent'}`}>
+                <div className={`flex items-center gap-0 w-full hover:bg-sidebar-accent/50 rounded-md p-1 ${selectedNote === note._id && 'bg-accent'}`}>
                     {/* <File className="opacity-50 size-4 flex-shrink-0" /> */}
 
                     {isNoteRenaming ? (
