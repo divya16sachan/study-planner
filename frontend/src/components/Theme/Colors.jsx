@@ -2,32 +2,32 @@ import React, { useState, useEffect } from "react";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
 import { Check } from "lucide-react";
+import { useLocalStorage } from "@/stores/useLocalStorage";
+import { useThemeStore } from "@/stores/useThemeStore";
 
 const colors = [
-  { name: "Zinc", color: "#52525b" },
-  { name: "Slate", color: "#475569" },
-  { name: "Stone", color: "#57534e" },
-  { name: "Gray", color: "#4b5563" },
-  { name: "Neutral", color: "#525252" },
-  { name: "Red", color: "#dc2626" },
-  { name: "Rose", color: "#e11d48" },
-  { name: "Orange", color: "#ea580c" },
-  { name: "Green", color: "#22c55e" },
-  { name: "Blue", color: "#3b82f6" },
-  { name: "Yellow", color: "#facc15" },
-  { name: "Voilet", color: "#6d28d9" },
+  { name: "zinc", color: "#52525b" },
+  { name: "slate", color: "#475569" },
+  { name: "stone", color: "#57534e" },
+  { name: "gray", color: "#4b5563" },
+  { name: "neutral", color: "#525252" },
+  { name: "red", color: "#dc2626" },
+  { name: "rose", color: "#e11d48" },
+  { name: "orange", color: "#ea580c" },
+  { name: "green", color: "#22c55e" },
+  { name: "blue", color: "#3b82f6" },
+  { name: "yellow", color: "#facc15" },
+  { name: "voilet", color: "#6d28d9" },
 ];
 
 const Colors = () => {
-  const [selectedColor, setSelectedColor] = useState(() => {
-    return localStorage.getItem("data-theme") || "zinc";
-  });
+  const { theme, setTheme } = useLocalStorage();
+  const { updateVariable } = useThemeStore();
 
   useEffect(() => {
-    localStorage.setItem("data-theme", selectedColor.toLowerCase());
-    document.documentElement.setAttribute("data-theme", selectedColor.toLowerCase());
-  }, [selectedColor]);
-  
+    document.documentElement.setAttribute("data-theme", theme);
+    updateVariable();
+  }, [theme]);
 
   return (
     <div className="space-y-1.5">
@@ -37,18 +37,20 @@ const Colors = () => {
           <Button
             key={name}
             variant="outline"
-            className={`justify-start ${
-              selectedColor.toLowerCase() === name.toLowerCase() ? "border-2 border-primary" : ""
-            }`}
-            onClick={() => setSelectedColor(name)}
+            className={`justify-center sm:justify-start
+               ${theme === name ? "border-2 border-primary" : ""}
+               `}
+            onClick={() => setTheme(name)}
           >
             <span
               className="h-5 w-5 flex-shrink-0 flex items-center justify-center rounded-full relative"
               style={{ background: color }}
             >
-              {selectedColor === name && <Check />}
+              {theme === name && <Check />}
             </span>
-            {name}
+            <span className="hidden xs:inline">
+              {name[0].toUpperCase() + name.slice(1)}
+            </span>
           </Button>
         ))}
       </div>

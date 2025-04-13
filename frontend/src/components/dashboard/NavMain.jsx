@@ -71,7 +71,7 @@ const NoteItem = ({ note }) => {
                 asChild
                 onClick={() => !isNoteRenaming && setselectedNote(note._id)}
             >
-                <div className={`flex items-center gap-0 w-full hover:bg-sidebar-accent/50 rounded-md p-1 ${selectedNote === note._id && 'bg-accent'}`}>
+                <div className={`flex items-center gap-0 w-full hover:bg-sidebar-accent rounded-md p-1 ${selectedNote === note._id && 'bg-accent'}`}>
                     {/* <File className="opacity-50 size-4 flex-shrink-0" /> */}
 
                     {isNoteRenaming ? (
@@ -96,13 +96,7 @@ const NoteItem = ({ note }) => {
                         <div className="ml-auto opacity-0 group-hover/note:opacity-100 transition-opacity">
                             <NotesOption
                                 trigger={
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="h-6 w-6 flex-shrink-0 hover:bg-background/20"
-                                    >
-                                        <EllipsisVertical className="size-4" />
-                                    </Button>
+                                    <EllipsisVertical className="size-4" />
                                 }
                                 note={note}
                                 onRenameStart={handleRenameStart}

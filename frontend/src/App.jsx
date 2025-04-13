@@ -22,13 +22,15 @@ import NotePage from './pages/NotePage';
 import { useRouteStore } from './stores/useRouteStore';
 import { useNoteStore } from './stores/useNoteStore';
 import NotFoundPage from './pages/NotFoundPage';
+import { useLocalStorage } from './stores/useLocalStorage';
 
 
 function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
+  const { theme } = useLocalStorage();
+
   useEffect(() => {
     checkAuth();
-    const theme = localStorage.getItem('data-theme') || 'zinc';
     const radius = localStorage.getItem('radius') || 0.5;
 
     document.documentElement.setAttribute('data-theme', theme);
@@ -54,7 +56,6 @@ function App() {
         const noteId = segments[++i];
         path += `${noteId}/`;
         let noteName = getNoteName(noteId);
-        console.log(noteName);
         if(noteName === null){
           noteName = "Not found"
         }

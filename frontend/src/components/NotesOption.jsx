@@ -37,7 +37,7 @@ const NotesOption = ({ trigger, note, onRenameStart }) => {
             <PopoverTrigger asChild>
                 <Button 
                     variant="ghost" 
-                    className="flex-shrink-0 p-1 size-6 text-muted-foreground hover:text-primary hover:bg-transparent"
+                    className="flex-shrink-0 p-1 size-6 text-muted-foreground hover:text-foreground"
                 >
                     {trigger}
                 </Button>
