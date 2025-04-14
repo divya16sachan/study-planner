@@ -30,6 +30,7 @@ import { Link } from "react-router-dom";
 import { SidebarSearch } from "./SidebarSearch";
 import TooltipWrapper from "../TooltipWrapper";
 import { useLocalStorage } from "@/stores/useLocalStorage";
+import SettingSidebar from "./SettingSidebar";
 
 const AppSidebar = (props) => {
   const { getHierarchy, createCollection, collections } = useNoteStore();
@@ -60,10 +61,10 @@ const AppSidebar = (props) => {
         <div className="py-[13px] h-14">
           {showSearch ? (
             <div className="flex gap-2 items-center">
-              <SidebarSearch 
+              <SidebarSearch
                 setShowSearch={setShowSearch}
-                inputRef={searchRef} 
-                onSearch={setSearchQuery} 
+                inputRef={searchRef}
+                onSearch={setSearchQuery}
               />
               <TooltipWrapper message="Close Searchbar">
                 <Button
@@ -161,7 +162,14 @@ const AppSidebar = (props) => {
       </SidebarHeader>
 
       <SidebarContent>
-        <MemoizedNavMain collections={collections} searchQuery={searchQuery} />
+        {location.pathname.startsWith("/settings") ? (
+          <SettingSidebar />
+        ) : (
+          <MemoizedNavMain
+            collections={collections}
+            searchQuery={searchQuery}
+          />
+        )}
       </SidebarContent>
 
       <SidebarFooter>
