@@ -37,6 +37,7 @@ const NavUser = () => {
     const { isMobile } = useSidebar();
     const { authUser } = useAuthStore();
     const { logout } = useAuthStore();
+    
     return (
         <SidebarMenu>
             <SidebarMenuItem>
@@ -52,7 +53,7 @@ const NavUser = () => {
                                 <AvatarFallback className="rounded-lg">
                                     {
                                         authUser ?
-                                            authUser.fullName.split(/\s+/).map(w => w[0].toUpperCase()).join('').slice(0, 2) :
+                                            authUser.fullName.trim().split(/\s+/).map(w => w[0].toUpperCase()).join('').slice(0, 2) :
                                             "NH"
                                     }
                                 </AvatarFallback>
@@ -78,7 +79,7 @@ const NavUser = () => {
                                     <AvatarFallback className="rounded-lg">
                                         {
                                             authUser ?
-                                                authUser.fullName.split(/\s+/).map(w => w[0].toUpperCase()).join('').slice(0, 2) :
+                                                authUser.fullName.trim().split(/\s+/).map(w => w[0].toUpperCase()).join('').slice(0, 2) :
                                                 "NH"
                                         }
                                     </AvatarFallback>

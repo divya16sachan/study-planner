@@ -33,53 +33,57 @@ import {
 } from "@/components/ui/sidebar";
 
 import React from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 
 const settings = [
   {
-    name: "Personal Details",
-    url: "settings/personal-details",
-    icon: CircleUserRound,
-  },
-  {
     name: "Personalization",
-    url: "settings/personalization",
+    url: "/settings/personalization",
     icon: PaintbrushVertical,
   },
   {
-    name: "Security",
-    url: "settings/security",
-    icon: KeyRound,
-  },
-  {
     name: "Photo and cover",
-    url: "settings/photo-and-cover",
+    url: "/settings/photo-and-cover",
     icon: Camera,
   },
+  {
+    name: "Personal Details",
+    url: "/settings/personal-details",
+    icon: CircleUserRound,
+  },
+  
+  {
+    name: "Security",
+    url: "/settings/security",
+    icon: KeyRound,
+  },
+  
 ];
 
 const SettingSidebar = () => {
   const { isMobile } = useSidebar();
+  const location = useLocation();
+
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Settings</SidebarGroupLabel>
       <SidebarMenu>
-        {settings.map((item) => (
-          <SidebarMenuItem key={item.name}>
-            <SidebarMenuButton asChild>
-              <NavLink
-                to={item.url}
-                end={item.url === "/settings"} // Prevent matching parent route if needed
-                className={({ isActive }) =>
-                  isActive ? "bg-red-500" : "bg-red-50"
-                }
+        {settings.map((item) => {
+          const isActive = location.pathname.split('/').join('') === item.url.split('/').join('');
+          return (
+            <SidebarMenuItem key={item.name}>
+              <SidebarMenuButton
+                asChild
+                className={isActive && "bg-sidebar-accent"}
               >
-                <item.icon />
-                <span>{item.name}</span>
-              </NavLink>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        ))}
+                <Link to={item.url}>
+                  <item.icon />
+                  <span>{item.name}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          );
+        })}
       </SidebarMenu>
     </SidebarGroup>
   );

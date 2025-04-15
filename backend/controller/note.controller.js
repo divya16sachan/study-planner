@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import Note from "../model/note.model.js";
-import { cloudinary } from "../utils/cloudinary.js";
 
 export const createNote = async (req, res) => {
     const { name, collectionId } = req.body;

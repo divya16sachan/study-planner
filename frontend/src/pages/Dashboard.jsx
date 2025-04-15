@@ -8,8 +8,8 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { Separator } from "@/components/ui/separator"
+} from "@/components/ui/breadcrumb";
+import { Separator } from "@/components/ui/separator";
 import {
   SidebarCloseTrigger,
   SidebarInset,
@@ -17,7 +17,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
   useSidebar,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 import { Link, Outlet } from "react-router-dom";
 import { useRouteStore } from "@/stores/useRouteStore";
 import React from "react";
@@ -25,6 +25,8 @@ import { Button } from "@/components/ui/button";
 import { Github, Plus } from "lucide-react";
 import AddNoteDialog from "@/components/AddNoteDialog";
 import TooltipWrapper from "@/components/TooltipWrapper";
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 const Dashboard = () => {
   return (
@@ -36,6 +38,7 @@ const Dashboard = () => {
 
 const DashboardContent = () => {
   const { routes } = useRouteStore();
+  const { authUser } = useAuthStore();
   const { isSidebarOpen } = useSidebar();
 
   return (
@@ -79,12 +82,37 @@ const DashboardContent = () => {
                 </Button>
               }
             />
+
             <a href="https://github.com/abhijeetSinghRajput/notehub">
               <Button className="size-8" variant="ghost">
                 <Github />
               </Button>
             </a>
             <ModeToggle />
+
+            <TooltipWrapper message={authUser.fullName || "user"}>
+              <Link
+                to="/profile"
+                className="size-8 overflow-hidden rounded-full"
+              >
+                <Avatar>
+                  <AvatarImage
+                    src={authUser?.avatarUrl}
+                    alt={authUser?.fullName}
+                  />
+                  <AvatarFallback className="rounded-lg">
+                    {authUser
+                      ? authUser.fullName
+                          .trim()
+                          .split(/\s+/)
+                          .map((w) => w[0].toUpperCase())
+                          .join("")
+                          .slice(0, 2)
+                      : "NH"}
+                  </AvatarFallback>
+                </Avatar>
+              </Link>
+            </TooltipWrapper>
           </div>
         </header>
 

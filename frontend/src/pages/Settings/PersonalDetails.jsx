@@ -1,157 +1,115 @@
-import { cn } from "@/lib/utils";
-
-import React, { useState } from "react";
-import { DrawerDialog } from "@/components/EditProfile";
+import React, { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Camera, Pencil } from "lucide-react";
+import { Pencil } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { 
+  Card, 
+  CardContent, 
+  CardHeader, 
+  CardTitle 
+} from "@/components/ui/card";
 import { useAuthStore } from "@/stores/useAuthStore";
-import imageCompression from "browser-image-compression";
 
 const PersonalDetails = () => {
-  const { authUser, uploadUserAvatar } = useAuthStore();
-  const [previewUrl, setPreviewUrl] = useState(null);
-
-  const handleUploadAvatar = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const option = {
-      maxSizeMB: 0.2,
-      maxWidthOrheight: 1920,
-      useWebWorker: true,
-    };
-    try {
-      // Show a preview while compressing the image
-      const previewUrl = URL.createObjectURL(file);
-      setPreviewUrl(previewUrl);
-
-      // Compressing the image
-      const compressedFile = await imageCompression(file, option);
-
-      // Converting to base64 string
-      const reader = new FileReader();
-      reader.readAsDataURL(compressedFile);
-      reader.onloadend = async () => {
-        const imageBase64 = reader.result;
-        await uploadUserAvatar({ avatarBase64: imageBase64 });
-      };
-    } catch (error) {
-      console.error("Error compressing or uploading avatar:\n", error);
-    }
-  };
-
   return (
     <Card>
       <CardHeader>
         <CardTitle>Personal Details</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <div>
-            <Label className="text-zinc-500 mb-2 inline-block">Username</Label>
-            <div className="relative overflow-hidden rounded-lg select-none flex bg-sidebar border border-sidebar-border justify-between items-center px-4 py-3">
-              {authUser?.userName}
-              <DrawerDialog
-                triggerButton={
-                  <Button
-                    className="border-l absolute h-full rounded-none top-0 right-0"
-                    variant="ghost"
-                  >
-                    <Pencil />
-                  </Button>
-                }
-              >
-                <ProfileForm
-                  apiEndPoint="user/update-username"
-                  dataKey="userName"
-                  field="Username"
-                  defaultValue={authUser?.userName}
-                />
-              </DrawerDialog>
-            </div>
-          </div>
 
-          <div>
-            <Label className="text-zinc-500 mb-2 inline-block">Full Name</Label>
-            <div className="relative overflow-hidden rounded-lg select-none bg-sidebar border border-sidebar-border flex justify-between items-center px-4 py-3">
-              {authUser?.fullName}
-              <DrawerDialog
-                triggerButton={
-                  <Button
-                    className="border-l absolute h-full rounded-none top-0 right-0"
-                    variant="ghost"
-                  >
-                    <Pencil />
-                  </Button>
-                }
-              >
-                <ProfileForm
-                  apiEndPoint="user/update-fullname"
-                  dataKey="fullName"
-                  field="Full Name"
-                  defaultValue={authUser?.fullName}
-                />
-              </DrawerDialog>
-            </div>
-          </div>
+      <CardContent className="space-y-4">
+        <Field
+          label="Full Name"
+          field="fullName"
+          apiEndPoint="user/update-fullname"
+          />
 
-          <div>
-            <Label className="text-zinc-500 mb-2 inline-block">Email</Label>
-            <div className="relative overflow-hidden rounded-lg select-none bg-sidebar border border-sidebar-border flex justify-between items-center px-4 py-3">
-              {authUser?.email}
-              <DrawerDialog
-                triggerButton={
-                  <Button
-                    className="border-l absolute h-full rounded-none top-0 right-0"
-                    variant="ghost"
-                  >
-                    <Pencil />
-                  </Button>
-                }
-              >
-                <ProfileForm
-                  apiEndPoint="email/update"
-                  dataKey="newEmail"
-                  field="Email"
-                  defaultValue={authUser?.email}
-                />
-              </DrawerDialog>
-            </div>
-          </div>
-        </div>
+        <Field
+          label="Username"
+          field="userName"
+          apiEndPoint="user/update-username"
+        />
+
+        <Field 
+          label="Email" 
+          field="email" 
+          apiEndPoint="email/update" 
+        />
       </CardContent>
+      
     </Card>
   );
 };
 
-function ProfileForm({ className, field, defaultValue, apiEndPoint, dataKey }) {
-  const [value, setValue] = useState(defaultValue);
-  const { updateUserField } = useAuthStore();
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const data = { [dataKey]: value };
-    await updateUserField(apiEndPoint, data);
+function Field({ label, field, apiEndPoint }) {
+  const { authUser, updateUserField } = useAuthStore();
+  const [immutable, setImmutable] = useState(true);
+  const [value, setValue] = useState(authUser[field] || "");
+  const inputRef = useRef(null);
+
+  const handleUpdate = () => {
+    if (!inputRef.current) return;
+
+    const input = inputRef.current;
+    input.focus();
+    input.select();
+
+    setImmutable(false);
   };
+
+  const handleSave = async () => {
+    const trimmedValue = value.trim();
+    if (!trimmedValue) {
+      setValue(authUser[field]);
+      setImmutable(true);
+      return;
+    }
+    if(trimmedValue === authUser[field]){
+      setImmutable(true);
+      return;
+    }
+
+    setImmutable(true);
+    const data = { [field]: trimmedValue };
+    const result = await updateUserField(apiEndPoint, data);
+    if(!result){
+      setValue(authUser[field]);
+    }
+  };
+
+  const handleEnter = (e)=>{
+    if(e.key === 'Enter'){
+      e.preventDefault();
+      inputRef.current?.blur();
+    }
+  }
+
   return (
-    <form
-      onSubmit={handleSubmit}
-      className={cn("grid items-start gap-4", className)}
-    >
-      <div className="grid gap-2">
-        <Label htmlFor={field}>{field}</Label>
+    <div className="space-y-1">
+      <Label>{label}</Label>
+      <div className="flex border border-input rounded-lg ">
         <Input
-          type="text"
-          id={field}
+          className={`${immutable? 'focus-visible:ring-0 focus-visible:outline-none' : ''}border-none rounded-r-none`}
           value={value}
           onChange={(e) => setValue(e.target.value)}
+          onBlur={handleSave}
+          readOnly={immutable}
+          onKeyDown={handleEnter}
+          ref={inputRef}
         />
+        <Button
+          variant="ghost"
+          size="icon"
+          className="rounded-l-none border border-l-input"
+          onClick={handleUpdate}
+        >
+          <Pencil />
+        </Button>
       </div>
-      <Button type="submit">Save changes</Button>
-    </form>
+    </div>
   );
 }
+
 
 export default PersonalDetails;

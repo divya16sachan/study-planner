@@ -6,6 +6,20 @@ import { sendMail } from "../utils/sendMail.js";
 import { generateVerificationCode } from "../utils/generateVerificationCode.js";
 import { verifyEmailTemplate } from "../utils/mailTemplates.js";
 
+const sanitizeUserForSharing = (user) => {
+    return {
+        _id: user._id,
+        avatarUrl: user.avatarUrl,
+        coverUrl: user.coverUrl,
+        email: user.email,
+        fullName: user.fullName,
+        imageUrls: user.imageUrls,
+        isEmailVerified: user.isEmailVerified,
+        streak: user.streak,
+        userName: user.userName,
+    }
+}
+
 export const signup = async (req, res) => {
     const { fullName, email, userName, password } = req.body;
     if (!fullName || !email || !userName || !password) {
@@ -104,15 +118,7 @@ export const login = async (req, res) => {
 
         generateToken(user._id, res);
 
-        res.status(200).json({
-            _id: user._id,
-            fullName: user.fullName,
-            email: user.email,
-            isEmailVerified: user.isEmailVerified,
-            userName: user.userName,
-            avatarUrl: user.avatarUrl,
-            streak: user.streak,
-        });
+        res.status(200).json(sanitizeUserForSharing(user));
 
     } catch (error) {
         console.error("error in login controller: ", error);
@@ -136,8 +142,9 @@ export const checkAuth = async (req, res) => {
         if (!req.user) {
             return res.status(400).json({ message: "user not found" });
         }
+        const user = req.user;
 
-        res.status(200).json(req.user)
+        res.status(200).json(sanitizeUserForSharing(user))
     } catch (error) {
         console.error('Error in checkAuth controller: ', error);
         res.status(500).json({ message: "Internal server error" });
@@ -151,13 +158,7 @@ export const getUser = async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: `User not found` });
         }
-        res.status(200).json({
-            _id: user._id,
-            fullName: user.fullName,
-            userName: user.userName,
-            email: user.email,
-            streak: user.streak,
-        })
+        res.status(200).json(sanitizeUserForSharing(user))
     } catch (error) {
         console.error('Error in getUser controller: ', error);
         res.status(500).json({ message: "Internal server error" });
@@ -166,7 +167,7 @@ export const getUser = async (req, res) => {
 
 export const uploadAvatar = async (req, res) => {
     const { user} = req;
-    const {avatarBase64} = req.body;
+    const {imageBase64 : avatarBase64} = req.body;
     if (!user) {
         return res.status(401).json({ message: "Unothorized: user not found" });
     }
@@ -185,17 +186,18 @@ export const uploadAvatar = async (req, res) => {
         user.avatarUrl = result.secure_url;
         await user.save();
 
-        res.status(200).json({ user, message: "Avatar uploaded successfully" });
+        res.status(200).json({ user: sanitizeUserForSharing(user), message: "Avatar uploaded successfully" });
     } catch (error) {
         console.error('Error in uploadAvatar controller: ', error);
         res.status(500).json({ message: "Internal server error" });
     }
 }
 
+
 export const removeAvatar = async (req, res) => {
     const {user} = req;
     try {
-        const { success, status, message } = await removeCloudinaryImage(user.avatarUrl);
+        const { success, status, message } = await removeCloudinaryImage(user.avatarUrl, 'avatar/');
         if(success){
             user.avatarUrl = '';
             user.save();
@@ -207,6 +209,49 @@ export const removeAvatar = async (req, res) => {
     }
 }
 
+export const uploadCover = async (req, res) => {
+    const { user } = req;
+    const { imageBase64 : coverBase64 } = req.body;
+    if (!user) {
+        return res.status(401).json({ message: "Unauthorized: user not found" });
+    }
+    if (!coverBase64) {
+        return res.status(400).json({ message: "Cover must be provided." });
+    }
+    try {
+        const publicId = `user_${user._id}_cover`;
+        const result = await cloudinary.uploader.upload(coverBase64, {
+            public_id: `cover/${publicId}`,
+            overwrite: true,
+            resource_type: 'image'
+        });
+
+        user.coverUrl = result.secure_url; // Update coverUrl field
+        await user.save();
+
+        res.status(200).json({ user: sanitizeUserForSharing(user), message: "Cover uploaded successfully" });
+    } catch (error) {
+        console.error('Error in uploadCover controller: ', error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+export const removeCover = async (req, res) => {
+    const { user } = req;
+    try {
+        const { success, status, message } = await removeCloudinaryImage(user.coverUrl, 'cover/');
+        if (success) {
+            user.coverUrl = ''; // Clear the coverUrl field
+            await user.save();
+        }
+        res.status(status).json({ user, message });
+    } catch (error) {
+        console.error('Error in removeCover controller: ', error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+
 export const updateFullName = async (req, res) => {
     try {
         const { fullName } = req.body;
@@ -217,7 +262,7 @@ export const updateFullName = async (req, res) => {
 
         user.fullName = fullName;
         await user.save();
-        res.status(200).json({user, message: "fullName updated successfully."});
+        res.status(200).json({user : sanitizeUserForSharing(user), message: "fullName updated successfully."});
     } catch (error) {
         console.log("Error in updateFullName controller\n", error);
         res.status(500).json({ message: "Internal server error." });
@@ -242,7 +287,7 @@ export const updateUserName = async (req, res) => {
 
         user.userName = userName;
         await user.save();
-        res.status(200).json({user, message: "userName updated successfully."});
+        res.status(200).json({user : sanitizeUserForSharing(user), message: "userName updated successfully."});
     } catch (error) {
         console.log("Error in updateUserName controller\n", error);
         res.status(500).json({ message: "Internal server error." });

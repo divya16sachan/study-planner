@@ -25,6 +25,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: '',
     },
+    coverUrl: {
+        type: String,
+        default: '',
+    },
     password: {
         type: String,
         required: true,

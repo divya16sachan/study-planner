@@ -116,8 +116,10 @@ function App() {
               <Route path="note/:id" element={<NotePage />} />
               <Route path="note/:id/editor" element={<Tiptap />} />
               <Route path="profile" element={<ProfilePage />} />
-              
+
               <Route path="settings" element={<SettingsPage />}>
+                <Route index element={<Personalization />} />
+                
                 <Route path="personal-details" element={<PersonalDetails />} />
                 <Route path="personalization" element={<Personalization />} />
                 <Route path="security" element={<Security />} />

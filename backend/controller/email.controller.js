@@ -79,7 +79,7 @@ export const resendOtp = async (req, res) => {
 }
 
 export const updateEmail = async (req, res) => {
-    const { newEmail } = req.body;
+    const { email : newEmail } = req.body;
     const { user } = req;
     if (!user) {
         return res.status(401).json({ message: "Unothorized: user not found." });

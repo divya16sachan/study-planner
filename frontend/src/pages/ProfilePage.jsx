@@ -14,7 +14,7 @@ import imageCompression from "browser-image-compression";
 const ProfilePage = () => {
   const { authUser, uploadUserAvatar } = useAuthStore();
   const [previewUrl, setPreviewUrl] = useState(null);
-
+  
   const handleUploadAvatar = async(e)=>{
     const file = e.target.files[0];
     if(!file) return;
@@ -36,22 +36,31 @@ const ProfilePage = () => {
       reader.readAsDataURL(compressedFile);
       reader.onloadend = async ()=>{
         const imageBase64 = reader.result;
-        await uploadUserAvatar({avatarBase64 : imageBase64});
+        await uploadUserAvatar({imageBase64});
       }
     } catch (error) {
       console.error('Error compressing or uploading avatar:\n', error);
+    } finally{
+      e.target.value = null;
     }
   }
 
   return (
     <div className="p-4 overflow-auto">
       <Card className="max-w-screen-md mx-auto overflow-hidden">
-        <div className="h-52 bg-muted/50 relative">
-          <img
-            src="https://ui.shadcn.com/placeholder.svg"
-            alt="Image"
-            className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-          />
+        <div className="h-52 overflow-hidden bg-muted/50 relative">
+        <Avatar>
+          <AvatarImage 
+            className="w-full h-full object-cover"
+            src={authUser?.coverUrl} />
+          <AvatarFallback>
+            <img
+              className="object-cover w-full h-full dark:brightness-[0.2]"
+              src="https://ui.shadcn.com/placeholder.svg"
+              alt="" 
+            />
+          </AvatarFallback>
+        </Avatar>
         </div>
         <CardContent>
           <div className="border-b pb-8 mb-8 flex items-center space-x-4">
