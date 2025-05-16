@@ -2,6 +2,14 @@ import User from '../models/user.model.js';
 import bcrypt from 'bcrypt';
 import { generateJwt } from '../services/jwt.service.js';
 
+export const checkAuth = (req, res) => {
+    const user = req.user;
+    if(!user){
+        return res.status(401).json({ message: "Unauthorized" });
+    }
+    res.status(200).json({ user });
+}
+
 export const signup = async (req, res) => {
     const { name, email, password } = req.body;
 
