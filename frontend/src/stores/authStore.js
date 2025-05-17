@@ -10,6 +10,7 @@ export const useAuthStore = create((set, get) => ({
     isLoggingIn: false,
     isSendingOtp: false,
     isUpdatingEmail: false,
+    isRenaming: false,
 
     checkAuth: async () => {
         set({ isCheckingAuth: true });
@@ -90,6 +91,7 @@ export const useAuthStore = create((set, get) => ({
     },
 
     updateName: async (newName) => {
+        set({ isRenaming: true });
         try {
             const response = await axiosInstance.post('/auth/update-name', { name: newName });
             set({ authUser: response.data.user });
@@ -98,11 +100,13 @@ export const useAuthStore = create((set, get) => ({
         } catch (error) {
             toast.error(error.response?.data?.message || "Failed to update name");
             return null;
+        } finally {
+            set({ isRenaming: false });
         }
     },
 
     updateEmail: async ({ newEmail, otp }) => {
-        set({ isUpdatingEmail: false });
+        set({ isUpdatingEmail: true });
         try {
             const response = await axiosInstance.post('/auth/update-email', { newEmail, otp });
             set({ authUser: response.data.user });
@@ -116,10 +120,11 @@ export const useAuthStore = create((set, get) => ({
         }
     },
 
-    sendEmailUpdateOtp: async (email) => {
+    sendEmailUpdateOtp: async (newEmail) => {
+        console.log(newEmail)
         set({ isSendingOtp: true });
         try {
-            const response = await axiosInstance.post('/auth/send-email-update-otp', { email });
+            const response = await axiosInstance.post('/auth/send-email-update-otp', { newEmail });
             toast.success(response.data.message || "OTP sent successfully!");
             return response.data;
         } catch (error) {

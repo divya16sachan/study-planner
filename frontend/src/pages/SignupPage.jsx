@@ -68,8 +68,8 @@ const SignupPage = () => {
 
         try {
             const result = await sendSignupOtp(formData.email);
-            if (result != null) {
-                setCooldown(60); // start cooldown only after successful otp send
+            if (result?.status >= 200) {
+                setCooldown(60); 
             }
         } catch (error) {
             // handle error if needed

@@ -101,6 +101,12 @@ const TaskTable = () => {
     setFilteredTasks(applyFilters(tasks, updated, search));
   };
 
+  const priorityStyle = {
+    'low' : 'text-green-500',
+    'high' : 'text-red-500',
+    'medium' : 'text-yellow-500',
+  }
+
   const handleSearchChange = (e) => {
     const text = e.target.value;
     setSearch(text);
@@ -155,7 +161,7 @@ const TaskTable = () => {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <div className="flex items-center gap-2">
+                  <div className={`flex items-center gap-2 ${priorityStyle[task.priority]}`}>
                     {PriorityIcon && <PriorityIcon className="size-4 text-muted-foreground" />}
                     <span className="truncate">{task.priority}</span>
                   </div>
