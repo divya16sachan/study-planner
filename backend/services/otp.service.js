@@ -8,7 +8,9 @@ export const sendOtp = async ({ email, purpose, subject, messageTemplate }) => {
   const now = new Date();
 
   if (existingOtp && now - existingOtp.lastSentAt < 60 * 1000) {
-    throw new Error('OTP already sent. Please wait a minute.');
+    const error = new Error('OTP already sent. Please wait a minute.');
+    error.status = 429;
+    throw error;
   }
 
   const otpCode = crypto.randomInt(100000, 999999).toString();
@@ -33,14 +35,27 @@ export const sendOtp = async ({ email, purpose, subject, messageTemplate }) => {
 
 export const validateOtp = async ({ email, purpose, otp }) => {
   const otpRecord = await Otp.findOne({ email, purpose });
-  if (!otpRecord) throw new Error('Please request OTP first');
+  if (!otpRecord) {
+    const error = new Error('Please request OTP first');
+    error.statusCode = 400; // Bad request
+    throw error;
+  }
 
   const now = new Date();
-  if (now > otpRecord.expiresAt) throw new Error('OTP has expired');
+  if (now > otpRecord.expiresAt) {
+    const error = new Error('OTP has expired');
+    error.statusCode = 410; // Gone
+    throw error;
+  }
 
   const isOtpValid = await bcrypt.compare(otp, otpRecord.otp);
-  if (!isOtpValid) throw new Error('Invalid OTP');
+  if (!isOtpValid) {
+    const error = new Error('Invalid OTP');
+    error.statusCode = 401; // Unauthorized
+    throw error;
+  }
 
   await Otp.deleteOne({ email, purpose });
   return true;
 };
+

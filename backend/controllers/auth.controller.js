@@ -23,18 +23,22 @@ export const sendEmailUpdateOtp = async (req, res) => {
     }
 
     try {
+        const existingUser = await User.findOne({ email: newEmail });
+        if (existingUser) {
+            return res.status(400).json({ message: 'Email already in use' });
+        }
+
         await sendOtp({
-            email: newEmail,
+            email : newEmail,
             purpose: 'email_update',
             subject: 'Update Email OTP',
-            generateMessage: (otp, minutes) =>
-                `Your OTP for updating email is: ${otp}\nIt is valid for ${minutes} minutes.`
+            messageTemplate: (code, mins) => `Your OTP for updating email is: ${code}\nIt is valid for ${mins} minutes.`
         });
 
         return res.status(200).json({ message: 'OTP sent successfully' });
     } catch (error) {
         console.error('Send email update OTP error:', error);
-        return res.status(429).json({ message: error.message || 'Failed to send OTP' });
+        return res.status(error.status || 500).json({ message: error.message || 'Failed to send OTP' });
     }
 };
 
@@ -51,7 +55,7 @@ export const sendSignupOtp = async (req, res) => {
 
         return res.status(200).json({ message: 'OTP sent successfully' });
     } catch (err) {
-        return res.status(429).json({ message: err.message });
+        return res.status(err.status || 500).json({ message: "Internal server error" });
     }
 };
 
@@ -82,7 +86,7 @@ export const signup = async (req, res) => {
         return res.status(201).json({ user: userResponse });
     } catch (error) {
         console.error('Signup error:', error.message);
-        return res.status(400).json({ message: error.message });
+        return res.status(500).json({ message: "Internal Server Error"});
     }
 };
 

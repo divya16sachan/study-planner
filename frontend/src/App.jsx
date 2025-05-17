@@ -18,7 +18,7 @@ const App = () => {
       await checkAuth();
     };
     checkAuth();
-  }, []);
+  }, [checkAuth, authUser]);
 
   if(!authUser && isCheckingAuth) {
     return (
