@@ -30,6 +30,7 @@
     --chart-5: 27 87% 67%;
     --radius: 0.5rem
   }
+
   .dark {
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
@@ -62,19 +63,31 @@
   * {
     @apply border-border;
   }
+
   body {
-    @apply bg-background text-foreground mt-16;
+    @apply bg-background text-foreground;
   }
 
-  .schedule-list li{
+  .schedule-list li {
     @apply relative;
   }
 
   .schedule-list li:last-child:after {
     @apply hidden;
   }
+
+  .no-spinner::-webkit-outer-spin-button,
+  .no-spinner::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .no-spinner {
+    appearance: textfield;
+  }
+
   .schedule-list li::after {
-    @apply bg-accent absolute ;
+    @apply bg-accent absolute;
     content: "";
     height: calc(100% + 10px);
     width: 1px;
