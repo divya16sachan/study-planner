@@ -1,3 +1,4 @@
+@import "@pqina/flip/dist/flip.min.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -67,7 +68,10 @@
   body {
     @apply bg-background text-foreground;
   }
-
+  .scrollbar-hide{
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
   .schedule-list li {
     @apply relative;
   }
@@ -94,5 +98,9 @@
     left: 64px;
     top: 15px;
     z-index: -1;
+  }
+
+  .tick .tick-credits { 
+    @apply hidden;
   }
 }
