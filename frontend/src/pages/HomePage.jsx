@@ -1,14 +1,67 @@
+import FlipTimer from '@/components/FlipTimer'
 import Schedule from '@/components/Schedule'
 import TaskTable from '@/components/TaskTable'
 import WeeklyCalendar from '@/components/WeeklyCalendar'
 import React from 'react'
 
+
+function Card({ title, image }) {
+  return (
+    <div>
+      <div className='relative rounded-lg h-32 aspect-video overflow-hidden'>
+        <img src={image} alt="" />
+        <div className='absolute inset-0 capitalize cursor-pointer flex items-center justify-center font-bold text-xl bg-black/40 hover:bg-black/30 transition-colors'>{title}</div>
+      </div>
+      <div>
+
+      </div>
+    </div>
+  )
+}
+
+const images = [
+  "./cover1.jpg",
+  "./cover2.jpg",
+  "./cover3.jpg",
+  "./cover4.jpg",
+];
+
+const data =  [
+  {title: "Daily", image: "./cover1.jpg"},
+  {title: "Weekly", image: "./cover2.jpg"},
+  {title: "Monthly", image: "./cover3.jpg"},
+]
+
+const randomImage = images[Math.floor(Math.random() * images.length)];
+
 const HomePage = () => {
+
   return (
     <div className='p-4 mt-16 max-w-screen-lg mx-auto w-full'>
-      <TaskTable/>
-      <WeeklyCalendar/>
-      <Schedule/>
+      <div className='rounded-lg overflow-hidden h-48'>
+        <img className='w-full h-full object-cover'
+          src={randomImage} alt="hello" />
+      </div>
+      <div>
+        <div className='my-4'>
+          <h2 className='font-bold text-xl'>Life Planner</h2>
+          <p className='border-l-2 text-sm text-muted-foreground pl-2 '>All your throughs in one private place.</p>
+        </div>
+        <div className='flex gap-4 overflow-x-auto scrollbar-hide'>
+          {
+            data.map(({title, image}, index) => (
+              <Card key={index} title={title} image={image} />
+            ))
+          }
+        </div>
+      </div>
+      <div className='flex gap-4 my-4'>
+        <div className='w-[200px]'><FlipTimer /></div>
+        <div></div>
+      </div>
+      <TaskTable />
+      <WeeklyCalendar />
+      <Schedule />
     </div>
   )
 }
