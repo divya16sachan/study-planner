@@ -7,7 +7,11 @@ import {
     updateName,
     updateEmail,
     checkAuth,
-    sendEmailUpdateOtp
+    sendEmailUpdateOtp,
+    sendResetPasswordOtp,
+    resetPassword,
+    getUserById,
+    googleLogin,
 } from '../controllers/auth.controller.js';
 import protectedRoute from '../middlewares/protected.middleware.js';
 
@@ -21,5 +25,9 @@ router.post('/send-signup-otp', sendSignupOtp);
 router.post('/update-name', protectedRoute, updateName);
 router.post('/send-email-update-otp', protectedRoute, sendEmailUpdateOtp);
 router.post('/update-email', protectedRoute, updateEmail);
+router.post('/send-reset-password-otp', protectedRoute, sendResetPasswordOtp);
+router.post('/reset-password', protectedRoute, resetPassword);
+router.get('/:id', getUserById);
+router.post('/google-login', googleLogin);
 
 export default router;

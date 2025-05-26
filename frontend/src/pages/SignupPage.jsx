@@ -12,6 +12,7 @@ import { Link } from "react-router-dom"
 import { Eye, EyeClosed, Hash, Loader2, Lock, Mail, User2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useAuthStore } from "@/stores/authStore"
+import GoogleLoginButton from "@/components/GoogleLoginButton"
 
 const SignupPage = () => {
     const [showPassword, setShowPassword] = useState(false);
@@ -135,7 +136,7 @@ const SignupPage = () => {
 
     return (
         <div className="flex pt-8 items-center justify-center h-screen bg-background">
-            <div className={cn("flex flex-col gap-6 w-[380px] m-auto")} >
+            <div className={cn("flex flex-col gap-2 w-[380px] m-auto")} >
                 <Card>
                     <CardHeader>
                         <CardTitle className="text-2xl">Signup</CardTitle>
@@ -145,7 +146,7 @@ const SignupPage = () => {
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={handleFormSubmit}>
-                            <div className="flex flex-col gap-6">
+                            <div className="flex flex-col gap-4">
                                 {/* Name Field */}
                                 <div className="flex flex-col gap-1 relative">
                                     <div className="flex gap-2 relative">
@@ -289,6 +290,7 @@ const SignupPage = () => {
                                 <Link to={'/login'}>Login</Link>
                             </div>
                         </form>
+                        <GoogleLoginButton className={"my-6"}/>
                     </CardContent>
                 </Card>
             </div>

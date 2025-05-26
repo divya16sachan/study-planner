@@ -2,18 +2,20 @@ import FlipTimer from '@/components/FlipTimer'
 import Schedule from '@/components/Schedule'
 import TaskTable from '@/components/TaskTable'
 import WeeklyCalendar from '@/components/WeeklyCalendar'
+import { Calendar } from 'lucide-react'
 import React from 'react'
 
 
 function Card({ title, image }) {
   return (
-    <div>
-      <div className='relative rounded-lg h-32 aspect-video overflow-hidden'>
+    <div className='flex-1'>
+      <div className='relative rounded-lg aspect-video overflow-hidden'>
         <img src={image} alt="" />
-        <div className='absolute inset-0 capitalize cursor-pointer flex items-center justify-center font-bold text-xl bg-black/40 hover:bg-black/30 transition-colors'>{title}</div>
+        <div className='absolute  inset-0 capitalize cursor-pointer flex items-center justify-center font-bold text-xl bg-black/40 hover:bg-black/30 transition-colors text-white'>{title}</div>
       </div>
-      <div>
-
+      <div className='text-muted-foreground text-sm my-1 flex  items-center gap-2'>
+        <Calendar className='size-4'/>
+        <p>Lorem, ipsum</p>
       </div>
     </div>
   )
@@ -47,7 +49,7 @@ const HomePage = () => {
           <h2 className='font-bold text-xl'>Life Planner</h2>
           <p className='border-l-2 text-sm text-muted-foreground pl-2 '>All your throughs in one private place.</p>
         </div>
-        <div className='flex gap-4 overflow-x-auto scrollbar-hide'>
+        <div className='flex gap-4 scrollbar-hide'>
           {
             data.map(({title, image}, index) => (
               <Card key={index} title={title} image={image} />
@@ -56,7 +58,7 @@ const HomePage = () => {
         </div>
       </div>
       <div className='flex gap-4 my-4'>
-        <div className='w-[200px]'><FlipTimer /></div>
+        {/* <div className='w-[200px]'><FlipTimer /></div> */}
         <div></div>
       </div>
       <TaskTable />

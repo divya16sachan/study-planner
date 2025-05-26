@@ -12,8 +12,17 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
     },
+    picture:  {
+        type: String,
+    },
+    googleId: {
+        type: String,
+    },
+    isOAuthUser: {
+        type: Boolean,
+        default: false,
+    }
 }, { timestamps: true })
 
 const User = mongoose.model("User", userSchema);

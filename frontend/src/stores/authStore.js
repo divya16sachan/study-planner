@@ -11,6 +11,7 @@ export const useAuthStore = create((set, get) => ({
     isSendingOtp: false,
     isUpdatingEmail: false,
     isRenaming: false,
+    isResettingPassword: false,
 
     checkAuth: async () => {
         set({ isCheckingAuth: true });
@@ -20,7 +21,6 @@ export const useAuthStore = create((set, get) => ({
             return response.data;
         } catch (error) {
             console.error("Check auth error:", error);
-            toast.error(error.response?.data?.message || "Failed to check authentication.");
             return null;
         } finally {
             set({ isCheckingAuth: false });
@@ -134,6 +134,51 @@ export const useAuthStore = create((set, get) => ({
         } finally {
             set({ isSendingOtp: false });
         }
-    }
+    },
 
+    sendResetPasswordOtp: async () => {
+        set({ isSendingOtp: true })
+        try {
+            const response = await axiosInstance.post('/auth/send-reset-password-otp');
+            toast.success(response.data.message || "OTP sent successfully!");
+            return response.data;
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to send OTP");
+            console.error("Send OTP error:", error);
+            return null;
+        } finally {
+            set({ isSendingOtp: false })
+        }
+    },
+
+    resetPassword: async ({newPassword, otp}) => {
+        set({ isResettingPassword: true });
+        try {
+            const response = await axiosInstance.post('/auth/reset-password', { newPassword, otp });
+            toast.success(response.data.message || "Password reset successfully!");
+            return response.data;
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to reset password");
+            console.error("Reset password error:", error);
+            return null;
+        } finally {
+            set({ isResettingPassword: false });
+        }
+    },
+
+    googleLogin: async (data)=>{
+        set({ isLoggingIn: true });
+        try {
+            const response = await axiosInstance.post('/auth/google-login', data);
+            set({ authUser: response.data.user, isLoggingIn: false });
+            toast.success(response.data.message || "Login successful!");
+            return response.data;
+        } catch (error) {
+            console.error("Login error:", error);
+            toast.error(error.response?.data?.message || "Login failed. Please try again.");
+            return null;
+        } finally {
+            set({ isLoggingIn: false });
+        }
+    }
 }));

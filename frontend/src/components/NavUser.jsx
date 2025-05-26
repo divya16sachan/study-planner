@@ -3,6 +3,7 @@
 import {
     BellIcon,
     CreditCardIcon,
+    Lock,
     LogOutIcon,
     MoreVerticalIcon,
     UserCircleIcon,
@@ -27,13 +28,24 @@ import { useAuthStore } from "@/stores/authStore";
 import { Button } from "./ui/button";
 import EditProfile from "./EditProfile";
 import { useState } from "react";
+import ForgotPassword from "./ForgotPassword";
+import { googleLogout } from "@react-oauth/google";
 
 
 export function NavUser() {
     const { authUser, logout } = useAuthStore();
     const [open, setOpen] = useState(false);
-    const [editDialogOpen, setEditDialogOpen] = useState(false); // separate state
+    const [editDialogOpen, setEditDialogOpen] = useState(false);
+    const [forgetPasswordDialogOpen, setForgetPasswordDialogOpen] = useState(false);
 
+    const handleLogout = ()=>{
+        if(authUser.isOAuthUser){
+            //log out from google as well
+            googleLogout();
+            google.accounts.id.disableAutoSelect();
+        }
+        logout();
+    }
     return (
         <>
             <DropdownMenu onOpenChange={setOpen} open={open}>
@@ -44,7 +56,7 @@ export function NavUser() {
                         className="rounded-full data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                     >
                         <Avatar className="h-full w-full">
-                            <AvatarImage src={authUser.avatar} alt={authUser.name} />
+                            <AvatarImage src={authUser.picture} alt={authUser.name} />
                             <AvatarFallback className="bg-transparent">
                                 {authUser.name.split(/\s+/).map(c => c[0]).join('').slice(0, 2)}
                             </AvatarFallback>
@@ -59,7 +71,7 @@ export function NavUser() {
                     <DropdownMenuLabel className="p-0 font-normal">
                         <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                             <Avatar className="h-8 w-8 rounded-lg">
-                                <AvatarImage src={authUser.avatar} alt={authUser.name} />
+                                <AvatarImage src={authUser.picture} alt={authUser.name} />
                                 <AvatarFallback>
                                     {authUser.name.split(/\s+/).map(c => c[0]).join('').slice(0, 2)}
                                 </AvatarFallback>
@@ -70,25 +82,45 @@ export function NavUser() {
                             </div>
                         </div>
                     </DropdownMenuLabel>
+                    {authUser.isOAuthUser === false &&
+                        <>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuGroup>
+                                <DropdownMenuItem
+                                    className="p-0 cursor-pointer hover:bg-accent"
+                                    onSelect={(e) => {
+                                        e.preventDefault();
+                                        setEditDialogOpen(true);
+                                    }}
+                                >
+                                    <EditProfile trigger={
+                                        <div className="flex items-center gap-2 w-full px-2 py-1.5">
+                                            <UserPen className="size-5" />
+                                            Edit Profile
+                                        </div>
+                                    } />
+                                </DropdownMenuItem>
+
+                                <DropdownMenuItem
+                                    className="p-0 cursor-pointer hover:bg-accent"
+                                    onSelect={(e) => {
+                                        e.preventDefault();
+                                        setForgetPasswordDialogOpen(true);
+                                    }}
+                                >
+                                    <ForgotPassword trigger={
+                                        <div className="flex items-center gap-2 w-full px-2 py-1.5">
+                                            <Lock className="size-5" />
+                                            Forgot Password
+                                        </div>
+                                    } />
+                                </DropdownMenuItem>
+
+                            </DropdownMenuGroup>
+                        </>
+                    }
                     <DropdownMenuSeparator />
-                    <DropdownMenuGroup>
-                        <DropdownMenuItem
-                            className="p-0 cursor-pointer hover:bg-accent"
-                            onSelect={(e) => {
-                                e.preventDefault(); // prevent menu close
-                                setEditDialogOpen(true);
-                            }}
-                        >
-                            <EditProfile trigger={
-                                <div className="flex items-center gap-2 w-full px-2 py-1.5">
-                                    <UserPen className="size-5 mr-2" />
-                                    Edit Profile
-                                </div>
-                            } />
-                        </DropdownMenuItem>
-                    </DropdownMenuGroup>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={logout} className="cursor-pointer hover:bg-accent">
+                    <DropdownMenuItem onClick={handleLogout} className="cursor-pointer hover:bg-accent">
                         <LogOutIcon />
                         Log out
                     </DropdownMenuItem>
@@ -97,6 +129,7 @@ export function NavUser() {
 
             {/* This should be outside of Dropdown */}
             <EditProfile open={editDialogOpen} onOpenChange={setEditDialogOpen} />
+            <ForgotPassword open={forgetPasswordDialogOpen} onOpenChange={setForgetPasswordDialogOpen} />
         </>
     );
 }
