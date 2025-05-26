@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import { Eye, EyeClosed, Lock, Mail } from "lucide-react";
 import { useState } from "react";
 import { useAuthStore } from "@/stores/authStore";
+import GoogleLoginButton from "@/components/GoogleLoginButton";
 
 const LoginPage = () => {
     const [showPassword, setShowPassword] = useState(false);
@@ -140,6 +141,7 @@ const LoginPage = () => {
                                 </Link>
                             </div>
                         </form>
+                        <GoogleLoginButton className={"my-6"}/>
                     </CardContent>
                 </Card>
             </div>

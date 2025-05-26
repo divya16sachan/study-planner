@@ -13,12 +13,8 @@ const App = () => {
   const {authUser, checkAuth, isCheckingAuth} = useAuthStore();
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const { checkAuth } = useAuthStore.getState();
-      await checkAuth();
-    };
     checkAuth();
-  }, [checkAuth, authUser]);
+  }, [checkAuth]);
 
   if(!authUser && isCheckingAuth) {
     return (

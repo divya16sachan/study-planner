@@ -20,6 +20,7 @@ import { useAuthStore } from "@/stores/authStore"
 import { useEffect, useState } from "react"
 import { REGEXP_ONLY_DIGITS } from "input-otp"
 import { Loader2 } from "lucide-react"
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar"
 
 const validateName = (name) => name.trim().length >= 3
 const validateEmail = (email) =>
@@ -76,8 +77,8 @@ const EditProfile = ({ trigger }) => {
         }
         if (email === authUser.email) return;
         const res = await sendEmailUpdateOtp(email.trim());
-        if(res){
-            setCooldown(60); 
+        if (res) {
+            setCooldown(60);
         }
     }
 
@@ -93,13 +94,23 @@ const EditProfile = ({ trigger }) => {
                 </DialogHeader>
 
                 <div className="grid gap-6 py-6">
+                    <label className="size-32" htmlFor="upload-picture">
+                        <input id="upload-picture" type="file" hidden className="hidden" />
+                        <Avatar className="size-32 aspect-square border rounded-full">
+                            <AvatarImage src={authUser.picture} alt={authUser.name} />
+                            <AvatarFallback className="bg-transparent overflow-hidden">
+                                <img src="./avatar.png" className="w-full h-full object-cover cursor-pointer hover:opacity-50 transition-opacity" alt="" />
+                            </AvatarFallback>
+                        </Avatar>
+                    </label>
+
                     {/* Name Field */}
                     <div className="grid relative grid-cols-[3fr_1fr] items-center gap-4">
                         <Input
                             id="name"
                             value={name}
                             onChange={(e) => {
-                                setNameTouched(true)
+                                // setNameTouched(true)
                                 setName(e.target.value)
                                 if (!validateName(e.target.value)) {
                                     setNameError("Name must be at least 3 characters.")
