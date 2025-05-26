@@ -1,32 +1,25 @@
-import { v2 as cloudinary } from 'cloudinary';
+import streamifier from 'streamifier';
+import cloudinary from '../config/cloudinary.config.js';
 
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
-const uploadImage = async (file, folder = 'default_folder') => {
-    try {
-        const result = await cloudinary.uploader.upload(file, {
-            folder, 
-            use_filename: true,
-            unique_filename: false,
-        });
-        return result.secure_url;
-    } catch (error) {
-        console.error('Cloudinary upload error:', error);
-        throw new Error('Failed to upload image');
-    }
+export const uploadStream = (buffer, folder = 'default_folder') => {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      { folder, use_filename: true, unique_filename: false },
+      (error, result) => {
+        if (error) return reject(error);
+        resolve(result.secure_url);
+      }
+    );
+    streamifier.createReadStream(buffer).pipe(uploadStream);
+  });
 };
 
-const deleteImage = async (publicId) => {
-    try {
-        await cloudinary.uploader.destroy(publicId);
-    } catch (error) {
-        console.error('Cloudinary delete error:', error);
-        throw new Error('Failed to delete image');
-    }
+export const deleteImage = async (publicId) => {
+  try {
+    await cloudinary.uploader.destroy(publicId);
+  } catch (error) {
+    console.error('Cloudinary delete error:', error);
+    throw new Error('Failed to delete image');
+  }
 };
 
-export { uploadImage, deleteImage };

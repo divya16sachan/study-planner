@@ -151,7 +151,7 @@ export const useAuthStore = create((set, get) => ({
         }
     },
 
-    resetPassword: async ({newPassword, otp}) => {
+    resetPassword: async ({ newPassword, otp }) => {
         set({ isResettingPassword: true });
         try {
             const response = await axiosInstance.post('/auth/reset-password', { newPassword, otp });
@@ -166,7 +166,7 @@ export const useAuthStore = create((set, get) => ({
         }
     },
 
-    googleLogin: async (data)=>{
+    googleLogin: async (data) => {
         set({ isLoggingIn: true });
         try {
             const response = await axiosInstance.post('/auth/google-login', data);
@@ -180,5 +180,25 @@ export const useAuthStore = create((set, get) => ({
         } finally {
             set({ isLoggingIn: false });
         }
-    }
+    },
+
+    updateProfilePicture: async (formData) => {
+        set({ isUploadingFile: true });
+        try {
+            const response = await axiosInstance.post('/auth/update-profile-picture', formData);
+            set({ authUser: response.data.user });
+            toast.success(response.data.message || "Profile picture updated successfully!");
+            return response.data;
+        } catch (error) {
+            console.error("Update profile picture error:", error);
+            toast.error(error.response?.data?.message || "Failed to update profile picture");
+            return null;
+        } finally {
+            set({ isUploadingFile: false });
+        }
+    },
+
+
+
+
 }));
