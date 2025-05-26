@@ -56,7 +56,7 @@ export function NavUser() {
                         className="rounded-full data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                     >
                         <Avatar className="h-full w-full">
-                            <AvatarImage src={authUser.picture} alt={authUser.name} />
+                            <AvatarImage className="w-full h-full object-cover" src={authUser.picture} alt={authUser.name} />
                             <AvatarFallback className="bg-transparent">
                                 {authUser.name.split(/\s+/).map(c => c[0]).join('').slice(0, 2)}
                             </AvatarFallback>
@@ -71,7 +71,7 @@ export function NavUser() {
                     <DropdownMenuLabel className="p-0 font-normal">
                         <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                             <Avatar className="h-8 w-8 rounded-lg">
-                                <AvatarImage src={authUser.picture} alt={authUser.name} />
+                                <AvatarImage className="w-full h-full object-cover" src={authUser.picture} alt={authUser.name} />
                                 <AvatarFallback>
                                     {authUser.name.split(/\s+/).map(c => c[0]).join('').slice(0, 2)}
                                 </AvatarFallback>

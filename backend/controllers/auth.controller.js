@@ -4,6 +4,7 @@ import { generateJwt } from '../services/jwt.service.js';
 import { Otp } from '../models/otp.model.js';
 import { sendOtp } from '../services/otp.service.js';
 import { validateOtp } from '../services/otp.service.js';
+import { deleteImage, uploadStream } from '../services/cloudinary.service.js';
 
 export const googleLogin = async (req, res) => {
     const { email, name, picture, sub } = req.body;
@@ -300,5 +301,45 @@ export const resetPassword = async (req, res) => {
         console.error('Reset password error:', error);
         return res.status(500).json({ message: "Internal server error" });
     }
+};
+
+
+export const updateProfilePicture = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const file = req.file;
+
+    if (!file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    const user = await User.findById(userId).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Delete old profile picture if exists
+    if (user.picture) {
+      // Extract publicId from existing URL
+      const segments = user.picture.split('/');
+      const fileName = segments[segments.length - 1];
+      const publicId = fileName.split('.')[0];
+      await deleteImage(publicId);
+    }
+
+    // Upload new profile picture from buffer stream
+    const folder = `user_profiles/${userId}`;
+    const newProfilePictureUrl = await uploadStream(file.buffer, folder);
+
+    // Update user record
+    user.picture = newProfilePictureUrl;
+    await user.save();
+
+    return res.status(200).json({ message: "Profile picture updated successfully", user });
+
+  } catch (error) {
+    console.error("Update profile picture error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
 };
 

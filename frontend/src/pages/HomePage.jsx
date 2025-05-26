@@ -26,10 +26,13 @@ const images = [
   "./cover2.jpg",
   "./cover3.jpg",
   "./cover4.jpg",
+  "./cover5.jpg",
+  "./cover6.jpg",
+  "./cover7.jpg",
 ];
 
 const data =  [
-  {title: "Daily", image: "./cover1.jpg"},
+  {title: "Daily", image: "./cover7.jpg"},
   {title: "Weekly", image: "./cover2.jpg"},
   {title: "Monthly", image: "./cover3.jpg"},
 ]
@@ -42,7 +45,7 @@ const HomePage = () => {
     <div className='p-4 mt-16 max-w-screen-lg mx-auto w-full'>
       <div className='rounded-lg overflow-hidden h-48'>
         <img className='w-full h-full object-cover'
-          src={randomImage} alt="hello" />
+        src={images[5]} alt="hello" />
       </div>
       <div>
         <div className='my-4'>

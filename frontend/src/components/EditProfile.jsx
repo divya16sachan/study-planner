@@ -21,6 +21,7 @@ import { useEffect, useState } from "react"
 import { REGEXP_ONLY_DIGITS } from "input-otp"
 import { Loader2 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar"
+import { toast } from "sonner"
 
 const validateName = (name) => name.trim().length >= 3
 const validateEmail = (email) =>
@@ -35,6 +36,8 @@ const EditProfile = ({ trigger }) => {
         isRenaming,
         isSendingOtp,
         isUpdatingEmail,
+        updateProfilePicture,
+        isUploadingFile
     } = useAuthStore()
 
     const [name, setName] = useState(authUser.name)
@@ -45,6 +48,7 @@ const EditProfile = ({ trigger }) => {
     const [emailTouched, setEmailTouched] = useState(false)
     const [otp, setOtp] = useState("")
     const [cooldown, setCooldown] = useState(0);
+    const [previewUrl, setPreviewUrl] = useState("");
 
     useEffect(() => {
         let interval;
@@ -82,6 +86,27 @@ const EditProfile = ({ trigger }) => {
         }
     }
 
+    const handleFileChange = async (event) => {
+        const file = event.target.files[0];
+
+        if (!file) {
+            toast.error("Please select a file to upload.");
+            return;
+        }
+
+        console.log(file);
+        setPreviewUrl(URL.createObjectURL(file));
+
+        // Create FormData
+        const formData = new FormData();
+        formData.append("file", file);
+
+        await updateProfilePicture(formData);
+        setPreviewUrl("");
+    };
+
+
+
     return (
         <Dialog>
             <DialogTrigger asChild>{trigger}</DialogTrigger>
@@ -94,14 +119,29 @@ const EditProfile = ({ trigger }) => {
                 </DialogHeader>
 
                 <div className="grid gap-6 py-6">
-                    <label className="size-32" htmlFor="upload-picture">
-                        <input id="upload-picture" type="file" hidden className="hidden" />
-                        <Avatar className="size-32 aspect-square border rounded-full">
-                            <AvatarImage src={authUser.picture} alt={authUser.name} />
-                            <AvatarFallback className="bg-transparent overflow-hidden">
-                                <img src="./avatar.png" className="w-full h-full object-cover cursor-pointer hover:opacity-50 transition-opacity" alt="" />
-                            </AvatarFallback>
-                        </Avatar>
+                    {/* Avatar Section */}
+                    <label htmlFor="profile-picture" className="relative border w-min rounded-full overflow-hidden">
+                        <input
+                            type="file"
+                            id="profile-picture"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={handleFileChange}
+                            disabled={isUploadingFile}
+                        />
+                        {isUploadingFile && (
+                            <div className="absolute inset-0 bg-black/30 flex justify-center items-center">
+                                <Loader2 className="animate-spin" />
+                            </div>
+                        )}
+                        <div className="size-24 cursor-pointer rounded-full overflow-hidden">
+                            <Avatar>
+                                <AvatarImage className="w-full h-full object-cover" src={previewUrl || authUser.picture} alt="Profile Picture" />
+                                <AvatarFallback className="bg-gray-200 text-gray-500">
+                                    <img className="w-full h-full object-cover" src="./avatar.png" alt="Profile Picture Placeholder" />
+                                </AvatarFallback>
+                            </Avatar>
+                        </div>
                     </label>
 
                     {/* Name Field */}
