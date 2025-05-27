@@ -5,6 +5,7 @@ import {
     updateEmail,
     getUserById,
     updateProfilePicture,
+    removeProfilePicture,
 } from '../controllers/user.controller.js';
 import protectedRoute from '../middlewares/protected.middleware.js';
 import upload from '../middlewares/multer.middleware.js';
@@ -15,6 +16,7 @@ router.post('/update-name', protectedRoute, updateName);
 router.post('/send-email-update-otp', protectedRoute, sendEmailUpdateOtp);
 router.post('/update-email', protectedRoute, updateEmail);
 router.get('/:id', getUserById);
+router.delete('/remove-profile-picture', protectedRoute, removeProfilePicture);
 router.post(
     '/update-profile-picture',
     protectedRoute,

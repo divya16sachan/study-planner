@@ -96,7 +96,7 @@ const LoginPage = () => {
                                     <div className="flex gap-2 relative">
                                         <Lock className="absolute top-[50%] translate-y-[-50%] left-2 text-muted-foreground size-4" />
                                         <Input
-                                            className={cn("pl-8", errors.password && "ring-2 ring-red-500")}
+                                            className={cn("px-8", errors.password && "ring-2 ring-red-500")}
                                             id="password"
                                             name="password"
                                             placeholder="Password"

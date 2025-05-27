@@ -4,7 +4,7 @@ import React from 'react'
 
 const WeeklyTaskPage = () => {
     return (
-        <div className='max-w-screen-md mx-auto w-full p-4 mt-16'>
+        <div className='max-w-screen-lg mx-auto w-full p-4 mt-16'>
             <WeeklyCalendar />
             <Schedule />
         </div>

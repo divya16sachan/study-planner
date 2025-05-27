@@ -19,9 +19,9 @@ const userSchema = new mongoose.Schema({
     googleId: {
         type: String,
     },
-    isOAuthUser: {
-        type: Boolean,
-        default: false,
+    authProvider : {
+        type: String,
+        default: 'local', // 'local' or 'google'
     }
 }, { timestamps: true })
 

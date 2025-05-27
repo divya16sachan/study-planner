@@ -26,7 +26,6 @@ const App = () => {
       </div>
     )
   }
-
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <Toaster/>
