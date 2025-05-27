@@ -15,7 +15,7 @@ export const sendOtp = async ({ email, purpose, subject, messageTemplate }) => {
 
   const otpCode = crypto.randomInt(100000, 999999).toString();
   const hashedOtp = await bcrypt.hash(otpCode, 10);
-  const minutes = 10;
+  const minutes = 15;
   const expiresAt = new Date(now.getTime() + minutes * 60 * 1000);
 
   await Otp.findOneAndUpdate(

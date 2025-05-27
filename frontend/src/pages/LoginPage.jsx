@@ -13,6 +13,7 @@ import { Eye, EyeClosed, Lock, Mail } from "lucide-react";
 import { useState } from "react";
 import { useAuthStore } from "@/stores/authStore";
 import GoogleLoginButton from "@/components/GoogleLoginButton";
+import { Label } from "@radix-ui/react-dropdown-menu";
 
 const LoginPage = () => {
     const [showPassword, setShowPassword] = useState(false);
@@ -119,6 +120,7 @@ const LoginPage = () => {
                                             <p className="text-xs absolute -bottom-4 text-red-500">{errors.password}</p>
                                         )}
                                     </div>
+                                    <Link to={'/forgot-password'} className="text-sm mt-2 ml-auto underline cursor-pointer">Forgot Your Password?</Link>
                                 </div>
 
                                 {/* General Error */}
@@ -133,15 +135,14 @@ const LoginPage = () => {
                                     {isLoggingIn ? "Logging in..." : "Login"}
                                 </Button>
                             </div>
-
-                            <div className="mt-4 text-center text-sm">
-                                Don&apos;t have an account?{" "}
-                                <Link to={"/signup"} className="underline">
-                                    Sign up
-                                </Link>
-                            </div>
                         </form>
-                        <GoogleLoginButton className={"my-6"}/>
+                        <GoogleLoginButton className={"my-6"} />
+                        <div className="mt-4 text-center text-sm">
+                            Don&apos;t have an account?{" "}
+                            <Link to={"/signup"} className="underline">
+                                Sign up
+                            </Link>
+                        </div>
                     </CardContent>
                 </Card>
             </div>

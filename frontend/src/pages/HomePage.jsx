@@ -1,23 +1,28 @@
 import FlipTimer from '@/components/FlipTimer'
-import Schedule from '@/components/Schedule'
 import TaskTable from '@/components/TaskTable'
-import WeeklyCalendar from '@/components/WeeklyCalendar'
+import { useAuthStore } from '@/stores/authStore'
+import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar'
 import { Calendar } from 'lucide-react'
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 
-function Card({ title, image }) {
+function Card({ title, image, path }) {
   return (
-    <div className='flex-1'>
+    <Link to={path} className='flex-1'>
       <div className='relative rounded-lg aspect-video overflow-hidden'>
         <img src={image} alt="" />
-        <div className='absolute  inset-0 capitalize cursor-pointer flex items-center justify-center font-bold text-xl bg-black/40 hover:bg-black/30 transition-colors text-white'>{title}</div>
+        <div
+          className='absolute  sm:text-xl  inset-0 capitalize cursor-pointer flex items-center justify-center font-bold bg-black/30 hover:bg-black/40 transition-colors text-white'
+        >
+          {title}
+        </div>
       </div>
       <div className='text-muted-foreground text-sm my-1 flex  items-center gap-2'>
-        <Calendar className='size-4'/>
+        <Calendar className='size-4' />
         <p>Lorem, ipsum</p>
       </div>
-    </div>
+    </Link>
   )
 }
 
@@ -31,22 +36,38 @@ const images = [
   "./cover7.jpg",
 ];
 
-const data =  [
-  {title: "Daily", image: "./cover7.jpg"},
-  {title: "Weekly", image: "./cover2.jpg"},
-  {title: "Monthly", image: "./cover3.jpg"},
+const data = [
+  { title: "Daily", path: '/weekly-task', image: "./cover7.jpg" },
+  { title: "Weekly", path: '/weekly-task', image: "./cover8.jpg" },
+  { title: "Monthly", path: '/weekly-task', image: "./cover3.jpg" },
 ]
 
 const randomImage = images[Math.floor(Math.random() * images.length)];
 
 const HomePage = () => {
-
+  const { authUser } = useAuthStore();
+  console.log(authUser)
   return (
-    <div className='p-4 mt-16 max-w-screen-lg mx-auto w-full'>
-      <div className='rounded-lg overflow-hidden h-48'>
-        <img className='w-full h-full object-cover'
-        src={images[5]} alt="hello" />
+    <div className='p-4 mt-16 max-w-screen-md mx-auto w-full'>
+      <div className='relative mb-16'>
+        <div className='rounded-lg overflow-hidden h-48'>
+          <img
+            onError={(e) => { e.target.src = './placeholder.svg'; }}
+            className="w-full h-full object-cover"
+            src={images[5]}
+            alt="Cover Photo"
+          />
+        </div>
+        <div className='size-20 absolute rounded-full overflow-hidden bottom-0 left-4 translate-y-1/2'>
+          <Avatar className="h-full w-full">
+            <AvatarImage className="w-full h-full object-cover" src={authUser.picture} alt={authUser.name} />
+            <AvatarFallback className="bg-transparent">
+              <img src="./avatar.png" alt="" />
+            </AvatarFallback>
+          </Avatar>
+        </div>
       </div>
+
       <div>
         <div className='my-4'>
           <h2 className='font-bold text-xl'>Life Planner</h2>
@@ -54,8 +75,8 @@ const HomePage = () => {
         </div>
         <div className='flex gap-4 scrollbar-hide'>
           {
-            data.map(({title, image}, index) => (
-              <Card key={index} title={title} image={image} />
+            data.map(({ title, image, path }, index) => (
+              <Card key={index} title={title} path={path} image={image} />
             ))
           }
         </div>
@@ -65,8 +86,6 @@ const HomePage = () => {
         <div></div>
       </div>
       <TaskTable />
-      <WeeklyCalendar />
-      <Schedule />
     </div>
   )
 }

@@ -8,6 +8,8 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { Toaster } from "./components/ui/sonner";
 import { useAuthStore } from "./stores/authStore";
 import { Loader } from "lucide-react";
+import WeeklyTaskPage from "./pages/WeeklyTaskPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 
 const App = () => {
   const {authUser, checkAuth, isCheckingAuth} = useAuthStore();
@@ -32,6 +34,8 @@ const App = () => {
       <div>
         <Routes>
           <Route path="/" element={authUser? <HomePage/> : <Navigate to='/login'/> }  />
+          <Route path="/weekly-task" element={authUser || true? <WeeklyTaskPage/> : <Navigate to='/login'/> }  />
+          <Route path="/forgot-password" element={authUser || true? <ForgotPasswordPage/> : <Navigate to='/login'/> }  />
           <Route path="/login" element={!authUser? <LoginPage /> : <Navigate to='/' /> } />
           <Route path="/signup" element={!authUser? <SignupPage /> : <Navigate to='/' /> } />
         </Routes>

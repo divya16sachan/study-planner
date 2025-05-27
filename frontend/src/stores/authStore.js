@@ -93,7 +93,7 @@ export const useAuthStore = create((set, get) => ({
     updateName: async (newName) => {
         set({ isRenaming: true });
         try {
-            const response = await axiosInstance.post('/auth/update-name', { name: newName });
+            const response = await axiosInstance.post('/user/update-name', { name: newName });
             set({ authUser: response.data.user });
             toast.success(response.data.message || "Name updated!");
             return response.data;
@@ -108,7 +108,7 @@ export const useAuthStore = create((set, get) => ({
     updateEmail: async ({ newEmail, otp }) => {
         set({ isUpdatingEmail: true });
         try {
-            const response = await axiosInstance.post('/auth/update-email', { newEmail, otp });
+            const response = await axiosInstance.post('/user/update-email', { newEmail, otp });
             set({ authUser: response.data.user });
             toast.success(response.data.message || "Email updated!");
             return response.data;
@@ -124,7 +124,7 @@ export const useAuthStore = create((set, get) => ({
         console.log(newEmail)
         set({ isSendingOtp: true });
         try {
-            const response = await axiosInstance.post('/auth/send-email-update-otp', { newEmail });
+            const response = await axiosInstance.post('/user/send-email-update-otp', { newEmail });
             toast.success(response.data.message || "OTP sent successfully!");
             return response.data;
         } catch (error) {
@@ -185,7 +185,7 @@ export const useAuthStore = create((set, get) => ({
     updateProfilePicture: async (formData) => {
         set({ isUploadingFile: true });
         try {
-            const response = await axiosInstance.post('/auth/update-profile-picture', formData);
+            const response = await axiosInstance.post('/user/update-profile-picture', formData);
             set({ authUser: response.data.user });
             toast.success(response.data.message || "Profile picture updated successfully!");
             return response.data;
