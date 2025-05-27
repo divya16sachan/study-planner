@@ -105,6 +105,11 @@ const EditProfile = ({ trigger }) => {
         setPreviewUrl("");
     };
 
+    const handleUpdateEmail = async () => {
+        await updateEmail({ newEmail: email.trim(), otp })
+        setCooldown(0);
+        setOtp("");
+    }
 
 
     return (
@@ -250,7 +255,7 @@ const EditProfile = ({ trigger }) => {
                         <Button
                             variant="outline"
                             className="w-full"
-                            onClick={() => updateEmail({ newEmail: email.trim(), otp })}
+                            onClick={handleUpdateEmail}
                             disabled={
                                 isUpdatingEmail || otp.length !== 6 || !validateEmail(email)
                             }

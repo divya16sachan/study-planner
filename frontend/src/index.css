@@ -68,10 +68,19 @@
   body {
     @apply bg-background text-foreground;
   }
-  .scrollbar-hide{
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
+
+  input[type="password"]::-ms-reveal,
+  input[type="password"]::-webkit-reveal {
+    display: none;
   }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+  }
+
   .schedule-list li {
     @apply relative;
   }
@@ -100,7 +109,7 @@
     z-index: -1;
   }
 
-  .tick .tick-credits { 
+  .tick .tick-credits {
     @apply hidden;
   }
 }
