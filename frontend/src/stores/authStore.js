@@ -12,6 +12,7 @@ export const useAuthStore = create((set, get) => ({
     isUpdatingEmail: false,
     isRenaming: false,
     isResettingPassword: false,
+    isRemovingPicture: false,
 
     checkAuth: async () => {
         set({ isCheckingAuth: true });
@@ -121,7 +122,6 @@ export const useAuthStore = create((set, get) => ({
     },
 
     sendEmailUpdateOtp: async (newEmail) => {
-        console.log(newEmail)
         set({ isSendingOtp: true });
         try {
             const response = await axiosInstance.post('/user/send-email-update-otp', { newEmail });
@@ -197,6 +197,22 @@ export const useAuthStore = create((set, get) => ({
             set({ isUploadingFile: false });
         }
     },
+
+    removeProfilePicture: async () => {
+        set({ isRemovingPicture: true });
+        try {
+            const response = await axiosInstance.delete('/user/remove-profile-picture');
+            set({ authUser: response.data.user });
+            toast.success(response.data.message || "Profile picture removed successfully!");
+            return response.data;
+        } catch (error) {
+            console.error("Remove profile picture error:", error);
+            toast.error(error.response?.data?.message || "Failed to remove profile picture");
+            return null;
+        } finally {
+            set({ isRemovingPicture: false });
+        }
+    }
 
 
 

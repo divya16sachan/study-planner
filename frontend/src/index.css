@@ -74,6 +74,25 @@
     display: none;
   }
 
+  .bento-grid{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    @apply gap-4;
+  }
+  .bento-grid > *{
+    @apply rounded-lg bg-accent p-2 min-h-52;
+  }
+  .bento-grid > div:first-child {
+    @apply col-span-2 row-span-1;
+  }
+  .bento-grid > div:nth-child(2) {
+    @apply col-span-1 row-span-1;
+  }
+  .bento-grid > div:nth-child(3) {
+    @apply col-span-3 row-span-1;
+  }
+
   .scrollbar-hide {
     -ms-overflow-style: none;
     /* IE and Edge */

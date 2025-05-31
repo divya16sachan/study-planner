@@ -12,6 +12,7 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
+<<<<<<< HEAD
     },
     picture:  {
         type: String,
@@ -19,10 +20,14 @@ const userSchema = new mongoose.Schema({
     googleId: {
         type: String,
     },
-    isOAuthUser: {
-        type: Boolean,
-        default: false,
+    authProvider : {
+        type: String,
+        default: 'local', // 'local' or 'google'
     }
+=======
+        required: true,
+    },
+>>>>>>> fcedc979dad6f5aaaf8bdfbc90f87d450c780619
 }, { timestamps: true })
 
 const User = mongoose.model("User", userSchema);
