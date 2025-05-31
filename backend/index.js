@@ -8,6 +8,8 @@ import userRouter from './routes/user.router.js';
 import passwordRouter from './routes/password.router.js';
 import cookieParser from 'cookie-parser';
 
+import authRoutes from './routes/auth.route.js';
+
 dotenv.config();
 
 const app = express();
