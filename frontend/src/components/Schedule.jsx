@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 const Schedule = () => {
   const tasks = [
     {
-      time: '9:30',
+      time: '09:30',
       endTime: '10:20',
       subject: 'Physics',
       description: 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Totam explicabo vero vitae accusantium tempore quaerat quas praesentium consectetur repellendus magnam.'
@@ -46,14 +46,14 @@ const Schedule = () => {
         {
           tasks.map((task, index) => (
             <li key={index} className='flex gap-4'>
-              <div className='w-[40px]'>
+              <div className='w-[60px]'>
                 <div className='font-semibold text-lg'>{task.time}</div>
                 <div className='text-sm text-muted-foreground'>{task.endTime}</div>
               </div>
 
-              <div className='size-4 rounded-full bg-foreground border-accent border-4' />
+              <div className='size-4 aspect-square rounded-full bg-foreground border-accent border-4' />
 
-              <Card className='w-[300px]'>
+              <Card className='w-full'>
                 <CardHeader className='p-3'>
                   <CardTitle>{task.subject}</CardTitle>
                 </CardHeader>

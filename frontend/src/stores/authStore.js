@@ -139,7 +139,7 @@ export const useAuthStore = create((set, get) => ({
     sendResetPasswordOtp: async () => {
         set({ isSendingOtp: true })
         try {
-            const response = await axiosInstance.post('/auth/send-reset-password-otp');
+            const response = await axiosInstance.post('/password/request-forgot-password-otp');
             toast.success(response.data.message || "OTP sent successfully!");
             return response.data;
         } catch (error) {
@@ -154,7 +154,7 @@ export const useAuthStore = create((set, get) => ({
     resetPassword: async ({ newPassword, otp }) => {
         set({ isResettingPassword: true });
         try {
-            const response = await axiosInstance.post('/auth/reset-password', { newPassword, otp });
+            const response = await axiosInstance.post('/password/reset-password', { newPassword, otp });
             toast.success(response.data.message || "Password reset successfully!");
             return response.data;
         } catch (error) {

@@ -37,7 +37,7 @@ const ForgotPasswordPage = () => {
     }, [cooldown]);
 
     const handleSendOtp = async () => {
-        const res = await sendPasswordResetOtp();
+        const res = await sendResetPasswordOtp(email); // Pass the email here
         if (res) {
             setCooldown(60);
         }
@@ -71,7 +71,7 @@ const ForgotPasswordPage = () => {
                                 <p className='text-muted-foreground text-xs'>abhijeet62008@gmail.com</p>
                             </div>
                         </div>
-                        
+
                         {/* Email Field */}
                         <div className="grid relative items-center gap-4">
                             <div className="flex gap-2 relative">
@@ -158,7 +158,7 @@ const ForgotPasswordPage = () => {
                             {/* Send OTP Button */}
                             <Button
                                 variant="outline"
-                                onClick={sendResetPasswordOtp}
+                                onClick={handleSendOtp}
                                 disabled={cooldown > 0 || isSendingOtp}
                             >
                                 {isSendingOtp ? (

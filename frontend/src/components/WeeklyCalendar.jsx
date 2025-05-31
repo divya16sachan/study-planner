@@ -6,6 +6,8 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { Button } from './ui/button';
+import { Plus } from 'lucide-react';
 
 const WeeklyCalendar = () => {
     const today = new Date();
@@ -21,10 +23,15 @@ const WeeklyCalendar = () => {
         <div>
             <Card className='w-min'>
                 <CardHeader>
-                    <CardTitle>Weekly Calendar</CardTitle>
-                    <CardDescription>
-                        This is a weekly calendar component.
-                    </CardDescription>
+                    <div className='flex justify-between'>
+                        <div>
+                            <CardTitle>Weekly Calendar</CardTitle>
+                            <CardDescription>
+                                This is a weekly calendar component.
+                            </CardDescription>
+                        </div>
+                        <Button><Plus /> Add</Button>
+                    </div>
                 </CardHeader>
 
                 <CardContent className="flex gap-2">
@@ -33,8 +40,8 @@ const WeeklyCalendar = () => {
                         date.setDate(weekStart.getDate() + index); // Adjust for each day in the week
 
                         return (
-                            <div 
-                                key={index} 
+                            <div
+                                key={index}
                                 className={`hover:bg-accent transition-colors cursor-pointer border select-none border-input p-4 rounded-xl flex flex-col items-center gap-1 
                                     ${index === currentDay ? 'text-green-400 bg-green-800/20' : ''}`}
                             >

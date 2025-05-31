@@ -1,10 +1,14 @@
 import FlipTimer from '@/components/FlipTimer'
+import Pomodoro from '@/components/Pomodoro/Pomodoro'
+import SpotifyWidget from '@/components/SpotifyWidget'
 import TaskTable from '@/components/TaskTable'
 import { useAuthStore } from '@/stores/authStore'
 import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar'
 import { Calendar } from 'lucide-react'
 import React from 'react'
 import { Link } from 'react-router-dom'
+import WeeklyTaskPage from '../pages/WeeklyTaskPage.jsx'
+import TodoList from '@/components/TodoList.jsx'
 
 
 function Card({ title, image, path }) {
@@ -46,7 +50,7 @@ const randomImage = images[Math.floor(Math.random() * images.length)];
 
 const HomePage = () => {
   const { authUser } = useAuthStore();
-  console.log(authUser)
+
   return (
     <div className='p-4 mt-16 max-w-screen-md mx-auto w-full'>
       <div className='relative mb-16'>
@@ -81,9 +85,25 @@ const HomePage = () => {
           }
         </div>
       </div>
+
       <div className='flex gap-4 my-4'>
         {/* <div className='w-[200px]'><FlipTimer /></div> */}
         <div></div>
+      </div>
+
+      <div className='flex gap-2'>
+        <WeeklyTaskPage />
+        <TodoList />
+      </div>
+
+      <div className='bento-box'>
+        <Pomodoro />
+        <div className='flex items-center justify-center flex-shrink-0 min-w-40 p-2'>
+          <FlipTimer />
+        </div>
+        <div>
+          <SpotifyWidget playlistId={"37i9dQZF1E4AfEUiirXPyP"} />
+        </div>
       </div>
       <TaskTable />
     </div>

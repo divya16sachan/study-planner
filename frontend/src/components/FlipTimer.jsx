@@ -18,8 +18,6 @@ const FlipTimer = () => {
       HOUR_SINGULAR: "Hour",
       MINUTE_PLURAL: "Minutes",
       MINUTE_SINGULAR: "Minute",
-      SECOND_PLURAL: "Seconds",
-      SECOND_SINGULAR: "Second",
     };
 
     Object.keys(locale).forEach((key) => tick.setConstant(key, locale[key]));
@@ -29,14 +27,14 @@ const FlipTimer = () => {
       .padStart(2, "0")}-${now.getDate().toString().padStart(2, "0")}T00:00:00`;
 
     Tick.count.up(todayMidnight, {
-      format: ["h", "m", "s"],
+      format: ["h", "m"],
     }).onupdate = (value) => {
       tick.value = value;
     };
   }
 
   return (
-    <div ref={tickRef} className="tick">
+    <div ref={tickRef} className="tick w-full">
       <div className="flex gap-1" data-repeat="true" data-layout="horizontal fit" data-transform="preset(h, m, s) -> delay">
         <div className="tick-group">
           <div data-key="value" data-repeat="true" data-transform="pad(00) -> split -> delay">
