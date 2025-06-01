@@ -9,6 +9,9 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import WeeklyTaskPage from '../pages/WeeklyTaskPage.jsx'
 import TodoList from '@/components/TodoList.jsx'
+import NotesList from '@/components/NotesList.jsx'
+import DailyHabits from '@/components/DailyHabits.jsx'
+import { Separator } from '@radix-ui/react-separator'
 
 
 function Card({ title, image, path }) {
@@ -52,7 +55,7 @@ const HomePage = () => {
   const { authUser } = useAuthStore();
 
   return (
-    <div className='p-4 mt-16 max-w-screen-md mx-auto w-full'>
+    <div className='p-4 mt-16 max-w-screen-lg mx-auto w-full'>
       <div className='relative mb-16'>
         <div className='rounded-lg overflow-hidden h-48'>
           <img
@@ -91,9 +94,15 @@ const HomePage = () => {
         <div></div>
       </div>
 
-      <div className='flex gap-2'>
+      <div className='gap-2  flex md:flex-row flex-col'>
         <WeeklyTaskPage />
-        <TodoList />
+        <div className='w-full flex flex-col gap-4'>
+          <TodoList />
+          <DailyHabits />
+        </div>
+      </div>
+      <div className='mt-10'>
+        <NotesList />
       </div>
 
       <div className='bento-box'>

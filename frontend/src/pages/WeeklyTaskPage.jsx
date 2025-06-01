@@ -90,14 +90,14 @@ const WeeklyTaskPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     if (!validateTime(formData.time, formData.endTime)) {
       alert('Please enter valid start and end times');
       return;
     }
 
     const selectedDayName = days[selectedDay];
-    
+
     if (checkTimeOverlap(selectedDayName, formData.time, formData.endTime, editIndex)) {
       alert('This time slot overlaps with an existing routine');
       return;
@@ -124,8 +124,8 @@ const WeeklyTaskPage = () => {
   const dayRoutines = weeklyRoutines[selectedDayName] || [];
 
   return (
-    <div className="p-4 w-min">
-      <Card className='w-min mb-4'>
+    <div className="w-min">
+      <Card className='w-min mb-4 bg-accent/30'>
         <CardHeader>
           <div className='flex justify-between'>
             <div>
@@ -218,8 +218,15 @@ const WeeklyTaskPage = () => {
               <div
                 key={index}
                 onClick={() => handleDayClick(index)}
-                className={`hover:bg-accent flex-shrink-0  transition-colors cursor-pointer border select-none border-input p-4 rounded-xl flex flex-col items-center gap-1 
-                  ${index === selectedDay ? 'text-green-400 bg-green-800/20' : ''}`}
+                className={`hover:bg-accent/30 w-14  transition-colors cursor-pointer border select-none border-input p-4 rounded-xl flex flex-col items-center gap-1 
+                  ${
+                    index === currentDay ?
+                     'bg-primary text-primary-foreground hover:bg-primary/75'
+                    : index === selectedDay ?
+                     'bg-secondary text-secondary-foreground hover:bg-secondary/75'
+                    : ''
+                  }`
+                }
               >
                 <div className='text-xs font-semibold'>{day}</div>
                 <div className='text-2xl font-semibold'>{date.getDate()}</div>
@@ -243,8 +250,8 @@ const WeeklyTaskPage = () => {
 
                   <div className='size-4 aspect-square rounded-full bg-foreground border-accent border-4' />
 
-                  <Card 
-                    className='w-full cursor-pointer hover:bg-accent transition-colors'
+                  <Card
+                    className='w-full bg-accent/30 cursor-pointer hover:bg-accent transition-colors'
                     onClick={() => handleEditClick(task, index)}
                   >
                     <CardHeader className='p-3'>

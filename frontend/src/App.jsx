@@ -10,18 +10,19 @@ import { useAuthStore } from "./stores/authStore";
 import { Loader } from "lucide-react";
 import WeeklyTaskPage from "./pages/WeeklyTaskPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import { TooltipProvider } from "@radix-ui/react-tooltip";
 
 const App = () => {
-  const {authUser, checkAuth, isCheckingAuth} = useAuthStore();
+  const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
 
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
 
-  if(!authUser && isCheckingAuth) {
+  if (!authUser && isCheckingAuth) {
     return (
       <div className="flex gap-2 items-center justify-center h-screen">
-        <Loader className="animate-spin"/>
+        <Loader className="animate-spin" />
         <p className="text-center">Study Planner</p>
       </div>
     )
@@ -29,17 +30,20 @@ const App = () => {
 
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <Toaster/>
-        <Navbar />
-      <div>
-        <Routes>
-          <Route path="/" element={authUser? <HomePage/> : <Navigate to='/login'/> }  />
-          <Route path="/weekly-task" element={authUser || true? <WeeklyTaskPage/> : <Navigate to='/login'/> }  />
-          <Route path="/forgot-password" element={authUser || true? <ForgotPasswordPage/> : <Navigate to='/login'/> }  />
-          <Route path="/login" element={!authUser? <LoginPage /> : <Navigate to='/' /> } />
-          <Route path="/signup" element={!authUser? <SignupPage /> : <Navigate to='/' /> } />
-        </Routes>
-      </div>
+      <TooltipProvider>
+
+        <Toaster />
+          <Navbar />
+          <div>
+            <Routes>
+              <Route path="/" element={authUser ? <HomePage /> : <Navigate to='/login' />} />
+              <Route path="/weekly-task" element={authUser || true ? <WeeklyTaskPage /> : <Navigate to='/login' />} />
+              <Route path="/forgot-password" element={authUser || true ? <ForgotPasswordPage /> : <Navigate to='/login' />} />
+              <Route path="/login" element={!authUser ? <LoginPage /> : <Navigate to='/' />} />
+              <Route path="/signup" element={!authUser ? <SignupPage /> : <Navigate to='/' />} />
+            </Routes>
+          </div>
+      </TooltipProvider>
     </ThemeProvider>
   );
 };

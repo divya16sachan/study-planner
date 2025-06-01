@@ -5,6 +5,7 @@ import { Progress } from "@/components/ui/progress";
 import { Plug, Plus, Trash2 } from 'lucide-react';
 import useTodoStore from '@/stores/todoStore';
 import { Button } from './ui/button';
+import CircularProgress from './CircularProgress';
 
 const TodoList = () => {
   const { todos, addTodo, toggleTodo, updateTodo, deleteTodo } = useTodoStore();
@@ -14,7 +15,8 @@ const TodoList = () => {
 
   // Calculate progress
   const completedCount = todos.filter(todo => todo.completed).length;
-  const progress = todos.length > 0 ? Math.round((completedCount / todos.length) * 100) : 0;
+  // const progress = todos.length > 0 ? Math.round((completedCount / todos.length) * 100) : 0;
+  const progress = todos.length > 0 ? ((completedCount / todos.length) * 100).toFixed(1) : 0;
 
   const handleAddTodo = (e) => {
     e.preventDefault();
@@ -37,15 +39,18 @@ const TodoList = () => {
   };
 
   return (
-    <div className="space-y-4 w-full max-w-md mx-auto p-4">
+    <div className="space-y-6 w-full bg-accent/30 rounded-lg border max-w-md p-4">
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Todo List</h2>
-          <div className="text-sm text-muted-foreground">
-            {completedCount}/{todos.length} completed
+          <div>
+            <h2 className="text-lg font-semibold">Todo List</h2>
+            <div className="text-sm text-muted-foreground">
+              {completedCount}/{todos.length} completed
+            </div>
           </div>
+          <CircularProgress value={progress} size={60} strokeWidth={6} textSize='xs' />
         </div>
-        <Progress value={progress} className="h-2" />
+
       </div>
 
       <div className="space-y-2">
@@ -61,7 +66,7 @@ const TodoList = () => {
               className="h-5 w-5 rounded-full"
             />
 
-            {editingId === todo.id  ? (
+            {editingId === todo.id ? (
               <Input
                 value={editText}
                 onChange={(e) => setEditText(e.target.value)}
@@ -96,14 +101,15 @@ const TodoList = () => {
           placeholder="New todo"
           value={newTodoText}
           onChange={(e) => setNewTodoText(e.target.value)}
-          className="h-8"
+          className="h-9 bg-input"
         />
         <Button
-            size="icon"
-            variant="ghost"
-            className="flex-shrink-0"
+          type="submit"
+          variant="secondary"
+          className="h-9 bg-input/30"
+          disabled={!newTodoText.trim()}
         >
-          <Plus/>
+          Add
         </Button>
       </form>
     </div>

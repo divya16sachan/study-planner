@@ -56,7 +56,7 @@ const ForgotPasswordPage = () => {
     };
 
     return (
-        <div className='max-w-screen-md flex items-center justify-center mx-auto w-full p-4 mt-16'>
+        <div className='max-w-screen-lg flex items-center justify-center mx-auto w-full p-4 mt-16'>
             <Card>
                 <CardHeader>
                     <CardTitle>Forgot Password</CardTitle>
