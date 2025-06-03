@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
-import { Eye, EyeClosed, Lock, Mail } from "lucide-react";
+import { Eye, EyeClosed, Loader2, Lock, Mail } from "lucide-react";
 import { useState } from "react";
 import { useAuthStore } from "@/stores/authStore";
 import GoogleLoginButton from "@/components/GoogleLoginButton";
@@ -132,7 +132,13 @@ const LoginPage = () => {
 
                                 {/* Login Button */}
                                 <Button type="submit" className="w-full" disabled={isLoggingIn}>
-                                    {isLoggingIn ? "Logging in..." : "Login"}
+                                    {isLoggingIn 
+                                        ? <>
+                                            Logging in 
+                                            <Loader2 className="animate-spin"/>
+                                          </> 
+                                        : "Login"
+                                    }
                                 </Button>
                             </div>
                         </form>

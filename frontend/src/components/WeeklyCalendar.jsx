@@ -9,7 +9,7 @@ import {
 import { Button } from './ui/button';
 import { Plus } from 'lucide-react';
 
-const WeeklyCalendar = () => {
+const WeeklyCalendar = ({className=""}) => {
     const today = new Date();
     const currentDay = today.getDay(); // 0 (Sunday) to 6 (Saturday)
 
@@ -21,7 +21,7 @@ const WeeklyCalendar = () => {
 
     return (
         <div>
-            <Card className='w-min'>
+            <Card className={`w-full ${className}`}>
                 <CardHeader>
                     <div className='flex justify-between'>
                         <div>

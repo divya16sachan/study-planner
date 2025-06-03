@@ -16,7 +16,7 @@ export const useAuthStore = create((set, get) => ({
     checkAuth: async () => {
         set({ isCheckingAuth: true });
         try {
-            const response = await axiosInstance.get('/auth/check-auth');
+            const response = await axiosInstance.get('/auth/me');
             set({ authUser: response.data.user, isCheckingAuth: false });
             return response.data;
         } catch (error) {
@@ -136,25 +136,31 @@ export const useAuthStore = create((set, get) => ({
         }
     },
 
-    sendResetPasswordOtp: async () => {
-        set({ isSendingOtp: true })
+    requestResetPasswordOtp: async (email) => {
+        set({ isSendingOtp: true });
         try {
-            const response = await axiosInstance.post('/password/request-forgot-password-otp');
+            const response = await axiosInstance.post('/password/request-reset-password-otp', {
+                email,
+            });
             toast.success(response.data.message || "OTP sent successfully!");
             return response.data;
         } catch (error) {
             toast.error(error.response?.data?.message || "Failed to send OTP");
-            console.error("Send OTP error:", error);
+            console.error("Request reset password OTP error:", error);
             return null;
         } finally {
-            set({ isSendingOtp: false })
+            set({ isSendingOtp: false });
         }
     },
 
-    resetPassword: async ({ newPassword, otp }) => {
+    resetPassword: async ({ email, newPassword, otp }) => {
         set({ isResettingPassword: true });
         try {
-            const response = await axiosInstance.post('/password/reset-password', { newPassword, otp });
+            const response = await axiosInstance.post('/password/reset-password', {
+                email,
+                newPassword,
+                otp,
+            });
             toast.success(response.data.message || "Password reset successfully!");
             return response.data;
         } catch (error) {
@@ -166,16 +172,17 @@ export const useAuthStore = create((set, get) => ({
         }
     },
 
-    googleLogin: async (data) => {
+    googleLogin: async ({ token }) => {
         set({ isLoggingIn: true });
         try {
-            const response = await axiosInstance.post('/auth/google-login', data);
+            const response = await axiosInstance.post('/auth/google-login', { token });
+
             set({ authUser: response.data.user, isLoggingIn: false });
             toast.success(response.data.message || "Login successful!");
             return response.data;
         } catch (error) {
             console.error("Login error:", error);
-            toast.error(error.response?.data?.message || "Login failed. Please try again.");
+            toast.error(error.response?.data?.error || "Login failed. Please try again.");
             return null;
         } finally {
             set({ isLoggingIn: false });
@@ -198,7 +205,14 @@ export const useAuthStore = create((set, get) => ({
         }
     },
 
-
-
-
+    getUserByEmail: async (email) => {
+        try {
+            const response = await axiosInstance.get(`/user/${email}`);
+            console.log(response.data.user);
+            return response.data.user;
+        } catch (error) {
+            return null;
+        }
+    }
 }));
+

@@ -58,7 +58,7 @@ const NotesList = () => {
   };
 
   return (
-    <div className="w-full max-w-3xl p-4 space-y-4">
+    <div className="w-full space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Notes</h2>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

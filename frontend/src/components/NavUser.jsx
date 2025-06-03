@@ -1,12 +1,8 @@
 "use client"
 
 import {
-    BellIcon,
-    CreditCardIcon,
     Lock,
     LogOutIcon,
-    MoreVerticalIcon,
-    UserCircleIcon,
     UserPen,
 } from "lucide-react"
 
@@ -38,14 +34,15 @@ export function NavUser() {
     const [editDialogOpen, setEditDialogOpen] = useState(false);
     const [forgetPasswordDialogOpen, setForgetPasswordDialogOpen] = useState(false);
 
-    const handleLogout = ()=>{
-        if(authUser.isOAuthUser){
+    const handleLogout = () => {
+        if (authUser.isOAuthUser) {
             //log out from google as well
             googleLogout();
             google.accounts.id.disableAutoSelect();
         }
         logout();
     }
+    
     return (
         <>
             <DropdownMenu onOpenChange={setOpen} open={open}>
@@ -56,7 +53,12 @@ export function NavUser() {
                         className="rounded-full data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                     >
                         <Avatar className="h-full w-full">
-                            <AvatarImage className="w-full h-full object-cover" src={authUser.picture} alt={authUser.name} />
+                            <AvatarImage
+                                className="w-full h-full object-cover"
+                                src={authUser.picture}
+                                alt={authUser.name}
+                                referrerPolicy="no-referrer"
+                            />
                             <AvatarFallback className="bg-transparent">
                                 {authUser.name.split(/\s+/).map(c => c[0]).join('').slice(0, 2)}
                             </AvatarFallback>
@@ -82,44 +84,43 @@ export function NavUser() {
                             </div>
                         </div>
                     </DropdownMenuLabel>
-                    {authUser.isOAuthUser === false &&
-                        <>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuGroup>
-                                <DropdownMenuItem
-                                    className="p-0 cursor-pointer hover:bg-accent"
-                                    onSelect={(e) => {
-                                        e.preventDefault();
-                                        setEditDialogOpen(true);
-                                    }}
-                                >
-                                    <EditProfile trigger={
-                                        <div className="flex items-center gap-2 w-full px-2 py-1.5">
-                                            <UserPen className="size-5" />
-                                            Edit Profile
-                                        </div>
-                                    } />
-                                </DropdownMenuItem>
 
-                                <DropdownMenuItem
-                                    className="p-0 cursor-pointer hover:bg-accent"
-                                    onSelect={(e) => {
-                                        e.preventDefault();
-                                        setForgetPasswordDialogOpen(true);
-                                    }}
-                                >
-                                    <ForgotPassword trigger={
-                                        <div className="flex items-center gap-2 w-full px-2 py-1.5">
-                                            <Lock className="size-5" />
-                                            Forgot Password
-                                        </div>
-                                    } />
-                                </DropdownMenuItem>
-
-                            </DropdownMenuGroup>
-                        </>
-                    }
                     <DropdownMenuSeparator />
+
+                    <DropdownMenuGroup>
+                        <DropdownMenuItem
+                            className="p-0 cursor-pointer hover:bg-accent"
+                            onSelect={(e) => {
+                                e.preventDefault();
+                                setEditDialogOpen(true);
+                            }}
+                        >
+                            <EditProfile trigger={
+                                <div className="flex items-center gap-2 w-full px-2 py-1.5">
+                                    <UserPen className="size-5" />
+                                    Edit Profile
+                                </div>
+                            } />
+                        </DropdownMenuItem>
+
+                        <DropdownMenuItem
+                            className="p-0 cursor-pointer hover:bg-accent"
+                            onSelect={(e) => {
+                                e.preventDefault();
+                                setForgetPasswordDialogOpen(true);
+                            }}
+                        >
+                            <ForgotPassword trigger={
+                                <div className="flex items-center gap-2 w-full px-2 py-1.5">
+                                    <Lock className="size-5" />
+                                    Forgot Password
+                                </div>
+                            } />
+                        </DropdownMenuItem>
+                    </DropdownMenuGroup>
+
+                    <DropdownMenuSeparator />
+
                     <DropdownMenuItem onClick={handleLogout} className="cursor-pointer hover:bg-accent">
                         <LogOutIcon />
                         Log out

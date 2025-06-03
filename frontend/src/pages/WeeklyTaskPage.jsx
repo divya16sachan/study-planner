@@ -19,7 +19,16 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@radix-ui/react-label';
 import useRoutineStore from '@/stores/routineStore';
 
-const WeeklyTaskPage = () => {
+const emptyStates = [
+  "Sunday-Chill.svg",
+  "Cup-Of-Coffee.svg",
+  "Music-On.svg",
+  "Chilling.svg",
+];
+
+const WeeklyTaskPage = ({ className = "" }) => {
+  const emptyState = emptyStates[Math.floor(Math.random() * emptyStates.length)];
+
   const today = new Date();
   const currentDay = today.getDay();
   const [selectedDay, setSelectedDay] = useState(currentDay);
@@ -124,12 +133,12 @@ const WeeklyTaskPage = () => {
   const dayRoutines = weeklyRoutines[selectedDayName] || [];
 
   return (
-    <div className="w-min">
-      <Card className='w-min mb-4 bg-accent/30'>
+    <div className={`${className}`}>
+      <Card className='mb-4 bg-accent/30'>
         <CardHeader>
           <div className='flex justify-between'>
             <div>
-              <CardTitle>Weekly Calendar</CardTitle>
+              <CardTitle >Weekly Calendar</CardTitle>
               <CardDescription>
                 Select a day to view or edit routines
               </CardDescription>
@@ -209,7 +218,7 @@ const WeeklyTaskPage = () => {
           </div>
         </CardHeader>
 
-        <CardContent className="flex gap-2">
+        <CardContent className="grid grid-cols-7  gap-4">
           {days.map((day, index) => {
             const date = new Date(weekStart);
             date.setDate(weekStart.getDate() + index);
@@ -218,13 +227,12 @@ const WeeklyTaskPage = () => {
               <div
                 key={index}
                 onClick={() => handleDayClick(index)}
-                className={`hover:bg-accent/30 w-14  transition-colors cursor-pointer border select-none border-input p-4 rounded-xl flex flex-col items-center gap-1 
-                  ${
-                    index === currentDay ?
-                     'bg-primary text-primary-foreground hover:bg-primary/75'
+                className={`hover:bg-accent/30 transition-colors cursor-pointer border select-none border-input p-4 rounded-xl flex flex-col items-center gap-1 
+                  ${index === currentDay ?
+                    'bg-primary text-primary-foreground hover:bg-primary/75'
                     : index === selectedDay ?
-                     'bg-secondary text-secondary-foreground hover:bg-secondary/75'
-                    : ''
+                      'bg-secondary text-secondary-foreground hover:bg-secondary/75'
+                      : ''
                   }`
                 }
               >
@@ -238,7 +246,7 @@ const WeeklyTaskPage = () => {
 
       <div>
         {dayRoutines.length > 0 ? (
-          <ul className='space-y-4 my-4 schedule-list'>
+          <ul className='space-y-4 mt-4 schedule-list'>
             {dayRoutines
               .sort((a, b) => a.time.localeCompare(b.time))
               .map((task, index) => (
@@ -266,6 +274,10 @@ const WeeklyTaskPage = () => {
           </ul>
         ) : (
           <div className="text-center py-8">
+            <div className='size-52 opacity-95 aspect-square bg-white rounded-full p-9 my-8 mx-auto'>
+              <img className='h-full w-full object-contain' src={emptyState} alt="" />
+            </div>
+
             <h3 className="text-xl font-semibold">You seem free today! 😊</h3>
             <p className="text-muted-foreground">Click the "Add" button to create a new routine</p>
           </div>

@@ -16,10 +16,6 @@ const Navbar = () => {
                     <Link to='/'>Study Planner</Link>
                 </h1>
                 <div className='flex items-center gap-2'>
-                    <Button>
-                        <Plus />
-                        <span>Add Task</span>
-                    </Button>
                     <ModeToggle />
                     {authUser && (
                         <NavUser />

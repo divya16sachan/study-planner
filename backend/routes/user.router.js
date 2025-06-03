@@ -3,7 +3,7 @@ import {
     updateName,
     sendEmailUpdateOtp,
     updateEmail,
-    getUserById,
+    getUserByEmail,
     updateProfilePicture,
 } from '../controllers/user.controller.js';
 import protectedRoute from '../middlewares/protected.middleware.js';
@@ -14,7 +14,7 @@ const router = express.Router();
 router.post('/update-name', protectedRoute, updateName);
 router.post('/send-email-update-otp', protectedRoute, sendEmailUpdateOtp);
 router.post('/update-email', protectedRoute, updateEmail);
-router.get('/:id', getUserById);
+router.get('/:email', getUserByEmail);
 router.post(
     '/update-profile-picture',
     protectedRoute,

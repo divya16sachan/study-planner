@@ -2,27 +2,20 @@ import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
     name: {
-        type: String,
-        required: true,
+        type: String, required: true 
     },
     email: {
-        type: String,
-        required: true,
-        unique: true,
+        type: String, required: true, unique: true 
     },
     password: {
-        type: String,
-    },
-    picture:  {
-        type: String,
+        type: String // optional for Google users
+    }, 
+    picture: {
+        type: String 
     },
     googleId: {
-        type: String,
-    },
-    isOAuthUser: {
-        type: Boolean,
-        default: false,
-    }
+        type: String // Google sub (optional)
+    }, 
 }, { timestamps: true })
 
 const User = mongoose.model("User", userSchema);

@@ -67,7 +67,12 @@ const HomePage = () => {
         </div>
         <div className='size-20 absolute rounded-full overflow-hidden bottom-0 left-4 translate-y-1/2'>
           <Avatar className="h-full w-full">
-            <AvatarImage className="w-full h-full object-cover" src={authUser.picture} alt={authUser.name} />
+            <AvatarImage
+              className="w-full h-full object-cover"
+              src={authUser.picture}
+              alt={authUser.name}
+              referrerPolicy="no-referrer"
+            />
             <AvatarFallback className="bg-transparent">
               <img src="./avatar.png" alt="" />
             </AvatarFallback>
@@ -89,32 +94,34 @@ const HomePage = () => {
         </div>
       </div>
 
-      <div className='flex gap-4 my-4'>
-        {/* <div className='w-[200px]'><FlipTimer /></div> */}
-        <div></div>
-      </div>
+      <Separator className='border-b my-14' />
 
-      <div className='gap-2  flex md:flex-row flex-col'>
-        <WeeklyTaskPage />
-        <div className='w-full flex flex-col gap-4'>
+      <div className="flex gap-6 flex-col md:flex-row">
+        <WeeklyTaskPage className='w-full' />
+        <div className='w-full flex gap-6 flex-col sm:flex-row items-start md:flex-col'>
           <TodoList />
           <DailyHabits />
         </div>
       </div>
-      <div className='mt-10'>
-        <NotesList />
-      </div>
 
-      <div className='bento-box'>
-        <Pomodoro />
-        <div className='flex items-center justify-center flex-shrink-0 min-w-40 p-2'>
+
+
+
+
+      <Separator className='border-b my-14' />
+      <NotesList />
+      <Separator className='border-b my-14' />
+
+      <div className='grid gap-4
+        sm:grid-cols-[auto_1fr]
+      '>
+        <Pomodoro className={"min-w-96"} />
+        <div className='flex bg-accent/30 rounded-xl items-center justify-center flex-shrink-0 min-w-40 p-4'>
           <FlipTimer />
         </div>
-        <div>
-          <SpotifyWidget playlistId={"37i9dQZF1E4AfEUiirXPyP"} />
-        </div>
+
+        <SpotifyWidget className='sm:col-span-2' playlistId={"37i9dQZF1E4AfEUiirXPyP"} />
       </div>
-      <TaskTable />
     </div>
   )
 }

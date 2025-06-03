@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { Progress } from "@/components/ui/progress";
 import { Trash2, Flame, Trophy } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import useHabitStore from '@/stores/habitStore';
 import CircularProgress from './CircularProgress';
 
-const DailyHabits = () => {
+const DailyHabits = ({ className = "" }) => {
     const { habits, addHabit, toggleHabit, updateHabit, deleteHabit } = useHabitStore();
     const [newHabitText, setNewHabitText] = useState('');
     const [editingId, setEditingId] = useState(null);
@@ -65,11 +64,11 @@ const DailyHabits = () => {
 
     return (
         <TooltipProvider>
-            <div className="space-y-8 w-full rounded-lg bg-accent/30 border max-w-md p-4">
+            <div className={`space-y-4 w-full rounded-lg bg-accent/30 border p-4 ${className}`}>
                 <div className="space-y-2">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h2 className="text-lg font-semibold">Daily Habits</h2>
+                            <h2 className="tracking-tight leading-none font-semibold">Daily Habits</h2>
                             <div className="text-sm text-muted-foreground">
                                 {completedCount}/{habits.length} completed
                             </div>
@@ -79,10 +78,13 @@ const DailyHabits = () => {
                     </div>
                 </div>
 
-                <div className="space-y-2">
+                <div>
                     {habits.length === 0 ? (
-                        <div className="text-center py-8 text-muted-foreground text-sm">
-                            No habits yet. Add your first habit to start tracking!
+                        <div className="text-center space-y-2 text-muted-foreground text-sm">
+                            <div className='size-28 mx-auto grayscale opacity-50 aspect-square overflow-hidden'>
+                                <img className='w-full h-full object-contain' src="./empty-note-state.svg" alt="" />
+                            </div>
+                            <p>No habits yet. Add your first habit to start tracking!</p>
                         </div>
                     ) : (
                         habits.map((habit) => (
@@ -124,7 +126,7 @@ const DailyHabits = () => {
                                         e.stopPropagation();
                                         deleteHabit(habit.id);
                                     }}
-                                    className="text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                                    className="text-muted-foreground hover:text-destructive transition-opacity"
                                 >
                                     <Trash2 className="h-4 w-4" />
                                 </button>
@@ -136,7 +138,7 @@ const DailyHabits = () => {
                 <form onSubmit={handleAddHabit} className="flex items-center gap-2 pt-2">
                     <Input
                         type="text"
-                        placeholder="New habit (e.g. 'Drink water')"
+                        placeholder="New habit"
                         value={newHabitText}
                         onChange={(e) => setNewHabitText(e.target.value)}
                         className="h-9 bg-input/30"

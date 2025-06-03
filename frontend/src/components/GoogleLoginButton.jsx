@@ -1,7 +1,6 @@
 import React from 'react';
 import { GoogleLogin, useGoogleOneTapLogin } from '@react-oauth/google';
 import { useAuthStore } from '@/stores/authStore.js';
-import { jwtDecode } from 'jwt-decode';
 
 const GoogleLoginButton = ({ className }) => {
   const { googleLogin, isLoggingIn } = useAuthStore();
@@ -9,9 +8,9 @@ const GoogleLoginButton = ({ className }) => {
   // Trigger One Tap on component mount
   useGoogleOneTapLogin({
     onSuccess: credentialResponse => {
-      const user = jwtDecode(credentialResponse?.credential);
-      if (user?.email) {
-        googleLogin(user);
+      const token = credentialResponse?.credential;
+      if (token) {
+        googleLogin({ token }); // ✅ send token
       }
     },
     onError: () => {
@@ -23,9 +22,9 @@ const GoogleLoginButton = ({ className }) => {
     <div className={`w-full flex justify-center ${className}`}>
       <GoogleLogin
         onSuccess={credentialResponse => {
-          const user = jwtDecode(credentialResponse?.credential);
-          if (user?.email) {
-            googleLogin(user);
+          const token = credentialResponse?.credential;
+          if (token) {
+            googleLogin({ token }); // ✅ send token
           }
         }}
         onError={() => {

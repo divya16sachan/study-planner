@@ -99,15 +99,22 @@ export const updateEmail = async (req, res) => {
 };
 
 
-export const getUserById = async (req, res) => {
-    const { id } = req.params; // Extract user ID from request parameters
 
-    if (!id) {
-        return res.status(400).json({ message: "User ID is required" });
+export const getUserByEmail = async (req, res) => {
+    const { email } = req.params; // Ensure email is passed as a param
+
+    if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+    }
+
+    // Regular expression for email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ message: "Invalid email format" });
     }
 
     try {
-        const user = await User.findById(id, '-password'); // Fetch user from database
+        const user = await User.findOne({ email }).select('-password'); // Exclude password
 
         if (!user) {
             return res.status(404).json({ message: "User not found" });
@@ -115,11 +122,10 @@ export const getUserById = async (req, res) => {
 
         return res.status(200).json({ user });
     } catch (error) {
-        console.error("Get user by ID error:", error);
+        console.error("Get user by email error:", error);
         return res.status(500).json({ message: "Internal server error" });
     }
 };
-
 
 export const updateProfilePicture = async (req, res) => {
     try {

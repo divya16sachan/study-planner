@@ -3,7 +3,7 @@ import { Play, RotateCcw, Pause } from "lucide-react";
 import { PomodoroSetting } from "./PomodoroSetting";
 import { usePomodoroStore } from "@/stores/pomodoroStore";
 
-const Pomodoro = () => {
+const Pomodoro = ({className}) => {
   const {
     remainingTime,
     isRunning,
@@ -41,7 +41,7 @@ const Pomodoro = () => {
   };
 
   return (
-    <div className="p-8 overflow-hidden relative rounded-lg flex flex-col items-center justify-center">
+    <div className={`p-8 overflow-hidden relative rounded-xl flex flex-col items-center justify-center ${className}`}>
       <div className="absolute z-10 inset-0 bg-black/40" />
       <img
         className="inset z-0 absolute w-full h-full object-cover"

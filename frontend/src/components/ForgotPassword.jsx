@@ -13,12 +13,19 @@ import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@/comp
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { useAuthStore } from "@/stores/authStore";
 import { Eye, EyeClosed, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 const validatePassword = (password) => password.trim().length >= 8;
 const validateConfirmPassword = (password, confirmPassword) => password === confirmPassword;
 
 const ForgotPassword = ({ trigger }) => {
-    const {sendResetPasswordOtp, isSendingOtp, isResettingPassword, resetPassword } = useAuthStore();
+    const { authUser } = useAuthStore();
+    const {
+        requestResetPasswordOtp,
+        resetPassword,
+        isSendingOtp,
+        isResettingPassword,
+    } = useAuthStore();
 
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -28,6 +35,7 @@ const ForgotPassword = ({ trigger }) => {
     const [cooldown, setCooldown] = useState(0);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
         let interval;
@@ -39,124 +47,167 @@ const ForgotPassword = ({ trigger }) => {
         return () => clearInterval(interval);
     }, [cooldown]);
 
-    const handleSendOtp = async () => {
-        const res = await sendPasswordResetOtp();
-        if (res) {
-            setCooldown(60);
-        }
-    };
 
     const handleResetPassword = async () => {
+        setPasswordError("");
+        setConfirmPasswordError("");
+
         if (!validatePassword(password)) {
             setPasswordError("Password must be at least 8 characters.");
             return;
         }
+
         if (!validateConfirmPassword(password, confirmPassword)) {
             setConfirmPasswordError("Passwords do not match.");
             return;
         }
-        await resetPassword({ newPassword: password.trim(), otp });
+
+        if (otp.length !== 6) {
+            toast.error("Please enter a valid 6-digit OTP.");
+            return;
+        }
+
+        const res = await resetPassword({
+            email: authUser.email,
+            newPassword: password.trim(),
+            otp,
+        });
+
+        if (res) {
+            setIsOpen(false);
+            setPassword("");
+            setConfirmPassword("");
+            setOtp("");
+        }
     };
 
     return (
-        <Dialog>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>{trigger}</DialogTrigger>
             <DialogContent className="sm:max-w-[425px] z-[60]">
                 <DialogHeader>
-                    <DialogTitle>Forgot Password</DialogTitle>
-                    <DialogDescription>Generate an otp to you email before signup.</DialogDescription>
+                    <DialogTitle>Reset Password</DialogTitle>
+                    <DialogDescription>
+                        We'll send an OTP to your registered email address to reset your password.
+                    </DialogDescription>
                 </DialogHeader>
 
-                <div className="grid gap-6 py-6">
+                <div className="grid gap-4 py-4">
+
                     {/* Password Field */}
-                    <div className="grid relative  items-center gap-4">
-                        <Input
-                            type={showPassword ? "text" : "password"}
-                            placeholder="Enter new password"
-                            className="pr-8"
-                            value={password}
-                            onChange={(e) => {
-                                setPassword(e.target.value);
-                                setPasswordError(validatePassword(e.target.value) ? "" : "Password must be at least 6 characters.");
-                            }}
-                        />
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            className="p-1 h-min absolute top-[50%] translate-y-[-50%] right-2"
-                            onClick={() => setShowPassword(!showPassword)}
-                            tabIndex={-1}
-                        >
-                            {showPassword ? <Eye className="text-muted-foreground size-4" /> : <EyeClosed className="text-muted-foreground size-4" />}
-                        </Button>
-                        {passwordError && <p className="absolute -bottom-4 text-xs text-red-500">{passwordError}</p>}
+                    <div className="grid relative items-center gap-1">
+                        <div className="relative">
+                            <Input
+                                type={showPassword ? "text" : "password"}
+                                placeholder="Enter new password"
+                                className="pr-10"
+                                value={password}
+                                onChange={(e) => {
+                                    setPassword(e.target.value);
+                                    setPasswordError("");
+                                }}
+                                disabled={isResettingPassword}
+                            />
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className="absolute top-1/2 right-1 transform -translate-y-1/2 h-8 w-8"
+                                onClick={() => setShowPassword(!showPassword)}
+                                tabIndex={-1}
+                            >
+                                {showPassword ? <Eye className="h-4 w-4" /> : <EyeClosed className="h-4 w-4" />}
+                            </Button>
+                        </div>
+                        {passwordError && <p className="text-xs text-red-500">{passwordError}</p>}
                     </div>
 
                     {/* Confirm Password Field */}
-                    <div className="grid relative items-center gap-4">
-                        <Input
-                            type={showConfirmPassword ? "text" : "password"}
-                            className="pr-8"
-                            placeholder="Confirm new password"
-                            value={confirmPassword}
-                            onChange={(e) => {
-                                setConfirmPassword(e.target.value);
-                                setConfirmPasswordError(validateConfirmPassword(password, e.target.value) ? "" : "Passwords do not match.");
-                            }}
-                        />
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            className="p-1 h-min absolute top-[50%] translate-y-[-50%] right-2"
-                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                            tabIndex={-1}
-                        >
-                            {showConfirmPassword ? <Eye className="text-muted-foreground size-4" /> : <EyeClosed className="text-muted-foreground size-4" />}
-                        </Button>
-                        {confirmPasswordError && <p className="absolute -bottom-4 text-xs text-red-500">{confirmPasswordError}</p>}
+                    <div className="grid relative items-center gap-1">
+                        <div className="relative">
+                            <Input
+                                type={showConfirmPassword ? "text" : "password"}
+                                placeholder="Confirm new password"
+                                className="pr-10"
+                                value={confirmPassword}
+                                onChange={(e) => {
+                                    setConfirmPassword(e.target.value);
+                                    setConfirmPasswordError("");
+                                }}
+                                disabled={isResettingPassword}
+                            />
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className="absolute top-1/2 right-1 transform -translate-y-1/2 h-8 w-8"
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                tabIndex={-1}
+                            >
+                                {showConfirmPassword ? <Eye className="h-4 w-4" /> : <EyeClosed className="h-4 w-4" />}
+                            </Button>
+                        </div>
+                        {confirmPasswordError && <p className="text-xs text-red-500">{confirmPasswordError}</p>}
                     </div>
 
                     {/* OTP Field */}
-                    <div className="relative grid grid-cols-[3fr_1fr] items-center gap-4">
-                        <InputOTP maxLength={6} value={otp} onChange={setOtp} pattern={REGEXP_ONLY_DIGITS}>
-                            <InputOTPGroup>
-                                <InputOTPSlot index={0} />
-                                <InputOTPSlot index={1} />
-                                <InputOTPSlot index={2} />
-                            </InputOTPGroup>
-                            <InputOTPSeparator />
-                            <InputOTPGroup>
-                                <InputOTPSlot index={3} />
-                                <InputOTPSlot index={4} />
-                                <InputOTPSlot index={5} />
-                            </InputOTPGroup>
-                        </InputOTP>
-                        {/* Send OTP Button */}
-                        <Button
-                            variant="outline"
-                            onClick={sendResetPasswordOtp}
-                            disabled={cooldown > 0 || isSendingOtp}
-                        >
-                            {isSendingOtp ? (
-                                <>
-                                    Sending... <Loader2 className="animate-spin ml-2" />
-                                </>
-                            ) : cooldown > 0 ? (
-                                `Resend in ${cooldown}s`
-                            ) : (
-                                "Get OTP"
-                            )}
-                        </Button>
+                    <div className="grid gap-2">
+                        <div className="flex items-center gap-2">
+                            <InputOTP
+                                maxLength={6}
+                                value={otp}
+                                onChange={setOtp}
+                                pattern={REGEXP_ONLY_DIGITS}
+                                disabled={isResettingPassword}
+                            >
+                                <InputOTPGroup>
+                                    <InputOTPSlot index={0} />
+                                    <InputOTPSlot index={1} />
+                                    <InputOTPSlot index={2} />
+                                </InputOTPGroup>
+                                <InputOTPSeparator />
+                                <InputOTPGroup>
+                                    <InputOTPSlot index={3} />
+                                    <InputOTPSlot index={4} />
+                                    <InputOTPSlot index={5} />
+                                </InputOTPGroup>
+                            </InputOTP>
+                            <Button
+                                variant="outline"
+                                onClick={() => requestResetPasswordOtp(authUser.email)}
+                                disabled={cooldown > 0 || isSendingOtp}
+                                className="min-w-[100px]"
+                            >
+                                {isSendingOtp ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : cooldown > 0 ? (
+                                    `${cooldown}s`
+                                ) : (
+                                    "Get OTP"
+                                )}
+                            </Button>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                            Enter the 6-digit OTP sent to your email
+                        </p>
                     </div>
-
 
                     {/* Reset Password Button */}
                     <Button
-                        variant="outline"
                         onClick={handleResetPassword}
-                        disabled={isResettingPassword || passwordError || confirmPasswordError || otp.length !== 6}
+                        disabled={
+                            isResettingPassword ||
+                            passwordError ||
+                            confirmPasswordError ||
+                            otp.length !== 6 ||
+                            !password ||
+                            !confirmPassword
+                        }
                     >
-                        {isResettingPassword ? "Resetting..." : "Reset Password"}
+                        {isResettingPassword ? (
+                            <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                        ) : null}
+                        Reset Password
                     </Button>
                 </div>
             </DialogContent>
