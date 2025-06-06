@@ -220,10 +220,10 @@ const EditProfile = ({ trigger }) => {
                         >
                             {isSendingOtp ? (
                                 <>
-                                    Sending... <Loader2 className="animate-spin ml-2" />
+                                    <Loader2 className="animate-spin ml-2" />
                                 </>
-                            ) : cooldown > 0 ? (
-                                `Resend in ${cooldown}s`
+                            ) : cooldown > 0  ? (
+                                `${cooldown}s`
                             ) : (
                                 "Send otp"
                             )}

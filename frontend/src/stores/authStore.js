@@ -121,7 +121,6 @@ export const useAuthStore = create((set, get) => ({
     },
 
     sendEmailUpdateOtp: async (newEmail) => {
-        console.log(newEmail)
         set({ isSendingOtp: true });
         try {
             const response = await axiosInstance.post('/user/send-email-update-otp', { newEmail });

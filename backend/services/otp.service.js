@@ -32,7 +32,12 @@ export const sendOtp = async ({ email, purpose }) => {
   );
 
   const subject = "Your Study Planner Verification Code";
-  const html = otpTemplate(email, otpCode, expiresInMinutes);
+  const html = otpTemplate({
+    email,
+    otpCode,
+    expiresInMinutes,
+    purpose,
+  });
   const text = `Your Study Planner verification code is: ${otpCode}\nThis code expires in ${expiresInMinutes}.`;
   
   await sendEmail(email, subject, text, html);

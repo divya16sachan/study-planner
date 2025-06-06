@@ -264,7 +264,7 @@ const ForgotPasswordPage = () => {
                                             <Loader2 className="animate-spin mr-2 size-4" />
                                         </>
                                     ) : cooldown > 0 ? (
-                                        `Resend in ${cooldown}s`
+                                        `${cooldown}s`
                                     ) : (
                                         "Get OTP"
                                     )}

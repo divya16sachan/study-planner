@@ -265,10 +265,10 @@ const SignupPage = () => {
                                         >
                                             {isSendingOtp ? (
                                                 <>
-                                                    Sending... <Loader2 className="animate-spin ml-2" />
+                                                    <Loader2 className="animate-spin ml-2" />
                                                 </>
                                             ) : cooldown > 0 ? (
-                                                `Resend in ${cooldown}s`
+                                                `${cooldown}s`
                                             ) : (
                                                 "Send otp"
                                             )}
