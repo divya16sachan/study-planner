@@ -53,9 +53,6 @@ export const sendSignupOtp = async (req, res) => {
     await sendOtp({
       email,
       purpose: 'signup',
-      subject: 'Signup OTP',
-      messageTemplate: (code, mins) =>
-        `Your OTP is: ${code}\nIt is valid for ${mins} minutes.`,
     });
 
     res.status(200).json({ message: 'OTP sent successfully' });

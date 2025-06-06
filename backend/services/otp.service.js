@@ -2,8 +2,9 @@ import { Otp } from '../models/otp.model.js';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import { sendEmail } from './sendEmail.js';
+import { otpTemplate } from './emailTemplates.js';
 
-export const sendOtp = async ({ email, purpose, subject, messageTemplate }) => {
+export const sendOtp = async ({ email, purpose }) => {
   const existingOtp = await Otp.findOne({ email, purpose });
   const now = new Date();
 
@@ -17,6 +18,7 @@ export const sendOtp = async ({ email, purpose, subject, messageTemplate }) => {
   const hashedOtp = await bcrypt.hash(otpCode, 10);
   const minutes = 30;
   const expiresAt = new Date(now.getTime() + minutes * 60 * 1000);
+  const expiresInMinutes = `${minutes} minutes`; 
 
   await Otp.findOneAndUpdate(
     { email, purpose },
@@ -29,9 +31,13 @@ export const sendOtp = async ({ email, purpose, subject, messageTemplate }) => {
     { upsert: true, new: true }
   );
 
-  const message = messageTemplate(otpCode, minutes);
-  await sendEmail(email, subject, message);
+  const subject = "Your Study Planner Verification Code";
+  const html = otpTemplate(email, otpCode, expiresInMinutes);
+  const text = `Your Study Planner verification code is: ${otpCode}\nThis code expires in ${expiresInMinutes}.`;
+  
+  await sendEmail(email, subject, text, html);
 };
+
 
 export const validateOtp = async ({ email, purpose, otp }) => {
   const otpRecord = await Otp.findOne({ email, purpose });

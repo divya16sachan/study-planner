@@ -17,8 +17,6 @@ export const requestResetPasswordOtp = async (req, res) => {
         await sendOtp({
             email: user.email,
             purpose: 'password_reset',
-            subject: 'Reset Password OTP',
-            messageTemplate: (code, mins) => `Your OTP for resetting your password is: ${code}\nIt is valid for ${mins} minutes.`
         });
 
         return res.status(200).json({ message: `OTP successfully sent to ${user.email}` });

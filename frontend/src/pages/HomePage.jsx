@@ -1,10 +1,9 @@
 import FlipTimer from '@/components/FlipTimer'
 import Pomodoro from '@/components/Pomodoro/Pomodoro'
 import SpotifyWidget from '@/components/SpotifyWidget'
-import TaskTable from '@/components/TaskTable'
 import { useAuthStore } from '@/stores/authStore'
 import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar'
-import { Calendar } from 'lucide-react'
+import { AlarmClock, Calendar } from 'lucide-react'
 import React from 'react'
 import { Link } from 'react-router-dom'
 import WeeklyTaskPage from '../pages/WeeklyTaskPage.jsx'
@@ -112,15 +111,21 @@ const HomePage = () => {
       <NotesList />
       <Separator className='border-b my-14' />
 
-      <div className='grid gap-4
+      <div>
+        <h2 className="text-2xl flex items-center gap-2 font-bold">
+          <span>Focus</span>
+          <AlarmClock className='size-6' />
+        </h2>
+        <div className='mt-4 grid gap-4
         sm:grid-cols-[auto_1fr]
-      '>
-        <Pomodoro className={"min-w-96"} />
-        <div className='flex bg-accent/30 rounded-xl items-center justify-center flex-shrink-0 min-w-40 p-4'>
-          <FlipTimer />
-        </div>
+        '>
+          <Pomodoro className={"min-w-96"} />
+          <div className='flex bg-accent/30 rounded-xl items-center justify-center flex-shrink-0 min-w-40 p-4'>
+            <FlipTimer />
+          </div>
 
-        <SpotifyWidget className='sm:col-span-2' playlistId={"37i9dQZF1E4AfEUiirXPyP"} />
+          <SpotifyWidget className='sm:col-span-2' playlistId={"37i9dQZF1E4AfEUiirXPyP"} />
+        </div>
       </div>
     </div>
   )

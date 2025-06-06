@@ -50,8 +50,6 @@ export const sendEmailUpdateOtp = async (req, res) => {
         await sendOtp({
             email: newEmail,
             purpose: 'email_update',
-            subject: 'Update Email OTP',
-            messageTemplate: (code, mins) => `Your OTP for updating email is: ${code}\nIt is valid for ${mins} minutes.`
         });
 
         return res.status(200).json({ message: 'OTP sent successfully' });

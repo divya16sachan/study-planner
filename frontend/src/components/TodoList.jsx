@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
-import { Plug, Plus, Trash2 } from 'lucide-react';
+import { CircleCheckBig, Plug, Plus, Trash2 } from 'lucide-react';
 import useTodoStore from '@/stores/todoStore';
 import { Button } from './ui/button';
 import CircularProgress from './CircularProgress';
@@ -43,7 +43,10 @@ const TodoList = ({ className = "" }) => {
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="tracking-tight leading-none font-semibold">Todo List</h2>
+            <h2 className="flex items-center gap-2 tracking-tight leading-none font-semibold">
+              <span>Todo List</span>
+              <CircleCheckBig className='size-4'/>
+            </h2>
             <div className="text-sm text-muted-foreground">
               {completedCount}/{todos.length} completed
             </div>

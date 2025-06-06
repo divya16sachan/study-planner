@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, Pencil } from 'lucide-react';
+import { Plus, Trash2, Pencil, File } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -42,7 +42,7 @@ const NotesList = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     if (!formData.title.trim()) {
       alert('Please enter a title');
       return;
@@ -60,7 +60,10 @@ const NotesList = () => {
   return (
     <div className="w-full space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Notes</h2>
+        <h2 className="text-2xl flex items-center gap-2 font-bold">
+          <span>Notes</span>
+          <File className='size-5' />
+        </h2>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button onClick={handleAddClick}>
@@ -122,33 +125,21 @@ const NotesList = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {notes.map((note) => (
-            <Card 
-              key={note.id} 
+            <Card
+              key={note.id}
               className="hover:shadow-md bg-accent/30 transition-shadow cursor-pointer"
               onClick={() => handleEditClick(note)}
             >
-              <CardHeader className="pb-2">
+              <CardHeader className="pb-2 flex items-center flex-row justify-between">
                 <CardTitle className="text-lg">{note.title}</CardTitle>
+                <div className='text-xs text-muted-foreground leading-none'>
+                  {new Date(note.createdAt).toLocaleDateString()}
+                </div>
               </CardHeader>
               <CardContent>
                 <p className="line-clamp-2 text-sm text-muted-foreground">
                   {note.description}
                 </p>
-                <div className="flex justify-between items-center mt-4">
-                  <span className="text-xs text-muted-foreground">
-                    {new Date(note.createdAt).toLocaleDateString()}
-                  </span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleEditClick(note);
-                    }}
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                </div>
               </CardContent>
             </Card>
           ))}

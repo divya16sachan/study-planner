@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Plus } from 'lucide-react';
+import { Calendar, Calendar1, CalendarClock, Plus } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -27,7 +27,10 @@ const emptyStates = [
 ];
 
 const WeeklyTaskPage = ({ className = "" }) => {
-  const emptyState = emptyStates[Math.floor(Math.random() * emptyStates.length)];
+  const [selectedEmptyState] = useState(() => {
+    const randomIndex = Math.floor(Math.random() * emptyStates.length);
+    return emptyStates[randomIndex];
+  });
 
   const today = new Date();
   const currentDay = today.getDay();
@@ -136,9 +139,12 @@ const WeeklyTaskPage = ({ className = "" }) => {
     <div className={`${className}`}>
       <Card className='mb-4 bg-accent/30'>
         <CardHeader>
-          <div className='flex justify-between'>
+          <div className='flex justify-between gap-2'>
             <div>
-              <CardTitle >Weekly Calendar</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <span>Weekly Calendar</span>
+                <Calendar className='size-4'/>
+              </CardTitle>
               <CardDescription>
                 Select a day to view or edit routines
               </CardDescription>
@@ -275,7 +281,7 @@ const WeeklyTaskPage = ({ className = "" }) => {
         ) : (
           <div className="text-center py-8">
             <div className='size-52 opacity-95 aspect-square bg-white rounded-full p-9 my-8 mx-auto'>
-              <img className='h-full w-full object-contain' src={emptyState} alt="" />
+              <img className='h-full w-full object-contain' src={selectedEmptyState} alt="" />
             </div>
 
             <h3 className="text-xl font-semibold">You seem free today! 😊</h3>

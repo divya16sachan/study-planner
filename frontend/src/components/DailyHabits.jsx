@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { Trash2, Flame, Trophy } from 'lucide-react';
+import { Trash2, Flame, Trophy, CircleCheckBig } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import useHabitStore from '@/stores/habitStore';
@@ -68,7 +68,10 @@ const DailyHabits = ({ className = "" }) => {
                 <div className="space-y-2">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h2 className="tracking-tight leading-none font-semibold">Daily Habits</h2>
+                            <h2 className="flex items-center gap-2 tracking-tight leading-none font-semibold">
+                                <span>Daily Habits</span>
+                                <CircleCheckBig className='size-4' />
+                            </h2>
                             <div className="text-sm text-muted-foreground">
                                 {completedCount}/{habits.length} completed
                             </div>
@@ -141,11 +144,12 @@ const DailyHabits = ({ className = "" }) => {
                         placeholder="New habit"
                         value={newHabitText}
                         onChange={(e) => setNewHabitText(e.target.value)}
-                        className="h-9 bg-input/30"
+                        className="h-9 bg-input"
                     />
                     <Button
                         type="submit"
                         variant="secondary"
+                        className="h-9 bg-input/30"
                         disabled={!newHabitText.trim()}
                     >
                         Add
