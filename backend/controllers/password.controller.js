@@ -22,7 +22,7 @@ export const requestResetPasswordOtp = async (req, res) => {
         return res.status(200).json({ message: `OTP successfully sent to ${user.email}` });
     } catch (error) {
         console.error('Error sending reset password OTP:', error);
-        return res.status(500).json({ message: "Internal Server Error" });
+        return res.status(error.status || 500).json({ message: error.message || 'Failed to send OTP' });
     }
 };
 

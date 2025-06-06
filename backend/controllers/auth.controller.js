@@ -56,8 +56,9 @@ export const sendSignupOtp = async (req, res) => {
     });
 
     res.status(200).json({ message: 'OTP sent successfully' });
-  } catch (err) {
-    res.status(err.status || 500).json({ message: "Internal server error" });
+  } catch (error) {
+    console.log(error);
+    return res.status(error.status || 500).json({ message: error.message || 'Failed to send OTP' });
   }
 };
 
