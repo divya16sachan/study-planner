@@ -176,7 +176,7 @@ const EditProfile = ({ trigger }) => {
                             <p className="absolute -bottom-4 text-xs text-red-500">{nameError}</p>
                         )}
                         <Button
-                            variant="outline"
+                            variant="secondary"
                             onClick={handleNameChange}
                             className="w-full"
                             disabled={isRenaming || name === authUser.name || !!nameError}
@@ -212,8 +212,8 @@ const EditProfile = ({ trigger }) => {
                             <p className="absolute -bottom-4 text-xs text-red-500">{emailError}</p>
                         )}
                         <Button
+                            variant="secondary"
                             className="w-full"
-                            variant="outline"
                             type="button"
                             onClick={handleSendOtp}
                             disabled={cooldown > 0 || isSendingOtp || (email === authUser.email) || !!emailError}
@@ -253,7 +253,7 @@ const EditProfile = ({ trigger }) => {
                         </InputOTP>
 
                         <Button
-                            variant="outline"
+                            variant="secondary"
                             className="w-full"
                             onClick={handleUpdateEmail}
                             disabled={
