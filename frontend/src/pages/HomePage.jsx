@@ -12,21 +12,20 @@ import NotesList from '@/components/NotesList.jsx'
 import DailyHabits from '@/components/DailyHabits.jsx'
 import { Separator } from '@radix-ui/react-separator'
 
-
-function Card({ title, image, path }) {
+function Card({ title, image, path, date }) {
   return (
     <Link to={path} className='flex-1'>
       <div className='relative rounded-lg aspect-video overflow-hidden'>
         <img src={image} alt="" />
         <div
-          className='absolute  sm:text-xl  inset-0 capitalize cursor-pointer flex items-center justify-center font-bold bg-black/30 hover:bg-black/40 transition-colors text-white'
+          className='absolute sm:text-xl inset-0 capitalize cursor-pointer flex items-center justify-center font-bold bg-black/30 hover:bg-black/40 transition-colors text-white'
         >
           {title}
         </div>
       </div>
-      <div className='text-muted-foreground text-sm my-1 flex  items-center gap-2'>
+      <div className='text-muted-foreground text-sm my-1 flex items-center gap-2'>
         <Calendar className='size-4' />
-        <p>Lorem, ipsum</p>
+        <p>{date}</p>
       </div>
     </Link>
   )
@@ -40,27 +39,25 @@ const images = [
   "./cover5.jpg",
   "./cover6.jpg",
   "./cover7.jpg",
-];
-
-const data = [
-  { title: "Daily", path: '/weekly-task', image: "./cover7.jpg" },
-  { title: "Weekly", path: '/weekly-task', image: "./cover8.jpg" },
-  { title: "Monthly", path: '/weekly-task', image: "./cover3.jpg" },
 ]
 
-const randomImage = images[Math.floor(Math.random() * images.length)];
+const data = [
+  { title: "Daily", path: '/weekly-task', image: "./cover7.jpg", date: "Nov 3, 2025" },
+  { title: "Weekly", path: '/weekly-task', image: "./cover8.jpg", date: "Nov 3–9, 2025" },
+  { title: "Monthly", path: '/weekly-task', image: "./cover3.jpg", date: "November 2025" },
+]
 
 const HomePage = () => {
-  const { authUser } = useAuthStore();
+  const { authUser } = useAuthStore()
 
   return (
     <div className='p-4 mt-16 max-w-screen-lg mx-auto w-full'>
       <div className='relative mb-16'>
         <div className='rounded-lg overflow-hidden h-48'>
           <img
-            onError={(e) => { e.target.src = './placeholder.svg'; }}
+            onError={(e) => { e.target.src = './placeholder.svg' }}
             className="w-full h-full object-cover"
-            src={images[5]}
+            src={images[6]}
             alt="Cover Photo"
           />
         </div>
@@ -82,14 +79,12 @@ const HomePage = () => {
       <div>
         <div className='my-4'>
           <h2 className='font-bold text-xl'>Life Planner</h2>
-          <p className='border-l-2 text-sm text-muted-foreground pl-2 '>All your throughs in one private place.</p>
+          <p className='border-l-2 text-sm text-muted-foreground pl-2'>All your thoughts in one private place.</p>
         </div>
         <div className='flex gap-4 scrollbar-hide'>
-          {
-            data.map(({ title, image, path }, index) => (
-              <Card key={index} title={title} path={path} image={image} />
-            ))
-          }
+          {data.map(({ title, image, path, date }, index) => (
+            <Card key={index} title={title} path={path} image={image} date={date} />
+          ))}
         </div>
       </div>
 
@@ -103,10 +98,6 @@ const HomePage = () => {
         </div>
       </div>
 
-
-
-
-
       <Separator className='border-b my-14' />
       <NotesList />
       <Separator className='border-b my-14' />
@@ -116,14 +107,11 @@ const HomePage = () => {
           <span>Focus</span>
           <AlarmClock className='size-6' />
         </h2>
-        <div className='mt-4 grid gap-4
-        sm:grid-cols-[auto_1fr]
-        '>
+        <div className='mt-4 grid gap-4 sm:grid-cols-[auto_1fr]'>
           <Pomodoro className={"min-w-96"} />
           <div className='flex bg-accent/30 rounded-xl items-center justify-center flex-shrink-0 min-w-40 p-4'>
             <FlipTimer />
           </div>
-
           <SpotifyWidget className='sm:col-span-2' playlistId={"37i9dQZF1E4AfEUiirXPyP"} />
         </div>
       </div>

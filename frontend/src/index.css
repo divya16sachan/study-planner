@@ -94,6 +94,28 @@
     --selection-foreground: 0 0.02% 9.06%;
   }
 
+  .schedule-list li {
+    @apply relative;
+  }
+
+  .schedule-list li:last-child:after {
+    @apply hidden;
+  }
+  .schedule-list li::after {
+    @apply bg-accent absolute;
+    content: "";
+    height: calc(100% + 10px);
+    width: 1px;
+    left: 72px;
+    top: 15px;
+    z-index: -1;
+  }
+
+  .tick .tick-credits {
+    display: none !important;
+    opacity: 0 !important;
+  }
+
   * {
     @apply border-border;
   }

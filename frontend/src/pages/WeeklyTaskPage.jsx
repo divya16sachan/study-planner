@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Card,
   CardContent,
@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Calendar, Calendar1, CalendarClock, Plus } from 'lucide-react';
+import { Calendar, Calendar1, CalendarClock, Code2, Plus } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -14,10 +14,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@radix-ui/react-label';
-import useRoutineStore from '@/stores/routineStore';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@radix-ui/react-label";
+import { formatTime12Hour } from "@/lib/utils";
+import useRoutineStore from "@/stores/routineStore";
 
 const emptyStates = [
   "Sunday-Chill.svg",
@@ -26,7 +27,7 @@ const emptyStates = [
   "Chilling.svg",
 ];
 
-const WeeklyTaskPage = ({ className = "" }) => {
+const WeelyCalendar = ({ className = "" }) => {
   const [selectedEmptyState] = useState(() => {
     const randomIndex = Math.floor(Math.random() * emptyStates.length);
     return emptyStates[randomIndex];
@@ -40,14 +41,15 @@ const WeeklyTaskPage = ({ className = "" }) => {
   const [editIndex, setEditIndex] = useState(null);
 
   // Get data and actions from Zustand store
-  const { weeklyRoutines, addRoutine, updateRoutine, deleteRoutine } = useRoutineStore();
+  const { weeklyRoutines, addRoutine, updateRoutine, deleteRoutine } =
+    useRoutineStore();
 
   // Form state
   const [formData, setFormData] = useState({
-    time: '',
-    endTime: '',
-    subject: '',
-    description: '',
+    time: "",
+    endTime: "",
+    subject: "",
+    description: "",
   });
 
   // Generate an array of dates for the current week
@@ -62,10 +64,10 @@ const WeeklyTaskPage = ({ className = "" }) => {
 
   const handleAddClick = () => {
     setFormData({
-      time: '',
-      endTime: '',
-      subject: '',
-      description: '',
+      time: "",
+      endTime: "",
+      subject: "",
+      description: "",
     });
     setEditingRoutine(null);
     setEditIndex(null);
@@ -81,7 +83,7 @@ const WeeklyTaskPage = ({ className = "" }) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const validateTime = (start, end) => {
@@ -104,14 +106,21 @@ const WeeklyTaskPage = ({ className = "" }) => {
     e.preventDefault();
 
     if (!validateTime(formData.time, formData.endTime)) {
-      alert('Please enter valid start and end times');
+      alert("Please enter valid start and end times");
       return;
     }
 
     const selectedDayName = days[selectedDay];
 
-    if (checkTimeOverlap(selectedDayName, formData.time, formData.endTime, editIndex)) {
-      alert('This time slot overlaps with an existing routine');
+    if (
+      checkTimeOverlap(
+        selectedDayName,
+        formData.time,
+        formData.endTime,
+        editIndex
+      )
+    ) {
+      alert("This time slot overlaps with an existing routine");
       return;
     }
 
@@ -137,13 +146,13 @@ const WeeklyTaskPage = ({ className = "" }) => {
 
   return (
     <div className={`${className}`}>
-      <Card className='mb-4 bg-accent/30'>
+      <Card className="mb-4 bg-accent/30">
         <CardHeader>
-          <div className='flex justify-between gap-2'>
+          <div className="flex justify-between gap-2">
             <div>
               <CardTitle className="flex items-center gap-2">
                 <span>Weekly Calendar</span>
-                <Calendar className='size-4'/>
+                <Calendar className="size-4" />
               </CardTitle>
               <CardDescription>
                 Select a day to view or edit routines
@@ -151,12 +160,14 @@ const WeeklyTaskPage = ({ className = "" }) => {
             </div>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button onClick={handleAddClick}><Plus /> Add</Button>
+                <Button onClick={handleAddClick}>
+                  <Plus /> Add
+                </Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>
-                    {editingRoutine ? 'Edit Routine' : 'Add New Routine'}
+                    {editingRoutine ? "Edit Routine" : "Add New Routine"}
                   </DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -215,7 +226,7 @@ const WeeklyTaskPage = ({ className = "" }) => {
                       </Button>
                     )}
                     <Button type="submit">
-                      {editingRoutine ? 'Update' : 'Add'} Routine
+                      {editingRoutine ? "Update" : "Add"} Routine
                     </Button>
                   </div>
                 </form>
@@ -224,27 +235,27 @@ const WeeklyTaskPage = ({ className = "" }) => {
           </div>
         </CardHeader>
 
-        <CardContent className="grid grid-cols-7  gap-4">
+        <CardContent className="grid grid-cols-7  gap-1.5 sm:gap-4">
           {days.map((day, index) => {
             const date = new Date(weekStart);
             date.setDate(weekStart.getDate() + index);
 
             return (
-              <div
+              <Button
                 key={index}
                 onClick={() => handleDayClick(index)}
-                className={`hover:bg-accent/30 transition-colors cursor-pointer border select-none border-input p-4 rounded-xl flex flex-col items-center gap-1 
-                  ${index === currentDay ?
-                    'bg-primary text-primary-foreground hover:bg-primary/75'
-                    : index === selectedDay ?
-                      'bg-secondary text-secondary-foreground hover:bg-secondary/75'
-                      : ''
-                  }`
+                className="flex-col w-auto h-auto rounded-xl"
+                variant={
+                  index === currentDay
+                    ? "default"
+                    : index === selectedDay
+                    ? "secondary"
+                    : "ghost"
                 }
               >
-                <div className='text-xs font-semibold'>{day}</div>
-                <div className='text-2xl font-semibold'>{date.getDate()}</div>
-              </div>
+                <div className="text-xs font-semibold">{day}</div>
+                <div className="text-2xl font-semibold">{date.getDate()}</div>
+              </Button>
             );
           })}
         </CardContent>
@@ -252,27 +263,35 @@ const WeeklyTaskPage = ({ className = "" }) => {
 
       <div>
         {dayRoutines.length > 0 ? (
-          <ul className='space-y-4 mt-4 schedule-list'>
+          <ul className="space-y-4 mt-4 schedule-list">
             {dayRoutines
               .sort((a, b) => a.time.localeCompare(b.time))
               .map((task, index) => (
-                <li key={index} className='flex gap-4'>
-                  <div className='w-[60px]'>
-                    <div className='font-semibold text-lg'>{task.time}</div>
-                    <div className='text-sm text-muted-foreground'>{task.endTime}</div>
+                <li key={index} className="flex gap-4">
+                  <div className="w-[60px]">
+                    <div className="font-semibold text-lg flex items-end gap-0.5">
+                      {formatTime12Hour(task.time)}
+                      {/* <sub className="text-xs">{getAmPm(task.time)}</sub> */}
+                    </div>
+                    <div className="text-sm text-muted-foreground flex items-end gap-0.5">
+                      {formatTime12Hour(task.endTime)}
+                      {/* <sub className="text-xs">{getAmPm(task.endTime)}</sub> */}
+                    </div>
                   </div>
 
-                  <div className='size-4 aspect-square rounded-full bg-foreground border-accent border-4' />
+                  <div className="size-4 aspect-square rounded-full bg-foreground border-accent border-4" />
 
                   <Card
-                    className='w-full bg-accent/30 cursor-pointer hover:bg-accent transition-colors'
+                    className="w-full bg-accent/30 cursor-pointer hover:bg-accent transition-colors"
                     onClick={() => handleEditClick(task, index)}
                   >
-                    <CardHeader className='p-3'>
+                    <CardHeader className="p-3">
                       <CardTitle>{task.subject}</CardTitle>
                     </CardHeader>
-                    <CardContent className='p-3 pt-0'>
-                      <p className='line-clamp-2 text-muted-foreground text-sm'>{task.description}</p>
+                    <CardContent className="p-3 pt-0">
+                      <p className="line-clamp-2 text-muted-foreground text-sm">
+                        {task.description}
+                      </p>
                     </CardContent>
                   </Card>
                 </li>
@@ -280,12 +299,18 @@ const WeeklyTaskPage = ({ className = "" }) => {
           </ul>
         ) : (
           <div className="text-center py-8">
-            <div className='size-52 opacity-95 aspect-square bg-white rounded-full p-9 my-8 mx-auto'>
-              <img className='h-full w-full object-contain' src={selectedEmptyState} alt="" />
+            <div className="size-52 opacity-95 aspect-square bg-white rounded-full p-9 my-8 mx-auto">
+              <img
+                className="h-full w-full object-contain"
+                src={selectedEmptyState}
+                alt=""
+              />
             </div>
 
             <h3 className="text-xl font-semibold">You seem free today! 😊</h3>
-            <p className="text-muted-foreground">Click the "Add" button to create a new routine</p>
+            <p className="text-muted-foreground">
+              Click the "Add" button to create a new routine
+            </p>
           </div>
         )}
       </div>
@@ -293,4 +318,4 @@ const WeeklyTaskPage = ({ className = "" }) => {
   );
 };
 
-export default WeeklyTaskPage;
+export default WeelyCalendar;
