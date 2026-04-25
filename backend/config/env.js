@@ -15,8 +15,10 @@ function optional(key, defaultValue) {
 }
 
 export const ENV = {
-    PORT: optional('PORT', 8000),
+    PORT: optional('PORT', 5000),
     CLIENT_URL: required('CLIENT_URL'),
+    BREVO_API_KEY: required("BREVO_API_KEY"),
+    EMAIL_SENDER: required("EMAIL_SENDER"),
 
     JWT_SECRET: required('JWT_SECRET'),
     MONGODB_URI: required('MONGODB_URI'),

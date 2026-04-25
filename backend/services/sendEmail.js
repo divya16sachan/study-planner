@@ -1,22 +1,36 @@
-import nodemailer from "nodemailer";
 import { ENV } from "../config/env.js";
 
 export const sendEmail = async (email, subject, text, html) => {
-    const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-            user: ENV.MAIL_USER,
-            pass: ENV.MAIL_PASS,
+  try {
+    const res = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: {
+        "api-key": ENV.BREVO_API_KEY,
+        "Content-Type": "application/json",
+        accept: "application/json",
+      },
+      body: JSON.stringify({
+        sender: {
+          name: "NoteHub",
+          email: ENV.EMAIL_SENDER, 
         },
+        to: [{ email }],
+        subject,
+        htmlContent: html,
+        textContent: text,
+      }),
     });
 
-    const mailOptions = {
-        from: ENV.MAIL_USER,
-        to: email,
-        subject,
-        text, // plain text fallback
-        html, // HTML content
-    };
+    const data = await res.json();
 
-    await transporter.sendMail(mailOptions);
+    if (!res.ok) {
+      console.error("❌ Brevo API error:", data);
+      throw new Error("Email failed");
+    }
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.error("❌ Email sending failed:", error);
+    throw error;
+  }
 };

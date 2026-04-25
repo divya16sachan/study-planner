@@ -30,6 +30,13 @@ app.get('/', (req, res) => {
   res.status(200).json({ message: "Hello from server" });
 });
 
+app.use('/api/health', (req, res) => {
+  res.status(200).json({
+    message: `server is running`,
+    success: true,
+  })
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRouter);
 app.use('/api/password', passwordRouter);
