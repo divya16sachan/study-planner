@@ -30,7 +30,7 @@ const themes = [
   { name: "Winter Trek", src: "./background/winter-trek.jpg" },
 ];
 
-const GeneralSetting = () => {
+const ThemeSetting = () => {
   const [open, setOpen] = React.useState(false);
   const currentTheme = usePomodoroStore((state) => state.currentTheme);
   const setCurrentTheme = usePomodoroStore((state) => state.setCurrentTheme);
@@ -87,4 +87,4 @@ const GeneralSetting = () => {
   );
 };
 
-export default GeneralSetting;
+export default ThemeSetting;

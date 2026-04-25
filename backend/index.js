@@ -1,20 +1,26 @@
 import express from 'express';
-import dotenv from 'dotenv';
 import cors from 'cors';
-import connectDB from './connectDB.js';
+import connectDB from './db.js';
+import cookieParser from 'cookie-parser';
 
 import authRoutes from './routes/auth.router.js';
 import userRouter from './routes/user.router.js';
 import passwordRouter from './routes/password.router.js';
-import cookieParser from 'cookie-parser';
+import routineRouter from './routes/routine.router.js';
+import noteRouter from './routes/note.router.js';
+import { ENV } from './config/env.js';
 
-dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = ENV.PORT || 5000;
 
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174'],
+  origin: [
+    ENV.CLIENT_URL,           // live
+    'http://localhost:5173',  // react js
+    'http://localhost:5174',  // react js fallback 
+    'http://localhost:3000',  // next js
+  ],
   credentials: true,
 }));
 app.use(cookieParser());
@@ -27,6 +33,8 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRouter);
 app.use('/api/password', passwordRouter);
+app.use('/api/routines', routineRouter);
+app.use('/api/notes', noteRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

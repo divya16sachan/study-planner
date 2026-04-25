@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -41,9 +41,12 @@ const WeelyCalendar = ({ className = "" }) => {
   const [editIndex, setEditIndex] = useState(null);
 
   // Get data and actions from Zustand store
-  const { weeklyRoutines, addRoutine, updateRoutine, deleteRoutine } =
-    useRoutineStore();
+  const {fetchRoutines, weeklyRoutines, addRoutine, updateRoutine, deleteRoutine} = useRoutineStore();
 
+  useEffect(()=>{
+    fetchRoutines();
+  }, [])
+  
   // Form state
   const [formData, setFormData] = useState({
     time: "",

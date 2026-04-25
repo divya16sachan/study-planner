@@ -11,12 +11,12 @@ import {
 } from "@/components/ui/dialog";
 import { Settings } from "lucide-react";
 import TimerSetting from "./TimerSetting";
-import GeneralSetting from "./GeneralSetting";
+import ThemeSetting from "./ThemeSetting";
 import SoundSetting from "./SoundSetting";
 import { usePomodoroStore } from "@/stores/pomodoroStore";
 
 export function PomodoroSetting() {
-  const [selectedTab, setSelectedTab] = useState("general");
+  const [selectedTab, setSelectedTab] = useState("theme");
   const { resetAll } = usePomodoroStore();
 
   return (
@@ -40,11 +40,11 @@ export function PomodoroSetting() {
           {/* Sidebar Section Tabs */}
           <div className="w-[200px] space-y-1">
             <Button
-              variant={selectedTab === "general" ? "secondary" : "ghost"}
-              className={`${selectedTab !== "general" && "hover:bg-accent/30"} p-2 h-8 w-full justify-start`}
-              onClick={() => setSelectedTab("general")}
+              variant={selectedTab === "theme" ? "secondary" : "ghost"}
+              className={`${selectedTab !== "theme" && "hover:bg-accent/30"} p-2 h-8 w-full justify-start`}
+              onClick={() => setSelectedTab("theme")}
             >
-              General
+              Theme
             </Button>
             <Button
               variant={selectedTab === "sounds" ? "secondary" : "ghost"}
@@ -64,7 +64,7 @@ export function PomodoroSetting() {
 
           {/* Content Area Based on Selected Tab */}
           <div className="space-y-4 w-full">
-            {selectedTab === "general" && <GeneralSetting />}
+            {selectedTab === "theme" && <ThemeSetting />}
             {selectedTab === "timer" && <TimerSetting />}
             {selectedTab === "sounds" && <SoundSetting />}
           </div>

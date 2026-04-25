@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+
+// components/NotesList.jsx - Updated version
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, Pencil, File } from 'lucide-react';
+import { Plus, Trash2, File, Loader2 } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -12,16 +14,42 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import useNoteStore from '@/stores/noteStore';
 
 const NotesList = () => {
-  const { notes, addNote, updateNote, deleteNote } = useNoteStore();
+  const { 
+    notes, 
+    isLoading, 
+    isCreating, 
+    isUpdating, 
+    isDeleting,
+    error,
+    fetchNotes, 
+    addNote, 
+    updateNote, 
+    deleteNote,
+    clearError
+  } = useNoteStore();
+  
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingNote, setEditingNote] = useState(null);
   const [formData, setFormData] = useState({
     title: '',
     description: ''
   });
+
+  // Fetch notes on component mount
+  useEffect(() => {
+    fetchNotes();
+  }, [fetchNotes]);
+
+  // Clear error when dialog closes
+  useEffect(() => {
+    if (!isDialogOpen) {
+      clearError();
+    }
+  }, [isDialogOpen, clearError]);
 
   const handleAddClick = () => {
     setFormData({ title: '', description: '' });
@@ -40,7 +68,7 @@ const NotesList = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!formData.title.trim()) {
@@ -48,14 +76,37 @@ const NotesList = () => {
       return;
     }
 
+    let result;
     if (editingNote) {
-      updateNote(editingNote.id, formData.title, formData.description);
+      result = await updateNote(editingNote._id, formData.title, formData.description);
     } else {
-      addNote(formData.title, formData.description);
+      result = await addNote(formData.title, formData.description);
     }
 
-    setIsDialogOpen(false);
+    if (result.success) {
+      setIsDialogOpen(false);
+    }
   };
+
+  const handleDelete = async () => {
+    if (!editingNote) return;
+    
+    const result = await deleteNote(editingNote._id);
+    if (result.success) {
+      setIsDialogOpen(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="w-full flex items-center justify-center py-12">
+        <div className="flex flex-col items-center gap-2">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-muted-foreground">Loading notes...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full space-y-4">
@@ -74,6 +125,13 @@ const NotesList = () => {
             <DialogHeader>
               <DialogTitle>{editingNote ? 'Edit Note' : 'Create New Note'}</DialogTitle>
             </DialogHeader>
+            
+            {error && (
+              <Alert variant="destructive">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <Label htmlFor="title">Title</Label>
@@ -83,6 +141,7 @@ const NotesList = () => {
                   value={formData.title}
                   onChange={handleInputChange}
                   required
+                  disabled={isCreating || isUpdating}
                 />
               </div>
               <div>
@@ -93,6 +152,7 @@ const NotesList = () => {
                   value={formData.description}
                   onChange={handleInputChange}
                   rows={5}
+                  disabled={isCreating || isUpdating}
                 />
               </div>
               <div className="flex justify-end gap-2">
@@ -100,16 +160,36 @@ const NotesList = () => {
                   <Button
                     type="button"
                     variant="destructive"
-                    onClick={() => {
-                      deleteNote(editingNote.id);
-                      setIsDialogOpen(false);
-                    }}
+                    onClick={handleDelete}
+                    disabled={isDeleting || isUpdating}
                   >
-                    <Trash2 className="mr-2 h-4 w-4" /> Delete
+                    {isDeleting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Deleting...
+                      </>
+                    ) : (
+                      <>
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Delete
+                      </>
+                    )}
                   </Button>
                 )}
-                <Button type="submit">
-                  {editingNote ? 'Update' : 'Create'} Note
+                <Button 
+                  type="submit"
+                  disabled={isCreating || isUpdating}
+                >
+                  {(isCreating || isUpdating) ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {editingNote ? 'Updating...' : 'Creating...'}
+                    </>
+                  ) : (
+                    <>
+                      {editingNote ? 'Update' : 'Create'} Note
+                    </>
+                  )}
                 </Button>
               </div>
             </form>
@@ -126,7 +206,7 @@ const NotesList = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {notes.map((note) => (
             <Card
-              key={note.id}
+              key={note._id}
               className="hover:shadow-md bg-accent/30 transition-shadow cursor-pointer"
               onClick={() => handleEditClick(note)}
             >
@@ -137,8 +217,8 @@ const NotesList = () => {
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="line-clamp-2 text-sm text-muted-foreground">
-                  {note.description}
+                <p className="line-clamp-3 text-sm text-muted-foreground">
+                  {note.description || 'No description'}
                 </p>
               </CardContent>
             </Card>

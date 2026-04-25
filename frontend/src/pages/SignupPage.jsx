@@ -258,7 +258,7 @@ const SignupPage = () => {
                                         </div>
                                         <Button
                                             className="w-full"
-                                            variant="outline"
+                                            variant="secondary"
                                             type="button"
                                             onClick={handleSendotp}
                                             disabled={cooldown > 0 || isSendingOtp}
@@ -266,7 +266,7 @@ const SignupPage = () => {
                                             {isSendingOtp ? (
                                                 <>
                                                     <Loader2 className="animate-spin ml-2" />
-                                                </>
+                                                </>             
                                             ) : cooldown > 0 ? (
                                                 `${cooldown}s`
                                             ) : (

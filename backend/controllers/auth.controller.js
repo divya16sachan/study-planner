@@ -3,15 +3,16 @@ import bcrypt from 'bcrypt';
 import { generateJwt } from '../services/jwt.service.js';
 import { sendOtp, validateOtp } from '../services/otp.service.js';
 import { OAuth2Client } from 'google-auth-library';
+import { ENV } from '../config/env.js';
 
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const client = new OAuth2Client(ENV.GOOGLE_CLIENT_ID);
 
 export const googleLogin = async (req, res) => {
   const { token } = req.body;
   try {
     const ticket = await client.verifyIdToken({
       idToken: token,
-      audience: process.env.GOOGLE_CLIENT_ID,
+      audience: ENV.GOOGLE_CLIENT_ID,
     });
 
     const payload = ticket.getPayload();

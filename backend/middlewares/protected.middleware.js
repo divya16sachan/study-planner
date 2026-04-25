@@ -1,7 +1,8 @@
 import jwt from 'jsonwebtoken';
-import User from '../models/user.model.js'; 
+import User from '../models/user.model.js';
+import { ENV } from '../config/env.js';
 
-const protectedRoute = async (req, res, next) => { 
+const protectedRoute = async (req, res, next) => {
     const token = req.cookies?.jwt;
 
     if (!token) {
@@ -9,7 +10,7 @@ const protectedRoute = async (req, res, next) => {
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, ENV.JWT_SECRET);
         const user = await User.findById(decoded.id).select('-password'); // ✅ await & .select
         if (!user) {
             return res.status(401).json({ message: "Unauthorized" });
